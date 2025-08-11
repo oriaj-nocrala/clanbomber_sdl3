@@ -23,7 +23,14 @@ private:
     TTF_Font* font;
     std::vector<std::string> menu_items;
     int selected_item;
+    int selected_player;
     GameState next_state;
+    
+    void render_player_setup();
+    void render_game_options();
+    void handle_player_setup_input(SDL_Event& event);
+    std::string get_controller_name(int controller_type);
+    std::string get_team_name(int team);
 };
 
 #endif
