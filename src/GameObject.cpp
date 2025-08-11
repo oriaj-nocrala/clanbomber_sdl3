@@ -212,6 +212,7 @@ bool GameObject::move_right()
 		}
 	}
 	else {
+		SDL_Log("Attempting to kick right. can_kick value: %d", (int)can_kick);
 		if (can_kick  && (right_maptile->bomb->get_cur_dir() == DIR_NONE)) {
 			right_maptile->bomb->kick(DIR_RIGHT);
 		}
@@ -252,6 +253,7 @@ bool GameObject::move_left()
 		}
 	}
 	else {
+		SDL_Log("Attempting to kick left. can_kick value: %d", (int)can_kick);
 		if (can_kick  && (left_maptile->bomb->get_cur_dir() == DIR_NONE)) {
 			left_maptile->bomb->kick(DIR_LEFT);
 		}
@@ -291,6 +293,7 @@ bool GameObject::move_up()
 		}
 	}
 	else {
+		SDL_Log("Attempting to kick up. can_kick value: %d", (int)can_kick);
 		if (can_kick  && (up_maptile->bomb->get_cur_dir() == DIR_NONE)) {
 			up_maptile->bomb->kick(DIR_UP);
 		}
@@ -332,6 +335,7 @@ bool GameObject::move_down()
 		}
 	}
 	else {
+		SDL_Log("Attempting to kick down. can_kick value: %d", (int)can_kick);
 		if (can_kick  && (down_maptile->bomb->get_cur_dir() == DIR_NONE)) {
 			down_maptile->bomb->kick(DIR_DOWN);
 		}
@@ -348,7 +352,7 @@ bool GameObject::move(float deltaTime)
 		remainder += deltaTime*speed - (int)(deltaTime*speed);
 		span += (int)(remainder);
 		remainder -= (int)(remainder);
-	
+
 		for (int i=0; i<span; i++) {
 			switch (cur_dir) {
 				case DIR_LEFT:

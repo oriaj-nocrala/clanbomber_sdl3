@@ -15,6 +15,7 @@ public:
     void explode();
     void explode_delayed();
     void kick(Direction dir);
+    void stop();
 
     ObjectType get_type() const override { return BOMB; }
 
@@ -24,6 +25,7 @@ private:
     Bomber* owner;
     float anim_timer;
     int base_sprite;
+    MapTile* current_tile;
 };
 
 #endif
