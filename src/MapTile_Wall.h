@@ -6,8 +6,8 @@
 class MapTile_Wall : public MapTile {
 public:
     MapTile_Wall(int x, int y, ClanBomberApplication* app);
+    ~MapTile_Wall();
 
-    TILE_TYPE get_tile_type() const override { return WALL; }
     bool is_blocking() const override { return true; }
 };
 

@@ -21,8 +21,11 @@ add_executable(clanbomber-modern
     src/Explosion.cpp
     src/Timer.cpp
     src/Map.cpp
+    src/MapEntry.cpp
+    src/MapTile.cpp
     src/MapTile_Wall.cpp
     src/MapTile_Ground.cpp
+    src/MapTile_Box.cpp
     src/Audio.cpp
     src/Game.cpp
     src/MainMenuScreen.cpp

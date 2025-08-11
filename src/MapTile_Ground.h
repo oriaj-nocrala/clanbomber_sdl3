@@ -6,8 +6,7 @@
 class MapTile_Ground : public MapTile {
 public:
     MapTile_Ground(int x, int y, ClanBomberApplication* app);
-
-    TILE_TYPE get_tile_type() const override { return GROUND; }
+    ~MapTile_Ground();
 };
 
 #endif

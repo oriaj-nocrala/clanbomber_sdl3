@@ -9,6 +9,7 @@
 #define MAP_HEIGHT 15
 
 class MapTile;
+class MapEntry;
 class ClanBomberApplication;
 class Bomber;
 
@@ -35,14 +36,14 @@ public:
 
 private:
     ClanBomberApplication* app;
-    std::vector<std::vector<MapTile*>> tiles;
-    std::vector<CL_Vector> bomber_positions;
-    int width;
-    int height;
+    MapTile* maptiles[MAP_WIDTH][MAP_HEIGHT];
+    std::vector<MapEntry*> map_list;
+    MapEntry* current_map;
     int current_map_index;
-    int total_maps;
     
-    void init_default_bomber_positions();
+    void enumerate_maps();
+    void clear();
+    void reload();
 };
 
 #endif

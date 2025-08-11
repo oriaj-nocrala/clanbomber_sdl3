@@ -1,119 +1,221 @@
 #include "Map.h"
-#include "MapTile_Wall.h"
-#include "MapTile_Ground.h"
+#include "MapTile.h"
+#include "MapEntry.h"
 #include "ClanBomber.h"
 #include <algorithm>
 #include <random>
+#include <filesystem>
 #include <SDL3/SDL.h>
 
 Map::Map(ClanBomberApplication* _app) {
     app = _app;
-    width = 20; // 800 / 40
-    height = 15; // 600 / 40
     current_map_index = 0;
-    total_maps = 1; // For now, just one default map
-    init_default_bomber_positions();
+    current_map = nullptr;
+    
+    // Initialize maptiles array
+    for (int x = 0; x < MAP_WIDTH; x++) {
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            maptiles[x][y] = nullptr;
+        }
+    }
+    
+    enumerate_maps();
 }
 
 Map::~Map() {
-    for (int i = 0; i < width; ++i) {
-        for (int j = 0; j < height; ++j) {
-            delete tiles[i][j];
+    clear();
+    
+    // Clean up map list
+    for (auto& map_entry : map_list) {
+        delete map_entry;
+    }
+    map_list.clear();
+}
+
+void Map::enumerate_maps() {
+    map_list.clear();
+    
+    std::filesystem::path maps_dir = "data/maps";
+    if (!std::filesystem::exists(maps_dir)) {
+        SDL_Log("Maps directory not found: %s", maps_dir.string().c_str());
+        return;
+    }
+    
+    for (const auto& entry : std::filesystem::directory_iterator(maps_dir)) {
+        if (entry.is_regular_file() && entry.path().extension() == ".map") {
+            MapEntry* map_entry = new MapEntry(entry.path().string());
+            if (map_entry->load()) {
+                map_list.push_back(map_entry);
+            } else {
+                delete map_entry;
+            }
         }
+    }
+    
+    if (map_list.empty()) {
+        SDL_Log("No valid maps found");
+    } else {
+        SDL_Log("Found %zu maps", map_list.size());
+        current_map = map_list[0];
     }
 }
 
 void Map::load() {
-    tiles.resize(width);
-    for (int i = 0; i < width; ++i) {
-        tiles[i].resize(height);
+    if (current_map) {
+        reload();
+    } else if (!map_list.empty()) {
+        current_map = map_list[0];
+        reload();
     }
+}
 
-    for (int i = 0; i < width; ++i) {
-        for (int j = 0; j < height; ++j) {
-            if (i == 0 || j == 0 || i == width - 1 || j == height - 1) {
-                tiles[i][j] = new MapTile_Wall(i * 40, j * 40, app);
-            } else {
-                tiles[i][j] = new MapTile_Ground(i * 40, j * 40, app);
+void Map::clear() {
+    for (int x = 0; x < MAP_WIDTH; x++) {
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            if (maptiles[x][y]) {
+                delete maptiles[x][y];
+                maptiles[x][y] = nullptr;
+            }
+        }
+    }
+}
+
+void Map::reload() {
+    if (!current_map) return;
+    
+    clear();
+    
+    for (int y = 0; y < MAP_HEIGHT; y++) {
+        for (int x = 0; x < MAP_WIDTH; x++) {
+            char tile_char = current_map->get_data(x, y);
+            
+            switch (tile_char) {
+                case '0': case '1': case '2': case '3':
+                case '4': case '5': case '6': case '7':
+                case ' ':
+                    maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
+                    break;
+                case '*':
+                    maptiles[x][y] = MapTile::create(MapTile::WALL, x*40, y*40, app);
+                    break;
+                case '+':
+                    maptiles[x][y] = MapTile::create(MapTile::BOX, x*40, y*40, app);
+                    break;
+                case 'R':
+                    // Random box
+                    if (rand() % 3) {
+                        maptiles[x][y] = MapTile::create(MapTile::BOX, x*40, y*40, app);
+                    } else {
+                        maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
+                    }
+                    break;
+                case '-':
+                    maptiles[x][y] = MapTile::create(MapTile::WALL, x*40, y*40, app);
+                    break;
+                default:
+                    maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
+                    break;
             }
         }
     }
 }
 
 void Map::show() {
-    for (int i = 0; i < width; ++i) {
-        for (int j = 0; j < height; ++j) {
-            tiles[i][j]->show();
+    for (int x = 0; x < MAP_WIDTH; x++) {
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            if (maptiles[x][y]) {
+                maptiles[x][y]->show();
+            }
         }
     }
 }
 
 MapTile* Map::get_tile(int tx, int ty) {
-    if (tx >= 0 && tx < width && ty >= 0 && ty < height) {
-        return tiles[tx][ty];
+    if (tx >= 0 && tx < MAP_WIDTH && ty >= 0 && ty < MAP_HEIGHT) {
+        return maptiles[tx][ty];
     }
     return nullptr;
 }
 
 void Map::load_random_valid() {
-    load(); // For now, just load the default map
+    if (map_list.empty()) return;
+    
+    current_map_index = rand() % map_list.size();
+    current_map = map_list[current_map_index];
+    reload();
 }
 
 void Map::load_next_valid(int map_nr) {
-    if (map_nr >= 0) {
+    if (map_list.empty()) return;
+    
+    if (map_nr >= 0 && map_nr < (int)map_list.size()) {
         current_map_index = map_nr;
+    } else {
+        current_map_index = (current_map_index + 1) % map_list.size();
     }
-    load(); // For now, just load the default map
+    
+    current_map = map_list[current_map_index];
+    reload();
 }
 
 void Map::act() {
-    // No-op for now
+    // Update animated map tiles
+    for (int x = 0; x < MAP_WIDTH; x++) {
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            if (maptiles[x][y]) {
+                maptiles[x][y]->act();
+            }
+        }
+    }
 }
 
 void Map::refresh_holes() {
-    // No-op for now - would handle animated map elements
+    // No-op for now - would handle animated holes/ground effects
 }
 
 bool Map::any_valid_map() {
-    return total_maps > 0;
+    return !map_list.empty();
 }
 
 int Map::get_map_count() {
-    return total_maps;
+    return (int)map_list.size();
 }
 
 std::string Map::get_name() {
-    return "Default Map";
+    if (current_map) {
+        return current_map->get_name();
+    }
+    return "No Map";
 }
 
 std::string Map::get_author() {
-    return "ClanBomber SDL3";
+    if (current_map) {
+        return current_map->get_author();
+    }
+    return "Unknown";
 }
 
 CL_Vector Map::get_bomber_pos(int nr) {
-    if (nr >= 0 && nr < (int)bomber_positions.size()) {
-        return bomber_positions[nr];
+    if (current_map) {
+        return current_map->get_bomber_pos(nr);
     }
-    // Return default position if out of bounds
-    return CL_Vector(2, 2);
+    // Default positions if no map
+    switch (nr) {
+        case 0: return CL_Vector(2, 2);
+        case 1: return CL_Vector(17, 2);
+        case 2: return CL_Vector(2, 12);
+        case 3: return CL_Vector(17, 12);
+        case 4: return CL_Vector(9, 2);
+        case 5: return CL_Vector(9, 12);
+        case 6: return CL_Vector(2, 7);
+        case 7: return CL_Vector(17, 7);
+        default: return CL_Vector(2, 2);
+    }
 }
 
 void Map::randomize_bomber_positions() {
-    std::random_device rd;
-    std::mt19937 g(rd());
-    std::shuffle(bomber_positions.begin(), bomber_positions.end(), g);
-}
-
-void Map::init_default_bomber_positions() {
-    bomber_positions.clear();
-    
-    // Standard bomber start positions (in tile coordinates)
-    bomber_positions.push_back(CL_Vector(2, 2));   // Top-left
-    bomber_positions.push_back(CL_Vector(17, 2));  // Top-right  
-    bomber_positions.push_back(CL_Vector(2, 12));  // Bottom-left
-    bomber_positions.push_back(CL_Vector(17, 12)); // Bottom-right
-    bomber_positions.push_back(CL_Vector(9, 2));   // Top-center
-    bomber_positions.push_back(CL_Vector(9, 12));  // Bottom-center
-    bomber_positions.push_back(CL_Vector(2, 7));   // Left-center
-    bomber_positions.push_back(CL_Vector(17, 7));  // Right-center
+    if (current_map) {
+        // The positions are shuffled in MapEntry, this is just a placeholder
+        // In the original, this would modify the bomber position order
+    }
 }

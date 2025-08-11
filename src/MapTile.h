@@ -4,30 +4,59 @@
 #include "GameObject.h"
 
 class Bomb; // Forward declaration
+class Bomber; // Forward declaration
 
 class MapTile : public GameObject {
 public:
-    enum TILE_TYPE {
-        GROUND,
+    enum MAPTILE_TYPE {
+        NONE,
+        GROUND, 
         WALL,
-        BOX
+        BOX,
+        ICE,
+        ARROW,
+        TRAP
     };
 
-    MapTile(int x, int y, ClanBomberApplication* app) : GameObject(x, y, app) {
-        bomb = nullptr;
-    }
+    MapTile(int x, int y, ClanBomberApplication* app);
+    virtual ~MapTile();
 
     // Implement GameObject's get_type
     ObjectType get_type() const override { return MAPTILE; }
 
-    // Add a new method for the specific tile type
-    virtual TILE_TYPE get_tile_type() const = 0;
+    // Static factory method
+    static MapTile* create(MAPTILE_TYPE type, int x, int y, ClanBomberApplication* app);
 
-    virtual bool is_blocking() const { return false; }
-    virtual bool is_burnable() const { return false; }
-    virtual bool has_bomber() const { return false; }
+    virtual void act();
+    virtual void show() override;
+    virtual void destroy();
 
+    virtual bool is_blocking() const { return blocking; }
+    virtual bool is_destructible() const { return destructible; }
+    virtual bool is_burnable() const { return destructible; }
+    virtual bool has_bomb() const { return bomb != nullptr; }
+    virtual bool has_bomber() const { return bomber != nullptr; }
+    
+    // Compatibility method for legacy code
+    virtual int get_tile_type() const { 
+        if (blocking && !destructible) return WALL;
+        if (destructible) return BOX;
+        return GROUND;
+    }
+
+    void set_bomb(Bomb* _bomb) { bomb = _bomb; }
+    Bomb* get_bomb() { return bomb; }
+    
+    void set_bomber(Bomber* _bomber) { bomber = _bomber; }
+    Bomber* get_bomber() { return bomber; }
+
+public:
     Bomb* bomb;
+    Bomber* bomber;
+
+protected:
+    bool blocking;
+    bool destructible;
 };
 
 #endif
