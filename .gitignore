@@ -1,0 +1,10 @@
+# Build artifacts
+build/
+*.o
+*.a
+*.so
+*.dll
+clanbomber-modern
+
+# VSCode
+.vscode/
