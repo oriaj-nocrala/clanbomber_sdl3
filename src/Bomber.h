@@ -4,6 +4,7 @@
 #include "GameObject.h"
 #include "Controller.h"
 #include <string>
+#include <algorithm>
 
 class Bomber : public GameObject {
 public:
@@ -39,6 +40,15 @@ public:
 
     // Controller access
     Controller* get_controller() { return controller; }
+    
+    // Power-up effects
+    void inc_speed(int amount) { speed += amount; }
+    void dec_speed(int amount) { speed = std::max(30, speed - amount); }
+    int get_power() const { return power; }
+    void inc_power(int amount) { power += amount; }
+    
+public:
+    bool can_kick;
 
 protected:
     float anim_count;

@@ -56,28 +56,53 @@ void Explosion::act(float deltaTime) {
 }
 
 void Explosion::detonate_other_bombs() {
-    // Center
+    // Center - destroy destructibles and detonate bombs
     MapTile* tile = app->map->get_tile(get_map_x(), get_map_y());
-    if (tile && tile->bomb) {
-        tile->bomb->explode_delayed();
+    if (tile) {
+        if (tile->bomb) {
+            tile->bomb->explode_delayed();
+        }
+        if (tile->is_burnable()) {
+            tile->destroy();
+        }
     }
 
-    // Rays
+    // Rays - destroy destructibles and detonate bombs along explosion path
     for (int i = 1; i <= length_up; ++i) {
         tile = app->map->get_tile(get_map_x(), get_map_y() - i);
-        if (tile && tile->bomb) tile->bomb->explode_delayed();
+        if (tile) {
+            if (tile->bomb) tile->bomb->explode_delayed();
+            if (tile->is_burnable()) {
+                tile->destroy();
+            }
+        }
     }
     for (int i = 1; i <= length_down; ++i) {
         tile = app->map->get_tile(get_map_x(), get_map_y() + i);
-        if (tile && tile->bomb) tile->bomb->explode_delayed();
+        if (tile) {
+            if (tile->bomb) tile->bomb->explode_delayed();
+            if (tile->is_burnable()) {
+                tile->destroy();
+            }
+        }
     }
     for (int i = 1; i <= length_left; ++i) {
         tile = app->map->get_tile(get_map_x() - i, get_map_y());
-        if (tile && tile->bomb) tile->bomb->explode_delayed();
+        if (tile) {
+            if (tile->bomb) tile->bomb->explode_delayed();
+            if (tile->is_burnable()) {
+                tile->destroy();
+            }
+        }
     }
     for (int i = 1; i <= length_right; ++i) {
         tile = app->map->get_tile(get_map_x() + i, get_map_y());
-        if (tile && tile->bomb) tile->bomb->explode_delayed();
+        if (tile) {
+            if (tile->bomb) tile->bomb->explode_delayed();
+            if (tile->is_burnable()) {
+                tile->destroy();
+            }
+        }
     }
 }
 

@@ -159,11 +159,17 @@ void Map::load_next_valid(int map_nr) {
 }
 
 void Map::act() {
-    // Update animated map tiles
+    // Update animated map tiles and handle destroyed boxes
     for (int x = 0; x < MAP_WIDTH; x++) {
         for (int y = 0; y < MAP_HEIGHT; y++) {
             if (maptiles[x][y]) {
                 maptiles[x][y]->act();
+                
+                // Replace destroyed boxes with ground tiles
+                if (maptiles[x][y]->delete_me) {
+                    delete maptiles[x][y];
+                    maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
+                }
             }
         }
     }
