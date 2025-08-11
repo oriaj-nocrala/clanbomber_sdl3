@@ -3,7 +3,6 @@
 
 #include "Screen.h"
 #include "ClanBomber.h"
-#include "Controller_Keyboard.h"
 #include "Map.h"
 
 class GameplayScreen : public Screen {
@@ -16,8 +15,18 @@ public:
     void render(SDL_Renderer* renderer) override;
 
 private:
+    void init_game();
+    void deinit_game();
+    void act_all();
+    void show_all();
+    void delete_some();
+
     ClanBomberApplication* app;
-    Controller_Keyboard* controller;
+    bool pause_game;
+    bool show_fps;
+    int fps;
+    int frame_count;
+    float frame_time;
 };
 
 #endif

@@ -10,6 +10,7 @@ find_package(SDL3_ttf REQUIRED)
 
 add_executable(clanbomber-modern 
     src/main.cpp
+    src/ClanBomber.cpp
     src/GameConfig.cpp
     src/Controller.cpp
     src/GameObject.cpp

@@ -16,8 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef Controller_h
-#define Controller_h
+#ifndef CONTROLLER_H
+#define CONTROLLER_H
 
 class Bomber;
 
@@ -52,11 +52,11 @@ public:
 		NEVER
 	} bomb_mode;
 	
-	static Controller*	create( CONTROLLER_TYPE _type );
+	static Controller* create( CONTROLLER_TYPE _type );
 	
 	void attach(Bomber* _bomber);
 
-	virtual void update() = 0;
+	virtual void update() {};
 	virtual void reset() = 0;
 	virtual bool is_left() = 0;
 	virtual bool is_right() = 0;
@@ -70,9 +70,9 @@ public:
 	void bomb_always();
 	void bomb_normal();
 		
-	Bomber*	bomber;
-	bool		active;
-	bool		reverse;
+	Bomber* bomber;
+	bool active;
+	bool reverse;
 	bool put_bomb;
 
 	CONTROLLER_TYPE get_type();
@@ -80,7 +80,3 @@ public:
 };
 
 #endif
-
-
-
-

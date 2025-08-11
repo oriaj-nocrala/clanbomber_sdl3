@@ -16,14 +16,13 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "ClanBomber.h"
 #include "Controller.h"
 
-#include "Controller_AI.h"
-#include "Controller_AI_mass.h"
+// #include "Controller_AI.h"
+// #include "Controller_AI_mass.h"
 #include "Controller_Keyboard.h"
-#include "Controller_Joystick.h"
-#include "Controller_RCMouse.h"
+// #include "Controller_Joystick.h"
+// #include "Controller_RCMouse.h"
 
 #include "Bomber.h"
 
@@ -76,28 +75,28 @@ Controller* Controller::create( CONTROLLER_TYPE _type )
 			return new Controller_Keyboard(1);
 		case KEYMAP_3:
 			return new Controller_Keyboard(2);
-		case RCMOUSE:
-			return new Controller_RCMouse();
-		case JOYSTICK_1:
-			return new Controller_Joystick(0);
-		case JOYSTICK_2:
-			return new Controller_Joystick(1);
-		case JOYSTICK_3:
-			return new Controller_Joystick(2);
-		case JOYSTICK_4:
-			return new Controller_Joystick(3);
-		case JOYSTICK_5:
-			return new Controller_Joystick(4);
-		case JOYSTICK_6:
-			return new Controller_Joystick(5);
-		case JOYSTICK_7:
-			return new Controller_Joystick(6);
-		case JOYSTICK_8:
-			return new Controller_Joystick(7);
-		case AI:
-			return new Controller_AI();
-		case AI_mass:
-		  return new Controller_AI_mass();
+		// case RCMOUSE:
+		// 	return new Controller_RCMouse();
+		// case JOYSTICK_1:
+		// 	return new Controller_Joystick(0);
+		// case JOYSTICK_2:
+		// 	return new Controller_Joystick(1);
+		// case JOYSTICK_3:
+		// 	return new Controller_Joystick(2);
+		// case JOYSTICK_4:
+		// 	return new Controller_Joystick(3);
+		// case JOYSTICK_5:
+		// 	return new Controller_Joystick(4);
+		// case JOYSTICK_6:
+		// 	return new Controller_Joystick(5);
+		// case JOYSTICK_7:
+		// 	return new Controller_Joystick(6);
+		// case JOYSTICK_8:
+		// 	return new Controller_Joystick(7);
+		// case AI:
+		// 	return new Controller_AI();
+		// case AI_mass:
+		//   return new Controller_AI_mass();
 		default:
 		    ;
 	}
