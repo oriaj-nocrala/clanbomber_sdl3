@@ -61,7 +61,14 @@ void Bomb::explode() {
     if (delete_me) return;
 
     delete_me = true;
-    Audio::play(Resources::get_sound("explode"));
+    
+    // Play explosion sound
+    Sound* explode_sound = Resources::get_sound("explode");
+    if (explode_sound) {
+        Audio::play(explode_sound);
+    }
+    
+    // Create explosion
     app->objects.push_back(new Explosion(x, y, power, owner, app));
 }
 

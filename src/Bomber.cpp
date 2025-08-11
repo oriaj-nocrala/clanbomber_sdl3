@@ -4,6 +4,8 @@
 #include "Bomb.h"
 #include "ClanBomber.h"
 #include "GameConfig.h"
+#include "Resources.h"
+#include "Audio.h"
 
 Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app) : GameObject(_x, _y, _app) {
     color = _color;
@@ -23,13 +25,16 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     bomber_number = 0;
     bomber_name = "Bomber";
 
-    // Set texture based on color
+    // Set texture based on color - using proper bomber skins
     switch (color) {
         case RED: texture_name = "bomber_dull_red"; break;
         case BLUE: texture_name = "bomber_dull_blue"; break;
         case YELLOW: texture_name = "bomber_dull_yellow"; break;
         case GREEN: texture_name = "bomber_dull_green"; break;
-        // Add other colors later
+        case CYAN: texture_name = "bomber_snake"; break;
+        case ORANGE: texture_name = "bomber_tux"; break;
+        case PURPLE: texture_name = "bomber_spider"; break;
+        case BROWN: texture_name = "bomber_bsd"; break;
         default: texture_name = "bomber_snake"; break;
     }
 }
@@ -64,6 +69,12 @@ void Bomber::act(float deltaTime) {
     if (controller->is_bomb() && bomb_cooldown <= 0) {
         app->objects.push_back(new Bomb(x, y, power, this, app));
         bomb_cooldown = 0.5f; // 0.5 second cooldown
+        
+        // Play bomb placement sound
+        Sound* putbomb_sound = Resources::get_sound("putbomb");
+        if (putbomb_sound) {
+            Audio::play(putbomb_sound);
+        }
     }
 
     if (moved) {

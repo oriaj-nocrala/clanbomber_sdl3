@@ -709,7 +709,7 @@ MapTile* GameObject::get_tile() const
 
 void GameObject::show()
 {
-    if (texture_name.empty()) {
+    if (texture_name.empty() || delete_me) {
         return;
     }
 
@@ -718,11 +718,20 @@ void GameObject::show()
         return;
     }
 
+    // Apply opacity if needed
+    if (opacity_scaled != 255) {
+        SDL_SetTextureAlphaMod(tex_info->texture, opacity_scaled);
+    }
+
     SDL_FRect src_rect;
     if (tex_info->sprite_width > 0 && tex_info->sprite_height > 0) {
         float texture_width, texture_height;
         SDL_GetTextureSize(tex_info->texture, &texture_width, &texture_height);
         int num_cols = texture_width / tex_info->sprite_width;
+        
+        // Prevent division by zero
+        if (num_cols == 0) num_cols = 1;
+        
         int row = sprite_nr / num_cols;
         int col = sprite_nr % num_cols;
         src_rect.x = col * tex_info->sprite_width;
@@ -741,6 +750,11 @@ void GameObject::show()
     SDL_FRect dest_rect = { (float)get_x(), (float)get_y(), src_rect.w, src_rect.h };
 
     SDL_RenderTexture(Resources::get_renderer(), tex_info->texture, &src_rect, &dest_rect);
+    
+    // Reset alpha for next object
+    if (opacity_scaled != 255) {
+        SDL_SetTextureAlphaMod(tex_info->texture, 255);
+    }
 }
 
 void GameObject::show(int _x, int _y) const

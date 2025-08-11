@@ -1,6 +1,7 @@
 #include "Resources.h"
 #include <SDL3_image/SDL_image.h>
 #include <iostream>
+#include <vector>
 
 SDL_Renderer* Resources::renderer = nullptr;
 std::string Resources::base_path;
@@ -52,32 +53,25 @@ void Resources::init(SDL_Renderer* renderer) {
     textures["map_editor_background"] = load_texture("data/pics/map_editor.png");
     textures["corpse_parts"] = load_texture("data/pics/corpse_parts.png", 40, 40);
 
-    // Load sounds
-    sounds["typewriter"] = load_sound("data/wavs/typewriter.wav");
-    sounds["winlevel"] = load_sound("data/wavs/winlevel.wav");
-    sounds["klatsch"] = load_sound("data/wavs/klatsch.wav");
-    sounds["forward"] = load_sound("data/wavs/forward.wav");
-    sounds["rewind"] = load_sound("data/wavs/rewind.wav");
-    sounds["stop"] = load_sound("data/wavs/stop.wav");
-    sounds["wow"] = load_sound("data/wavs/wow.wav");
-    sounds["joint"] = load_sound("data/wavs/joint.wav");
-    sounds["horny"] = load_sound("data/wavs/horny.wav");
-    sounds["schnief"] = load_sound("data/wavs/schnief.wav");
-    sounds["whoosh"] = load_sound("data/wavs/whoosh.wav");
-    sounds["break"] = load_sound("data/wavs/break.wav");
-    sounds["clear"] = load_sound("data/wavs/clear.wav");
-    sounds["menu_back"] = load_sound("data/wavs/menu_back.wav");
-    sounds["hurry_up"] = load_sound("data/wavs/hurry_up.wav");
-    sounds["time_over"] = load_sound("data/wavs/time_over.wav");
-    sounds["crunch"] = load_sound("data/wavs/crunch.wav");
-    sounds["die"] = load_sound("data/wavs/die.wav");
-    sounds["explode"] = load_sound("data/wavs/explode.wav");
-    sounds["putbomb"] = load_sound("data/wavs/putbomb.wav");
-    sounds["deepfall"] = load_sound("data/wavs/deepfall.wav");
-    sounds["corpse_explode"] = load_sound("data/wavs/corpse_explode.wav");
-    sounds["explode"] = load_sound("data/wavs/explode.wav");
-    sounds["splash1"] = load_sound("data/wavs/splash1a.wav");
-    sounds["splash2"] = load_sound("data/wavs/splash2a.wav");
+    // Load all game sounds with error checking
+    const std::vector<std::string> sound_files = {
+        "typewriter", "winlevel", "klatsch", "forward", "rewind", "stop",
+        "wow", "joint", "horny", "schnief", "whoosh", "break", "clear",
+        "menu_back", "hurry_up", "time_over", "crunch", "die", "explode",
+        "putbomb", "deepfall", "corpse_explode", "splash1", "splash2"
+    };
+    
+    for (const std::string& sound_name : sound_files) {
+        std::string file_path = "data/wavs/" + sound_name + ".wav";
+        // Handle special cases
+        if (sound_name == "splash1") file_path = "data/wavs/splash1a.wav";
+        if (sound_name == "splash2") file_path = "data/wavs/splash2a.wav";
+        
+        Sound* sound = load_sound(file_path);
+        if (sound) {
+            sounds[sound_name] = sound;
+        }
+    }
 }
 
 void Resources::shutdown() {

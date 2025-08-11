@@ -49,10 +49,14 @@ void GameplayScreen::init_game() {
             bomber->set_team(GameConfig::bomber[i].get_team());
             bomber->set_number(i);
             app->bomber_objects.push_back(bomber);
-
-            bomber->set_pos(350, 270);
-            bomber->fly_to((int)(pos.x*40), (int)(pos.y*40), 300);
+            
+            // Smooth entry animation with proper Z-ordering
+            bomber->set_pos(400 - i * 20, 300 - i * 20);
+            bomber->fly_to((int)(pos.x*40), (int)(pos.y*40), 200 + i * 50);
             bomber->get_controller()->deactivate();
+            
+            // Set appropriate Z-order for visual layering
+            bomber->z = 10 + i;
         }
     }
 
@@ -142,16 +146,29 @@ void GameplayScreen::render(SDL_Renderer* renderer) {
 }
 
 void GameplayScreen::act_all() {
+    float deltaTime = Timer::time_elapsed();
+    
+    // Cap delta time to prevent issues with large time steps
+    const float max_delta = 1.0f / 30.0f; // 30 FPS minimum
+    if (deltaTime > max_delta) {
+        deltaTime = max_delta;
+    }
+    
     if (app->map != nullptr) {
         app->map->act();
     }
 
+    // Update all objects with consistent delta time
     for (auto& obj : app->objects) {
-        obj->act(Timer::time_elapsed());
+        if (obj && !obj->delete_me) {
+            obj->act(deltaTime);
+        }
     }
 
     for (auto& bomber : app->bomber_objects) {
-        bomber->act(Timer::time_elapsed());
+        if (bomber && !bomber->delete_me) {
+            bomber->act(deltaTime);
+        }
     }
 }
 
@@ -190,18 +207,15 @@ void GameplayScreen::show_all() {
         app->map->refresh_holes();
     }
 
-    bool drawn_map = false;
+    // Always draw map first as background
+    if (app->map != nullptr) {
+        app->map->show();
+    }
+    
+    // Draw all game objects in Z-order
     for (auto& obj : draw_list) {
-        if (app->map != nullptr && obj->get_z() >= Z_GROUND && !drawn_map) {
-            app->map->show();
-            drawn_map = true;
-        }
-        if (obj != nullptr) {
+        if (obj != nullptr && !obj->delete_me) {
             obj->show();
         }
-    }
-
-    if (app->map != nullptr && !drawn_map) {
-        app->map->show();
     }
 }

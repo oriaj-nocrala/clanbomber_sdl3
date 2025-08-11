@@ -12,10 +12,10 @@ public:
         BLUE = 1,
         YELLOW = 2,
         GREEN = 3,
-        RED2 = 4,
-        BLUE2 = 5,
-        YELLOW2 = 6,
-        GREEN2 = 7,
+        CYAN = 4,
+        ORANGE = 5,
+        PURPLE = 6,
+        BROWN = 7,
     } COLOR;
 
     Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app);

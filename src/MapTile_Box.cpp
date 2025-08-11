@@ -5,7 +5,7 @@
 
 MapTile_Box::MapTile_Box(int _x, int _y, ClanBomberApplication* _app) : MapTile(_x, _y, _app) {
     texture_name = "maptiles";
-    sprite_nr = 1; // Box tile
+    sprite_nr = 10; // Box tile
     destroyed = false;
     destroy_animation = 0.0f;
     blocking = true;

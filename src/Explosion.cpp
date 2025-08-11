@@ -83,27 +83,43 @@ void Explosion::detonate_other_bombs() {
 
 
 void Explosion::show() {
-    // Original animation sequence based on remaining time
-    int anim = 14;
-    if (detonation_period < 0.4f) anim = 7;
-    if (detonation_period < 0.3f) anim = 0;
-    if (detonation_period < 0.2f) anim = 7;
-    if (detonation_period < 0.1f) anim = 14;
+    // Improved animation sequence with better timing
+    float normalized_time = (0.5f - detonation_period) / 0.5f; // 0.0 to 1.0
+    int anim_frame = 0;
+    
+    if (normalized_time < 0.2f) {
+        anim_frame = 0; // Initial expansion
+    } else if (normalized_time < 0.5f) {
+        anim_frame = 7; // Peak intensity
+    } else if (normalized_time < 0.8f) {
+        anim_frame = 14; // Sustained burn
+    } else {
+        anim_frame = 7; // Fade out
+    }
 
-    // Draw center
-    draw_part(x, y, EXPLODE_X + anim);
+    // Add alpha blending for fade effect near end
+    if (normalized_time > 0.9f) {
+        float alpha = 1.0f - ((normalized_time - 0.9f) / 0.1f);
+        SDL_SetTextureAlphaMod(Resources::get_texture(texture_name)->texture, (Uint8)(alpha * 255));
+    }
 
-    // Draw rays
-    for (int i = 1; i < length_up; ++i) draw_part(x, y - i * 40, EXPLODE_V + anim);
-    for (int i = 1; i < length_down; ++i) draw_part(x, y + i * 40, EXPLODE_V + anim);
-    for (int i = 1; i < length_left; ++i) draw_part(x - i * 40, y, EXPLODE_H + anim);
-    for (int i = 1; i < length_right; ++i) draw_part(x + i * 40, y, EXPLODE_H + anim);
+    // Draw center explosion
+    draw_part(x, y, EXPLODE_X + anim_frame);
 
-    // Draw tips
-    if (length_up > 0) draw_part(x, y - length_up * 40, EXPLODE_UP + anim);
-    if (length_down > 0) draw_part(x, y + length_down * 40, EXPLODE_DOWN + anim);
-    if (length_left > 0) draw_part(x - length_left * 40, y, EXPLODE_LEFT + anim);
-    if (length_right > 0) draw_part(x + length_right * 40, y, EXPLODE_RIGHT + anim);
+    // Draw explosion rays with proper sprites
+    for (int i = 1; i < length_up; ++i) draw_part(x, y - i * 40, EXPLODE_V + anim_frame);
+    for (int i = 1; i < length_down; ++i) draw_part(x, y + i * 40, EXPLODE_V + anim_frame);
+    for (int i = 1; i < length_left; ++i) draw_part(x - i * 40, y, EXPLODE_H + anim_frame);
+    for (int i = 1; i < length_right; ++i) draw_part(x + i * 40, y, EXPLODE_H + anim_frame);
+
+    // Draw explosion tips
+    if (length_up > 0) draw_part(x, y - length_up * 40, EXPLODE_UP + anim_frame);
+    if (length_down > 0) draw_part(x, y + length_down * 40, EXPLODE_DOWN + anim_frame);
+    if (length_left > 0) draw_part(x - length_left * 40, y, EXPLODE_LEFT + anim_frame);
+    if (length_right > 0) draw_part(x + length_right * 40, y, EXPLODE_RIGHT + anim_frame);
+    
+    // Reset alpha for next frame
+    SDL_SetTextureAlphaMod(Resources::get_texture(texture_name)->texture, 255);
 }
 
 void Explosion::draw_part(int px, int py, int spr_nr) {

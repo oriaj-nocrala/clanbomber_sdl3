@@ -200,7 +200,9 @@ protected:
 	
   float x;
   float y;
+public:
   int z;
+protected:
   int orig_x;
   int orig_y;
   float remainder;
