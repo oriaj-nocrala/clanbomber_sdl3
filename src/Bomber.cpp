@@ -16,7 +16,6 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     speed = 90;
     bomb_cooldown = 0.0f;
     power = GameConfig::get_start_power();
-    can_kick = true; // TODO: Set to false by default, enable with power-up
 
     // Set texture based on color
     switch (color) {
@@ -35,21 +34,23 @@ void Bomber::act(float deltaTime) {
     }
     controller->update();
 
-    // Update direction based on controller input
+    bool moved = false;
     if (controller->is_left()) {
         cur_dir = DIR_LEFT;
+        x -= speed * deltaTime;
+        moved = true;
     } else if (controller->is_right()) {
         cur_dir = DIR_RIGHT;
+        x += speed * deltaTime;
+        moved = true;
     } else if (controller->is_up()) {
         cur_dir = DIR_UP;
+        y -= speed * deltaTime;
+        moved = true;
     } else if (controller->is_down()) {
         cur_dir = DIR_DOWN;
-    }
-
-    // Move if a direction key is pressed, otherwise the animation frame is reset
-    bool moved = false;
-    if (controller->is_left() || controller->is_right() || controller->is_up() || controller->is_down()) {
-        moved = move(deltaTime);
+        y += speed * deltaTime;
+        moved = true;
     }
 
     if (bomb_cooldown > 0) {

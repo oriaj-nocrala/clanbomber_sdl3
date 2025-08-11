@@ -23,9 +23,6 @@ add_executable(clanbomber-modern
     src/MapTile_Wall.cpp
     src/MapTile_Ground.cpp
     src/Audio.cpp
-    src/Game.cpp
-    src/MainMenuScreen.cpp
-    src/GameplayScreen.cpp
 )
 
 target_link_libraries(clanbomber-modern PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)

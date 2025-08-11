@@ -253,6 +253,7 @@ bool GameObject::move_left()
 		}
 	}
 	else {
+		SDL_Log("Attempting to kick left. can_kick value: %d", (int)can_kick);
 		if (can_kick  && (left_maptile->bomb->get_cur_dir() == DIR_NONE)) {
 			left_maptile->bomb->kick(DIR_LEFT);
 		}
