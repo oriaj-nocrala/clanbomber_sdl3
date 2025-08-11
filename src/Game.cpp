@@ -4,6 +4,7 @@
 #include "Audio.h"
 #include "MainMenuScreen.h"
 #include "GameplayScreen.h"
+#include "SettingsScreen.h"
 
 Game::Game() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -89,13 +90,21 @@ void Game::update(float deltaTime) {
             change_screen(menu->get_next_state());
         }
     }
+    else if (dynamic_cast<SettingsScreen*>(current_screen)) {
+        SettingsScreen* settings = static_cast<SettingsScreen*>(current_screen);
+        if (settings->get_next_state() != GameState::SETTINGS) {
+            change_screen(settings->get_next_state());
+        }
+    }
 }
 
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
     SDL_RenderClear(renderer);
 
-    current_screen->render(renderer);
+    if (current_screen) {
+        current_screen->render(renderer);
+    }
 
     SDL_RenderPresent(renderer);
 }
@@ -109,7 +118,14 @@ void Game::change_screen(GameState next_state) {
     if (next_state == GameState::GAMEPLAY) {
         current_screen = new GameplayScreen(&app);
     }
+    else if (next_state == GameState::SETTINGS) {
+        current_screen = new SettingsScreen(renderer, font);
+    }
+    else if (next_state == GameState::MAIN_MENU) {
+        current_screen = new MainMenuScreen(renderer, font);
+    }
     else if (next_state == GameState::QUIT) {
         running = false;
+        current_screen = nullptr;
     }
 }

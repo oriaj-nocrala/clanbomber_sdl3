@@ -26,6 +26,7 @@ add_executable(clanbomber-modern
     src/Game.cpp
     src/MainMenuScreen.cpp
     src/GameplayScreen.cpp
+    src/SettingsScreen.cpp
 )
 
 target_link_libraries(clanbomber-modern PRIVATE SDL3::SDL3 SDL3_image::SDL3_image SDL3_ttf::SDL3_ttf)

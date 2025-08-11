@@ -26,7 +26,7 @@ void MainMenuScreen::handle_events(SDL_Event& event) {
                 if (selected_item == 0) {
                     next_state = GameState::GAMEPLAY;
                 } else if (selected_item == 1) {
-                    // next_state = GameState::SETTINGS;
+                    next_state = GameState::SETTINGS;
                 } else if (selected_item == 2) {
                     next_state = GameState::QUIT;
                 }
