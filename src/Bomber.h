@@ -21,6 +21,8 @@ public:
     
     void act(float deltaTime) override;
 
+    COLOR get_color() const { return color; }
+
     ObjectType get_type() const override { return BOMBER; }
 
 protected:

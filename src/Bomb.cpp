@@ -32,6 +32,14 @@ Bomb::~Bomb() {
 }
 
 void Bomb::act(float deltaTime) {
+    // Animation logic based on original game
+    anim_timer += deltaTime;
+    const int num_animation_frames = 4;
+    const float animation_speed = 10.0f;
+    int current_frame = static_cast<int>(anim_timer * animation_speed) % num_animation_frames;
+    sprite_nr = base_sprite + current_frame;
+
+    // Countdown to explosion
     countdown -= deltaTime;
     if (countdown <= 0) {
         explode();

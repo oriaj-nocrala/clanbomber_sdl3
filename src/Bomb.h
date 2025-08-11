@@ -22,6 +22,8 @@ private:
     float countdown;
     int power;
     Bomber* owner;
+    float anim_timer;
+    int base_sprite;
 };
 
 #endif
