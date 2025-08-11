@@ -17,6 +17,11 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     bomb_cooldown = 0.0f;
     power = GameConfig::get_start_power();
     can_kick = true; // TODO: Set to false by default, enable with power-up
+    
+    // Initialize new member variables
+    bomber_team = 0;
+    bomber_number = 0;
+    bomber_name = "Bomber";
 
     // Set texture based on color
     switch (color) {

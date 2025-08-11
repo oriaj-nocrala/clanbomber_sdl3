@@ -2,6 +2,9 @@
 #include "Bomber.h"
 #include "Timer.h"
 #include "Controller_Keyboard.h"
+#include "GameConfig.h"
+#include "Controller.h"
+#include <algorithm>
 
 GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app) {
     init_game();
@@ -19,11 +22,56 @@ void GameplayScreen::init_game() {
     show_fps = false;
 
     app->map = new Map(app);
-    app->map->load();
+    if (!app->map->any_valid_map()) {
+        SDL_Log("No valid maps found.");
+    }
 
-    Controller* controller = new Controller_Keyboard(0);
-    Bomber* bomber = new Bomber(100, 100, Bomber::RED, controller, app);
-    app->bomber_objects.push_back(bomber);
+    if (GameConfig::get_random_map_order()) {
+        app->map->load_random_valid();
+    } else {
+        if (GameConfig::get_start_map() > app->map->get_map_count() - 1) {
+            GameConfig::set_start_map(app->map->get_map_count() - 1);
+        }
+        app->map->load_next_valid(GameConfig::get_start_map());
+    }
+
+    if (GameConfig::get_random_positions()) {
+        app->map->randomize_bomber_positions();
+    }
+
+    int j = 0;
+    for (int i = 0; i < 8; i++) {
+        if (GameConfig::bomber[i].is_enabled()) {
+            CL_Vector pos = app->map->get_bomber_pos(j++);
+            Controller* controller = Controller::create(static_cast<Controller::CONTROLLER_TYPE>(GameConfig::bomber[i].get_controller()));
+            Bomber* bomber = new Bomber((int)(pos.x * 40), (int)(pos.y * 40), static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, app);
+            bomber->set_name(GameConfig::bomber[i].get_name());
+            bomber->set_team(GameConfig::bomber[i].get_team());
+            bomber->set_number(i);
+            app->bomber_objects.push_back(bomber);
+
+            bomber->set_pos(350, 270);
+            bomber->fly_to((int)(pos.x*40), (int)(pos.y*40), 300);
+            bomber->get_controller()->deactivate();
+        }
+    }
+
+    // Remove teams with only one player
+    int team_count[] = {0, 0, 0, 0};
+    for (int team = 0; team < 4; team++) {
+        for (auto const& bomber : app->bomber_objects) {
+            if (bomber->get_team() - 1 == team) {
+                team_count[team]++;
+            }
+        }
+    }
+    for (auto const& bomber : app->bomber_objects) {
+        if (bomber->get_team() != 0) {
+            if (team_count[bomber->get_team() - 1] == 1) {
+                bomber->set_team(0);
+            }
+        }
+    }
 }
 
 void GameplayScreen::deinit_game() {
@@ -94,6 +142,10 @@ void GameplayScreen::render(SDL_Renderer* renderer) {
 }
 
 void GameplayScreen::act_all() {
+    if (app->map != nullptr) {
+        app->map->act();
+    }
+
     for (auto& obj : app->objects) {
         obj->act(Timer::time_elapsed());
     }
@@ -122,19 +174,34 @@ void GameplayScreen::delete_some() {
 }
 
 void GameplayScreen::show_all() {
-    if (app->map != nullptr) {
-        app->map->show();
+    std::vector<GameObject*> draw_list;
+    for(auto const& value: app->objects) {
+        draw_list.push_back(value);
+    }
+    for(auto const& value: app->bomber_objects) {
+        draw_list.push_back(value);
     }
 
-    for (auto& obj : app->objects) {
+    std::sort(draw_list.begin(), draw_list.end(), [](GameObject* go1, GameObject* go2) {
+        return go1->get_z() < go2->get_z();
+    });
+
+    if (app->map != nullptr) {
+        app->map->refresh_holes();
+    }
+
+    bool drawn_map = false;
+    for (auto& obj : draw_list) {
+        if (app->map != nullptr && obj->get_z() >= Z_GROUND && !drawn_map) {
+            app->map->show();
+            drawn_map = true;
+        }
         if (obj != nullptr) {
             obj->show();
         }
     }
 
-    for (auto& bomber : app->bomber_objects) {
-        if (bomber != nullptr) {
-            bomber->show();
-        }
+    if (app->map != nullptr && !drawn_map) {
+        app->map->show();
     }
 }

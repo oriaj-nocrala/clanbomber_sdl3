@@ -3,6 +3,7 @@
 
 #include "GameObject.h"
 #include "Controller.h"
+#include <string>
 
 class Bomber : public GameObject {
 public:
@@ -22,8 +23,22 @@ public:
     void act(float deltaTime) override;
 
     COLOR get_color() const { return color; }
-
     ObjectType get_type() const override { return BOMBER; }
+
+    // Team management
+    void set_team(int team) { bomber_team = team; }
+    int get_team() const { return bomber_team; }
+    
+    // Name management
+    void set_name(const std::string& name) { bomber_name = name; }
+    std::string get_name() const { return bomber_name; }
+    
+    // Number management
+    void set_number(int number) { bomber_number = number; }
+    int get_number() const { return bomber_number; }
+
+    // Controller access
+    Controller* get_controller() { return controller; }
 
 protected:
     float anim_count;
@@ -31,6 +46,9 @@ protected:
     Controller* controller;
     float bomb_cooldown;
     int power;
+    int bomber_team;
+    int bomber_number;
+    std::string bomber_name;
 };
 
 #endif
