@@ -6,6 +6,7 @@
 #include "GameConfig.h"
 #include "Resources.h"
 #include "Audio.h"
+#include "AudioMixer.h"
 
 Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app) : GameObject(_x, _y, _app) {
     color = _color;
@@ -70,10 +71,13 @@ void Bomber::act(float deltaTime) {
         app->objects.push_back(new Bomb(x, y, power, this, app));
         bomb_cooldown = 0.5f; // 0.5 second cooldown
         
-        // Play bomb placement sound
-        Sound* putbomb_sound = Resources::get_sound("putbomb");
-        if (putbomb_sound) {
-            Audio::play(putbomb_sound);
+        // Play bomb placement sound with AudioMixer
+        if (!AudioMixer::play_sound("putbomb")) {
+            // Fallback to old system
+            Sound* putbomb_sound = Resources::get_sound("putbomb");
+            if (putbomb_sound) {
+                Audio::play(putbomb_sound);
+            }
         }
     }
 

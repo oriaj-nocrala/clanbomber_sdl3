@@ -27,6 +27,7 @@ add_executable(clanbomber-modern
     src/MapTile_Ground.cpp
     src/MapTile_Box.cpp
     src/Audio.cpp
+    src/AudioMixer.cpp
     src/Game.cpp
     src/MainMenuScreen.cpp
     src/GameplayScreen.cpp

@@ -6,6 +6,7 @@
 #include "Map.h"
 #include "MapTile.h"
 #include "Audio.h"
+#include "AudioMixer.h"
 #include "Resources.h"
 #include "Bomber.h"
 
@@ -62,10 +63,13 @@ void Bomb::explode() {
 
     delete_me = true;
     
-    // Play explosion sound
-    Sound* explode_sound = Resources::get_sound("explode");
-    if (explode_sound) {
-        Audio::play(explode_sound);
+    // Play explosion sound with AudioMixer
+    if (!AudioMixer::play_sound("explode")) {
+        // Fallback to old system
+        Sound* explode_sound = Resources::get_sound("explode");
+        if (explode_sound) {
+            Audio::play(explode_sound);
+        }
     }
     
     // Create explosion

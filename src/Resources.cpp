@@ -1,4 +1,5 @@
 #include "Resources.h"
+#include "AudioMixer.h"
 #include <SDL3_image/SDL_image.h>
 #include <iostream>
 #include <vector>
@@ -53,6 +54,9 @@ void Resources::init(SDL_Renderer* renderer) {
     textures["map_editor_background"] = load_texture("data/pics/map_editor.png");
     textures["corpse_parts"] = load_texture("data/pics/corpse_parts.png", 40, 40);
 
+    // Initialize audio mixer
+    AudioMixer::init();
+    
     // Load all game sounds with error checking
     const std::vector<std::string> sound_files = {
         "typewriter", "winlevel", "klatsch", "forward", "rewind", "stop",
@@ -67,6 +71,14 @@ void Resources::init(SDL_Renderer* renderer) {
         if (sound_name == "splash1") file_path = "data/wavs/splash1a.wav";
         if (sound_name == "splash2") file_path = "data/wavs/splash2a.wav";
         
+        // Load with AudioMixer
+        std::string full_path = base_path + file_path;
+        MixerAudio* mixer_audio = AudioMixer::load_sound(full_path);
+        if (mixer_audio) {
+            AudioMixer::add_sound(sound_name, mixer_audio);
+        }
+        
+        // Also load with old system for compatibility
         Sound* sound = load_sound(file_path);
         if (sound) {
             sounds[sound_name] = sound;
@@ -75,6 +87,8 @@ void Resources::init(SDL_Renderer* renderer) {
 }
 
 void Resources::shutdown() {
+    AudioMixer::shutdown();
+    
     for (auto const& [key, val] : textures) {
         SDL_DestroyTexture(val->texture);
         delete val;
