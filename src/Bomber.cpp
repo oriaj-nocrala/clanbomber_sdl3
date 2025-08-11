@@ -71,8 +71,9 @@ void Bomber::act(float deltaTime) {
         app->objects.push_back(new Bomb(x, y, power, this, app));
         bomb_cooldown = 0.5f; // 0.5 second cooldown
         
-        // Play bomb placement sound with AudioMixer
-        if (!AudioMixer::play_sound("putbomb")) {
+        // Play bomb placement sound with 3D positioning
+        AudioPosition bomber_pos(x, y, 0.0f);
+        if (!AudioMixer::play_sound_3d("putbomb", bomber_pos, 400.0f)) {
             // Fallback to old system
             Sound* putbomb_sound = Resources::get_sound("putbomb");
             if (putbomb_sound) {

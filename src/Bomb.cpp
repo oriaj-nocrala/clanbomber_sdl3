@@ -63,8 +63,9 @@ void Bomb::explode() {
 
     delete_me = true;
     
-    // Play explosion sound with AudioMixer
-    if (!AudioMixer::play_sound("explode")) {
+    // Play explosion sound with 3D positioning
+    AudioPosition bomb_pos(x, y, 0.0f);
+    if (!AudioMixer::play_sound_3d("explode", bomb_pos, 600.0f)) {
         // Fallback to old system
         Sound* explode_sound = Resources::get_sound("explode");
         if (explode_sound) {

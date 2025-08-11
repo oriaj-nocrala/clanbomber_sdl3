@@ -4,6 +4,7 @@
 #include "Controller_Keyboard.h"
 #include "GameConfig.h"
 #include "Controller.h"
+#include "AudioMixer.h"
 #include <algorithm>
 
 GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app) {
@@ -116,6 +117,9 @@ void GameplayScreen::update(float deltaTime) {
         return;
     }
 
+    // Update 3D audio listener position based on active players
+    update_audio_listener();
+
     // observer->act();
     // if (observer->end_of_game_requested()) {
     //     // Handle end of game
@@ -131,6 +135,27 @@ void GameplayScreen::update(float deltaTime) {
         frame_count = 0;
     }
     frame_count++;
+}
+
+void GameplayScreen::update_audio_listener() {
+    if (app->bomber_objects.empty()) return;
+    
+    // Position audio listener at the center of all active players
+    float total_x = 0.0f, total_y = 0.0f;
+    int active_count = 0;
+    
+    for (auto& bomber : app->bomber_objects) {
+        if (bomber && !bomber->delete_me) {
+            total_x += bomber->get_x();
+            total_y += bomber->get_y();
+            active_count++;
+        }
+    }
+    
+    if (active_count > 0) {
+        AudioPosition listener_pos(total_x / active_count, total_y / active_count, 0.0f);
+        AudioMixer::set_listener_position(listener_pos);
+    }
 }
 
 void GameplayScreen::render(SDL_Renderer* renderer) {

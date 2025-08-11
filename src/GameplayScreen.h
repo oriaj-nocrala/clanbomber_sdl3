@@ -20,6 +20,7 @@ private:
     void act_all();
     void show_all();
     void delete_some();
+    void update_audio_listener();
 
     ClanBomberApplication* app;
     bool pause_game;
