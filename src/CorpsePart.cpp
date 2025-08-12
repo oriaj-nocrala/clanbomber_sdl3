@@ -86,9 +86,32 @@ void CorpsePart::act(float deltaTime) {
         angular_velocity += angular_acceleration * deltaTime;
         rotation += angular_velocity * deltaTime;
         
-        // Normalize rotation
-        while (rotation > 360.0f) rotation -= 360.0f;
-        while (rotation < 0.0f) rotation += 360.0f;
+        // Normalize rotation with aggressive protection against loops
+        if (std::isfinite(rotation) && rotation > -3600.0f && rotation < 3600.0f) {
+            // Safe normalization with iteration limit
+            int safety_counter = 0;
+            while (rotation > 360.0f && safety_counter < 100) {
+                rotation -= 360.0f;
+                safety_counter++;
+            }
+            safety_counter = 0;
+            while (rotation < 0.0f && safety_counter < 100) {
+                rotation += 360.0f;
+                safety_counter++;
+            }
+            
+            // If we hit the safety limit, force reset
+            if (safety_counter >= 100) {
+                rotation = 0.0f;
+                angular_velocity = 0.0f;
+                SDL_Log("CorpsePart: Safety limit hit, resetting rotation");
+            }
+        } else {
+            // Reset rotation if it's infinite, NaN, or extremely large
+            rotation = 0.0f;
+            angular_velocity = 0.0f;
+            SDL_Log("CorpsePart: Fixed problematic rotation value: %f", rotation);
+        }
         
         // Handle collisions with advanced physics
         handle_collisions(deltaTime);

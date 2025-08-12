@@ -24,30 +24,56 @@ Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberAppli
 
     length_up = length_down = length_left = length_right = 0;
 
+    // SDL_Log("Explosion constructor: Starting at (%d,%d) with power=%d", get_map_x(), get_map_y(), _power);
+
     // Calculate explosion lengths
     for (int i = 1; i <= power; ++i) {
         MapTile* tile = app->map->get_tile(get_map_x(), get_map_y() - i);
-        if (!tile || tile->is_blocking()) break;
+        if (!tile) break;
         length_up = i;
+        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
+                                (tile->get_tile_type() == 2) ? "WALL" : 
+                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
+        // SDL_Log("Explosion constructor: UP ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
+        //         i, get_map_x(), get_map_y() - i, tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
         if (tile->is_burnable()) break;
+        if (tile->is_blocking()) break;
     }
     for (int i = 1; i <= power; ++i) {
         MapTile* tile = app->map->get_tile(get_map_x(), get_map_y() + i);
-        if (!tile || tile->is_blocking()) break;
+        if (!tile) break;
         length_down = i;
+        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
+                                (tile->get_tile_type() == 2) ? "WALL" : 
+                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
+        // SDL_Log("Explosion constructor: DOWN ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
+        //         i, get_map_x(), get_map_y() + i, tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
         if (tile->is_burnable()) break;
+        if (tile->is_blocking()) break;
     }
     for (int i = 1; i <= power; ++i) {
         MapTile* tile = app->map->get_tile(get_map_x() - i, get_map_y());
-        if (!tile || tile->is_blocking()) break;
+        if (!tile) break;
         length_left = i;
+        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
+                                (tile->get_tile_type() == 2) ? "WALL" : 
+                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
+        // SDL_Log("Explosion constructor: LEFT ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
+        //         i, get_map_x() - i, get_map_y(), tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
         if (tile->is_burnable()) break;
+        if (tile->is_blocking()) break;
     }
     for (int i = 1; i <= power; ++i) {
         MapTile* tile = app->map->get_tile(get_map_x() + i, get_map_y());
-        if (!tile || tile->is_blocking()) break;
+        if (!tile) break;
         length_right = i;
+        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
+                                (tile->get_tile_type() == 2) ? "WALL" : 
+                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
+        // SDL_Log("Explosion constructor: RIGHT ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
+        //         i, get_map_x() + i, get_map_y(), tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
         if (tile->is_burnable()) break;
+        if (tile->is_blocking()) break;
     }
 
     detonate_other_bombs();
@@ -73,8 +99,17 @@ void Explosion::detonate_other_bombs() {
         if (tile->bomb) {
             tile->bomb->explode_delayed();
         }
+        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
+                                (tile->get_tile_type() == 2) ? "WALL" : 
+                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
+        SDL_Log("Explosion: Checking tile at (%d,%d), type=%d (%s), destructible=%d", 
+                tile->get_map_x(), tile->get_map_y(), tile->get_tile_type(), type_name, tile->is_destructible());
         if (tile->is_burnable()) {
+            SDL_Log("Explosion: Destroying burnable tile at (%d,%d)", tile->get_map_x(), tile->get_map_y());
             tile->destroy();
+        } else {
+            SDL_Log("Explosion: Tile at (%d,%d) is not burnable (type=%d, %s)", 
+                    tile->get_map_x(), tile->get_map_y(), tile->get_tile_type(), type_name);
         }
     }
 

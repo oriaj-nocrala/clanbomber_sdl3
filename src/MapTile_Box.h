@@ -11,6 +11,13 @@ public:
     void act() override;
     void show() override;
     void destroy() override;
+    
+    bool is_burnable() const override { 
+        // SDL_Log("MapTile_Box::is_burnable() - destructible=%d, destroyed=%d, result=%d", 
+        //         destructible, destroyed, (destructible && !destroyed));
+        return destructible && !destroyed; 
+    }
+    bool is_blocking() const override { return blocking && !destroyed; }
 
 private:
     bool destroyed;

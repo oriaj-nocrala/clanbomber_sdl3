@@ -31,6 +31,12 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     respawn_timer = 0.0f;
     invincible_timer = 0.0f;
     
+    // Initialize flight animation
+    flying = false;
+    flight_timer = 0.0f;
+    flight_duration = 0.0f;
+    start_x = start_y = target_x = target_y = 0;
+    
     // Initialize new member variables
     bomber_team = 0;
     bomber_number = 0;
@@ -76,30 +82,52 @@ void Bomber::act(float deltaTime) {
         }
     }
     
+    // Handle flight animation
+    if (flying) {
+        flight_timer += deltaTime;
+        float progress = flight_timer / flight_duration;
+        
+        if (progress >= 1.0f) {
+            // Animation complete
+            flying = false;
+            x = target_x;
+            y = target_y;
+        } else {
+            // Interpolate position with easing
+            float ease_progress = 1.0f - (1.0f - progress) * (1.0f - progress); // Ease out
+            x = start_x + (target_x - start_x) * ease_progress;
+            y = start_y + (target_y - start_y) * ease_progress;
+        }
+    }
+    
     controller->update();
 
-    // Update direction based on controller input
-    if (controller->is_left()) {
-        cur_dir = DIR_LEFT;
-    } else if (controller->is_right()) {
-        cur_dir = DIR_RIGHT;
-    } else if (controller->is_up()) {
-        cur_dir = DIR_UP;
-    } else if (controller->is_down()) {
-        cur_dir = DIR_DOWN;
-    }
-
-    // Move if a direction key is pressed, otherwise the animation frame is reset
+    // Only process input if controller is active and not flying
     bool moved = false;
-    if (controller->is_left() || controller->is_right() || controller->is_up() || controller->is_down()) {
-        moved = move(deltaTime);
+    if (controller->active && !flying) {
+        // Update direction based on controller input
+        if (controller->is_left()) {
+            cur_dir = DIR_LEFT;
+        } else if (controller->is_right()) {
+            cur_dir = DIR_RIGHT;
+        } else if (controller->is_up()) {
+            cur_dir = DIR_UP;
+        } else if (controller->is_down()) {
+            cur_dir = DIR_DOWN;
+        }
+
+        // Move if a direction key is pressed, otherwise the animation frame is reset
+        if (controller->is_left() || controller->is_right() || controller->is_up() || controller->is_down()) {
+            moved = move(deltaTime);
+        }
     }
 
     if (bomb_cooldown > 0) {
         bomb_cooldown -= deltaTime;
     }
 
-    if (controller->is_bomb() && bomb_cooldown <= 0) {
+    if (controller->active && !flying && controller->is_bomb() && bomb_cooldown <= 0) {
+        SDL_Log("Bomber placing bomb at pixel (%d,%d), maps to grid (%d,%d)", x, y, get_map_x(), get_map_y());
         app->objects.push_back(new Bomb(x, y, power, this, app));
         bomb_cooldown = 0.5f; // 0.5 second cooldown
         
@@ -178,4 +206,14 @@ void Bomber::show() {
     
     // Call parent show() for normal rendering
     GameObject::show();
+}
+
+void Bomber::fly_to(int target_x, int target_y, float duration_ms) {
+    flying = true;
+    flight_timer = 0.0f;
+    flight_duration = duration_ms / 1000.0f; // Convert to seconds
+    start_x = x;
+    start_y = y;
+    this->target_x = target_x;
+    this->target_y = target_y;
 }

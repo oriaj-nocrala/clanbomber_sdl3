@@ -167,6 +167,8 @@ void Map::act() {
                 
                 // Replace destroyed boxes with ground tiles
                 if (maptiles[x][y]->delete_me) {
+                    SDL_Log("Map::act() replacing tile at (%d,%d) with ground (was type %d)", 
+                            x, y, maptiles[x][y]->get_tile_type());
                     delete maptiles[x][y];
                     maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
                 }
