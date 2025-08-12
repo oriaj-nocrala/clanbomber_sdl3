@@ -95,29 +95,55 @@ void BomberCorpse::create_gore_explosion() {
     std::random_device rd;
     std::mt19937 gen(rd());
     
-    // Create 6-8 body parts flying in different directions
-    std::uniform_int_distribution<> part_count_dist(6, 8);
+    // Create 8-12 body parts with realistic explosion physics
+    std::uniform_int_distribution<> part_count_dist(8, 12);
     std::uniform_int_distribution<> part_type_dist(0, 3); // 4 different body parts
-    std::uniform_real_distribution<> velocity_dist(100.0f, 300.0f);
+    std::uniform_real_distribution<> velocity_dist(150.0f, 450.0f); // Higher velocities for more violence
     std::uniform_real_distribution<> angle_dist(0.0f, 2.0f * M_PI);
+    std::uniform_real_distribution<> force_dist(800.0f, 1500.0f); // Explosion force range
     
     int num_parts = part_count_dist(gen);
     
     for (int i = 0; i < num_parts; i++) {
         float angle = angle_dist(gen);
         float velocity = velocity_dist(gen);
+        float explosion_force = force_dist(gen);
         
+        // More realistic explosion physics - parts fly outward with variation
         float vel_x = std::cos(angle) * velocity;
-        float vel_y = std::sin(angle) * velocity - 100.0f; // Slight upward bias
+        float vel_y = std::sin(angle) * velocity;
+        
+        // Add upward bias for more dramatic effect
+        if (vel_y > 0) vel_y *= 0.7f; // Reduce downward velocity
+        else vel_y *= 1.3f; // Increase upward velocity
         
         int part_type = part_type_dist(gen);
         
-        // Add some randomness to starting position
-        std::uniform_real_distribution<> pos_offset(-10.0f, 10.0f);
+        // More spread in starting positions for realistic dismemberment
+        std::uniform_real_distribution<> pos_offset(-15.0f, 15.0f);
         float start_x = x + pos_offset(gen);
         float start_y = y + pos_offset(gen);
         
-        CorpsePart* part = new CorpsePart(start_x, start_y, part_type, vel_x, vel_y, app);
+        // Create corpse part with advanced physics
+        CorpsePart* part = new CorpsePart(start_x, start_y, part_type, vel_x, vel_y, explosion_force, app);
         app->objects.push_back(part);
+    }
+    
+    // Create additional blood splatter effect
+    for (int i = 0; i < 20; i++) {
+        float angle = angle_dist(gen);
+        float velocity = velocity_dist(gen) * 0.6f; // Smaller blood droplets
+        float force = force_dist(gen) * 0.3f;
+        
+        float vel_x = std::cos(angle) * velocity;
+        float vel_y = std::sin(angle) * velocity * 0.8f; // Less upward for blood
+        
+        std::uniform_real_distribution<> blood_offset(-20.0f, 20.0f);
+        float start_x = x + blood_offset(gen);
+        float start_y = y + blood_offset(gen);
+        
+        // Use part type 0 for blood droplets (smallest)
+        CorpsePart* blood_drop = new CorpsePart(start_x, start_y, 0, vel_x, vel_y, force, app);
+        app->objects.push_back(blood_drop);
     }
 }
