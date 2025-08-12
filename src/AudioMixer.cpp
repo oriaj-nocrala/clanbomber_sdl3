@@ -1,11 +1,41 @@
 #include "AudioMixer.h"
 #include <iostream>
 #include <algorithm>
+#include <vector>
 
+// Static member initialization
 SDL_AudioStream* AudioMixer::stream = nullptr;
 SDL_AudioSpec AudioMixer::device_spec;
 std::map<std::string, MixerAudio*> AudioMixer::sounds;
-AudioPosition AudioMixer::listener_pos(400.0f, 300.0f, 0.0f); // Default listener at screen center
+AudioPosition AudioMixer::listener_pos(400.0f, 300.0f, 0.0f);
+Channel AudioMixer::channels[MAX_CHANNELS];
+
+// Helper functions for 3D audio calculations
+static float calculate_distance(const AudioPosition& sound_pos) {
+    float dx = sound_pos.x - AudioMixer::get_listener_position().x;
+    float dy = sound_pos.y - AudioMixer::get_listener_position().y;
+    float dz = sound_pos.z - AudioMixer::get_listener_position().z;
+    return std::sqrt(dx*dx + dy*dy + dz*dz);
+}
+
+static void calculate_stereo_pan(const AudioPosition& sound_pos, float& left_gain, float& right_gain) {
+    float dx = sound_pos.x - AudioMixer::get_listener_position().x;
+    float pan_range = 400.0f; // Stereo effect range in pixels
+    
+    float pan = std::max(-1.0f, std::min(1.0f, dx / pan_range));
+    
+    if (pan <= 0) {
+        left_gain = 1.0f;
+        right_gain = 1.0f + pan;
+    } else {
+        left_gain = 1.0f - pan;
+        right_gain = 1.0f;
+    }
+    
+    left_gain = std::max(0.0f, left_gain);
+    right_gain = std::max(0.0f, right_gain);
+}
+
 
 void AudioMixer::init() {
     SDL_zero(device_spec);
@@ -28,7 +58,6 @@ void AudioMixer::shutdown() {
         stream = nullptr;
     }
     
-    // Clean up all loaded sounds
     for (auto& [name, audio] : sounds) {
         if (audio->needs_free && audio->buffer) {
             SDL_free(audio->buffer);
@@ -48,6 +77,29 @@ MixerAudio* AudioMixer::load_sound(const std::string& path) {
         return nullptr;
     }
     
+    // Convert all loaded sounds to the device format on load
+    // This simplifies the mixing callback significantly
+    SDL_AudioSpec target_spec = device_spec;
+    if (audio->spec.format != target_spec.format ||
+        audio->spec.channels != target_spec.channels ||
+        audio->spec.freq != target_spec.freq) {
+        
+        Uint8* converted_buffer = nullptr;
+        int converted_size = 0;
+        if (!SDL_ConvertAudioSamples(&audio->spec, audio->buffer, audio->length,
+                                   &target_spec, &converted_buffer, &converted_size)) {
+            SDL_Log("Failed to convert sound %s on load: %s", path.c_str(), SDL_GetError());
+            SDL_free(audio->buffer);
+            delete audio;
+            return nullptr;
+        }
+        
+        SDL_free(audio->buffer);
+        audio->buffer = converted_buffer;
+        audio->length = converted_size;
+        audio->spec = target_spec;
+    }
+
     return audio;
 }
 
@@ -58,7 +110,6 @@ void AudioMixer::add_sound(const std::string& name, MixerAudio* audio) {
 }
 
 bool AudioMixer::play_sound(const std::string& name) {
-    // Play at listener position (no 3D effect)
     return play_sound_3d(name, listener_pos, 0.0f);
 }
 
@@ -72,93 +123,42 @@ bool AudioMixer::play_sound_3d(const std::string& name, const AudioPosition& pos
     
     MixerAudio* audio = it->second;
     
-    // Calculate 3D audio effects
     float distance = calculate_distance(pos);
     float volume = 1.0f;
     
-    // Apply distance attenuation if max_distance > 0
-    if (max_distance > 0.0f && distance > max_distance) {
-        return true; // Too far away, don't play
-    }
     if (max_distance > 0.0f) {
+        if (distance > max_distance) return true; // Too far
         volume = std::max(0.0f, 1.0f - (distance / max_distance));
-        if (volume < 0.1f) return true; // Too quiet, don't play
+        if (volume < 0.01f) return true; // Too quiet
     }
     
-    // Calculate stereo panning
     float left_gain, right_gain;
     calculate_stereo_pan(pos, left_gain, right_gain);
     
-    return play_sound_with_effects(audio, volume, left_gain, right_gain);
-}
-
-bool AudioMixer::play_sound_with_effects(MixerAudio* audio, float volume, float left_gain, float right_gain) {
-    if (!stream || !audio->buffer) return false;
-    
-    // Convert audio if needed
-    Uint8* converted_buffer = nullptr;
-    int converted_size = 0;
-    bool needs_conversion = (audio->spec.format != device_spec.format ||
-                           audio->spec.channels != device_spec.channels ||
-                           audio->spec.freq != device_spec.freq);
-    
-    if (needs_conversion) {
-        if (!SDL_ConvertAudioSamples(&audio->spec, audio->buffer, audio->length, 
-                                   &device_spec, &converted_buffer, &converted_size)) {
-            std::cerr << "Failed to convert audio: " << SDL_GetError() << std::endl;
-            return false;
-        }
-    } else {
-        converted_buffer = audio->buffer;
-        converted_size = audio->length;
-    }
-    
-    // Apply volume and stereo effects for 16-bit stereo audio
-    if (device_spec.format == SDL_AUDIO_S16LE && device_spec.channels == 2) {
-        Sint16* samples = (Sint16*)converted_buffer;
-        int num_frames = converted_size / (sizeof(Sint16) * 2);
-        
-        for (int i = 0; i < num_frames; i++) {
-            samples[i * 2] = (Sint16)(samples[i * 2] * volume * left_gain);     // Left channel
-            samples[i * 2 + 1] = (Sint16)(samples[i * 2 + 1] * volume * right_gain); // Right channel
+    // Find an available channel
+    int channel_id = -1;
+    for (int i = 0; i < MAX_CHANNELS; ++i) {
+        if (!channels[i].active) {
+            channel_id = i;
+            break;
         }
     }
     
-    SDL_PutAudioStreamData(stream, converted_buffer, converted_size);
-    
-    if (needs_conversion) {
-        SDL_free(converted_buffer);
+    if (channel_id == -1) {
+        // Optional: find the oldest channel and replace it
+        SDL_Log("No free audio channels to play sound: %s", name.c_str());
+        return false; // No free channels
     }
+    
+    // Activate the channel
+    channels[channel_id].audio = audio;
+    channels[channel_id].position = 0;
+    channels[channel_id].volume = volume;
+    channels[channel_id].left_gain = left_gain;
+    channels[channel_id].right_gain = right_gain;
+    channels[channel_id].active = true;
     
     return true;
-}
-
-float AudioMixer::calculate_distance(const AudioPosition& sound_pos) {
-    float dx = sound_pos.x - listener_pos.x;
-    float dy = sound_pos.y - listener_pos.y;
-    float dz = sound_pos.z - listener_pos.z;
-    return std::sqrt(dx*dx + dy*dy + dz*dz);
-}
-
-void AudioMixer::calculate_stereo_pan(const AudioPosition& sound_pos, float& left_gain, float& right_gain) {
-    // Calculate horizontal panning based on X position
-    float dx = sound_pos.x - listener_pos.x;
-    float pan_range = 400.0f; // Stereo effect range in pixels
-    
-    float pan = std::max(-1.0f, std::min(1.0f, dx / pan_range));
-    
-    // Convert pan (-1 to 1) to stereo gains
-    if (pan <= 0) {
-        left_gain = 1.0f;
-        right_gain = 1.0f + pan; // pan is negative, so this reduces right
-    } else {
-        left_gain = 1.0f - pan;
-        right_gain = 1.0f;
-    }
-    
-    // Ensure gains are non-negative
-    left_gain = std::max(0.0f, left_gain);
-    right_gain = std::max(0.0f, right_gain);
 }
 
 void AudioMixer::set_listener_position(const AudioPosition& pos) {
@@ -166,6 +166,43 @@ void AudioMixer::set_listener_position(const AudioPosition& pos) {
 }
 
 void AudioMixer::audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount) {
-    // This callback is called when SDL3 needs more audio data
-    // For our simple mixer, we don't need to do anything here since we're using SDL_PutAudioStreamData
+    // Buffer for mixing, using 32-bit samples to prevent clipping during accumulation
+    std::vector<Sint32> mix_buffer(additional_amount / sizeof(Sint16), 0);
+
+    // Mix active channels
+    for (int i = 0; i < MAX_CHANNELS; ++i) {
+        if (channels[i].active) {
+            Channel& chan = channels[i];
+            MixerAudio* audio = chan.audio;
+            
+            Uint32 remaining_length = audio->length - chan.position;
+            Uint32 amount_to_mix = std::min((Uint32)additional_amount, remaining_length);
+            
+            Sint16* src_samples = (Sint16*)(audio->buffer + chan.position);
+            
+            // Mix into the 32-bit buffer
+            for (Uint32 j = 0; j < amount_to_mix / sizeof(Sint16); j += 2) {
+                // Left channel
+                mix_buffer[j] += (Sint32)(src_samples[j] * chan.volume * chan.left_gain);
+                // Right channel
+                mix_buffer[j + 1] += (Sint32)(src_samples[j + 1] * chan.volume * chan.right_gain);
+            }
+            
+            chan.position += amount_to_mix;
+            if (chan.position >= audio->length) {
+                chan.active = false;
+            }
+        }
+    }
+
+    // Clamp and convert back to 16-bit
+    std::vector<Sint16> final_buffer(additional_amount / sizeof(Sint16));
+    for (size_t i = 0; i < mix_buffer.size(); ++i) {
+        final_buffer[i] = (Sint16)std::clamp(mix_buffer[i], (Sint32)SDL_MIN_SINT16, (Sint32)SDL_MAX_SINT16);
+    }
+
+    // Put the mixed data into the stream
+    if (SDL_PutAudioStreamData(stream, final_buffer.data(), additional_amount) < 0) {
+        SDL_Log("Failed to put audio data in callback: %s", SDL_GetError());
+    }
 }

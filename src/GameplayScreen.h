@@ -4,6 +4,7 @@
 #include "Screen.h"
 #include "ClanBomber.h"
 #include "Map.h"
+#include "GameState.h"
 
 class GameplayScreen : public Screen {
 public:
@@ -13,6 +14,8 @@ public:
     void handle_events(SDL_Event& event) override;
     void update(float deltaTime) override;
     void render(SDL_Renderer* renderer) override;
+
+    GameState get_next_state();
 
 private:
     void init_game();
@@ -30,6 +33,14 @@ private:
     float game_over_timer;
     int winning_team;
     std::string winning_player;
+    
+    // Gore delay before checking victory
+    float gore_delay_timer;
+    bool checking_victory;
+    
+    // Controller activation delay
+    float controller_activation_timer;
+    bool controllers_activated;
 
     ClanBomberApplication* app;
     bool pause_game;
@@ -37,6 +48,7 @@ private:
     int fps;
     int frame_count;
     float frame_time;
+    GameState next_state;
 };
 
 #endif

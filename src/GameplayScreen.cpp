@@ -12,11 +12,23 @@
 #include <string>
 
 GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app) {
+    SDL_Log("GameplayScreen::GameplayScreen() - Loading game configuration...");
+    GameConfig::load(); // Load game configuration before initializing
+    
+    // Clear any pending keyboard events to prevent menu input bleeding into gameplay
+    SDL_PumpEvents();
+    SDL_FlushEvents(SDL_EVENT_KEY_DOWN, SDL_EVENT_KEY_UP);
+    
     init_game();
+    next_state = GameState::GAMEPLAY;
 }
 
 GameplayScreen::~GameplayScreen() {
     deinit_game();
+}
+
+GameState GameplayScreen::get_next_state() {
+    return next_state;
 }
 
 void GameplayScreen::init_game() {
@@ -26,12 +38,20 @@ void GameplayScreen::init_game() {
     pause_game = false;
     show_fps = false;
     
+    // Initialize controller activation delay (wait for fly-to animations to complete)
+    controller_activation_timer = 2.0f; // 2 second delay to allow animations to finish
+    controllers_activated = false;
+    
     // Initialize victory/defeat state
     game_over = false;
     victory_achieved = false;
     game_over_timer = 0.0f;
     winning_team = 0;
     winning_player = "";
+    
+    // Initialize gore delay
+    gore_delay_timer = 0.0f;
+    checking_victory = false;
 
     app->map = new Map(app);
     if (!app->map->any_valid_map()) {
@@ -56,17 +76,32 @@ void GameplayScreen::init_game() {
         if (GameConfig::bomber[i].is_enabled()) {
             CL_Vector pos = app->map->get_bomber_pos(j++);
             Controller* controller = Controller::create(static_cast<Controller::CONTROLLER_TYPE>(GameConfig::bomber[i].get_controller()));
-            Bomber* bomber = new Bomber((int)(pos.x * 40), (int)(pos.y * 40), static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, app);
+            if (!controller) {
+                SDL_Log("Failed to create controller for bomber %d, skipping", i);
+                continue;
+            }
+            
+            SDL_Log("Creating bomber %d: controller=%d, pos=(%f,%f) -> (%d,%d)", 
+                   i, GameConfig::bomber[i].get_controller(), pos.x, pos.y, (int)(pos.x * 40), (int)(pos.y * 40));
+            
+            // Create bomber at temporary position (off-screen or center)
+            int temp_x = 400 - i * 20;
+            int temp_y = 300 - i * 20;
+            Bomber* bomber = new Bomber(temp_x, temp_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, app);
             bomber->set_name(GameConfig::bomber[i].get_name());
             bomber->set_team(GameConfig::bomber[i].get_team());
             bomber->set_number(i);
             bomber->set_lives(3); // Start with 3 lives
             app->bomber_objects.push_back(bomber);
             
-            // Smooth entry animation with proper Z-ordering
-            bomber->set_pos(400 - i * 20, 300 - i * 20);
-            bomber->fly_to((int)(pos.x*40), (int)(pos.y*40), 200 + i * 50);
-            bomber->get_controller()->deactivate();
+            // Start fly-to animation to final position
+            bomber->fly_to((int)(pos.x*40), (int)(pos.y*40), 1000 + i * 200); // 1 second + stagger
+            
+            // Delay controller activation to prevent menu input bleeding
+            if (bomber->get_controller()) {
+                bomber->get_controller()->deactivate(); // Start deactivated
+                // Will be activated after a short delay in update()
+            }
             
             // Set appropriate Z-order for visual layering
             bomber->z = 10 + i;
@@ -129,6 +164,21 @@ void GameplayScreen::update(float deltaTime) {
         return;
     }
 
+    // Handle controller activation delay
+    if (!controllers_activated) {
+        controller_activation_timer -= deltaTime;
+        if (controller_activation_timer <= 0.0f) {
+            controllers_activated = true;
+            // Activate all bomber controllers
+            for (auto& bomber : app->bomber_objects) {
+                if (bomber && bomber->get_controller()) {
+                    bomber->get_controller()->activate();
+                }
+            }
+            SDL_Log("Controllers activated after delay");
+        }
+    }
+
     // Update 3D audio listener position based on active players
     update_audio_listener();
 
@@ -140,14 +190,40 @@ void GameplayScreen::update(float deltaTime) {
     delete_some();
     act_all();
     
-    // Check for victory conditions
+    // Handle gore delay and victory checking
     if (!game_over) {
-        check_victory_conditions();
+        // Check if we need to start gore delay
+        bool any_bombers_just_died = false;
+        for (auto& bomber : app->bomber_objects) {
+            if (bomber && bomber->is_dead() && !bomber->delete_me) {
+                any_bombers_just_died = true;
+                break;
+            }
+        }
+        
+        if (any_bombers_just_died && !checking_victory) {
+            // Start gore delay timer
+            checking_victory = true;
+            gore_delay_timer = 2.0f; // 2 seconds to enjoy the gore
+            SDL_Log("Starting gore delay...");
+        }
+        
+        if (checking_victory) {
+            gore_delay_timer -= deltaTime;
+            if (gore_delay_timer <= 0.0f) {
+                checking_victory = false;
+                check_victory_conditions();
+            }
+        } else if (!any_bombers_just_died) {
+            // No recent deaths, check victory immediately
+            check_victory_conditions();
+        }
     } else {
         game_over_timer += deltaTime;
-        // Return to menu after 5 seconds
-        if (game_over_timer > 5.0f) {
-            // TODO: Transition back to menu
+        // Return to menu after 8 seconds (more time to enjoy victory)
+        if (game_over_timer > 8.0f) {
+            SDL_Log("Game over timer expired, should return to menu");
+            next_state = GameState::MAIN_MENU;
         }
     }
 
@@ -297,30 +373,40 @@ void GameplayScreen::check_victory_conditions() {
     // Check victory conditions
     if (alive_bombers.empty()) {
         // No one left - draw
-        game_over = true;
-        victory_achieved = false;
-        winning_player = "Draw!";
-        
-        // Play game over sound
-        AudioPosition center_pos(400, 300, 0.0f);
-        AudioMixer::play_sound_3d("time_over", center_pos, 800.0f);
+        if (!game_over) { // Only trigger once
+            game_over = true;
+            victory_achieved = false;
+            winning_player = "Draw!";
+            
+            // Play game over sound (only once) - with error protection
+            AudioPosition center_pos(400, 300, 0.0f);
+            if (!AudioMixer::play_sound_3d("time_over", center_pos, 800.0f)) {
+                SDL_Log("Failed to play time_over sound - continuing without audio");
+            }
+            SDL_Log("Game Over: Draw!");
+        }
         
     } else if (alive_bombers.size() == 1 && alive_teams.size() <= 1) {
         // Single winner or single team remaining
-        game_over = true;
-        victory_achieved = true;
-        
-        Bomber* winner = alive_bombers[0];
-        if (winner->get_team() > 0) {
-            winning_team = winner->get_team();
-            winning_player = "Team " + std::to_string(winning_team) + " Wins!";
-        } else {
-            winning_player = winner->get_name() + " Wins!";
+        if (!game_over) { // Only trigger once
+            game_over = true;
+            victory_achieved = true;
+            
+            Bomber* winner = alive_bombers[0];
+            if (winner->get_team() > 0) {
+                winning_team = winner->get_team();
+                winning_player = "Team " + std::to_string(winning_team) + " Wins!";
+            } else {
+                winning_player = winner->get_name() + " Wins!";
+            }
+            
+            // Play victory sound (only once) - with error protection
+            AudioPosition winner_pos(winner->get_x(), winner->get_y(), 0.0f);
+            if (!AudioMixer::play_sound_3d("winlevel", winner_pos, 800.0f)) {
+                SDL_Log("Failed to play winlevel sound - continuing without audio");
+            }
+            SDL_Log("Game Over: %s", winning_player.c_str());
         }
-        
-        // Play victory sound
-        AudioPosition winner_pos(winner->get_x(), winner->get_y(), 0.0f);
-        AudioMixer::play_sound_3d("winlevel", winner_pos, 800.0f);
     }
 }
 

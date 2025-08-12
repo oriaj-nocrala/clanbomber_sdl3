@@ -1,7 +1,6 @@
 #include "Game.h"
 #include "Resources.h"
 #include "Timer.h"
-#include "Audio.h"
 #include "MainMenuScreen.h"
 #include "GameplayScreen.h"
 #include "SettingsScreen.h"
@@ -39,7 +38,6 @@ Game::Game() {
 
     Resources::init(renderer);
     Timer::init();
-    Audio::init();
 
     font = TTF_OpenFont("data/fonts/DejaVuSans-Bold.ttf", 28);
     if (!font) {
@@ -54,7 +52,6 @@ Game::Game() {
 Game::~Game() {
     delete current_screen;
     TTF_CloseFont(font);
-    Audio::shutdown();
     Resources::shutdown();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
@@ -94,6 +91,12 @@ void Game::update(float deltaTime) {
         SettingsScreen* settings = static_cast<SettingsScreen*>(current_screen);
         if (settings->get_next_state() != GameState::SETTINGS) {
             change_screen(settings->get_next_state());
+        }
+    }
+    else if (dynamic_cast<GameplayScreen*>(current_screen)) {
+        GameplayScreen* gameplay = static_cast<GameplayScreen*>(current_screen);
+        if (gameplay->get_next_state() != GameState::GAMEPLAY) {
+            change_screen(gameplay->get_next_state());
         }
     }
 }
