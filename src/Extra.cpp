@@ -4,6 +4,7 @@
 #include "AudioMixer.h"
 #include "MapTile.h"
 #include "Bomber.h"
+#include "ParticleSystem.h"
 #include <cmath>
 #include <random>
 
@@ -67,6 +68,10 @@ void Extra::collect() {
     if (collected) return;
     
     collected = true;
+    
+    // Create pickup particle effect
+    ParticleSystem* pickup_sparkles = new ParticleSystem(x, y, EXPLOSION_SPARKS, app);
+    app->objects.push_back(pickup_sparkles);
     
     // Play collection sound
     AudioPosition extra_pos(x, y, 0.0f);

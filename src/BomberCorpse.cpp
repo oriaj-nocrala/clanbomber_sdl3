@@ -3,6 +3,7 @@
 #include "ClanBomber.h"
 #include "AudioMixer.h"
 #include "Timer.h"
+#include "ParticleSystem.h"
 #include <random>
 #include <cmath>
 
@@ -94,6 +95,13 @@ void BomberCorpse::explode() {
 void BomberCorpse::create_gore_explosion() {
     std::random_device rd;
     std::mt19937 gen(rd());
+    
+    // Add particle effects for gore explosion
+    ParticleSystem* blood_splatter = new ParticleSystem(x, y, FIRE_PARTICLES, app); // Red particles
+    app->objects.push_back(blood_splatter);
+    
+    ParticleSystem* gore_smoke = new ParticleSystem(x, y, SMOKE_TRAILS, app);
+    app->objects.push_back(gore_smoke);
     
     // Create 8-12 body parts with realistic explosion physics
     std::uniform_int_distribution<> part_count_dist(8, 12);

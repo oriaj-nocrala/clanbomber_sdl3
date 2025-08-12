@@ -8,6 +8,7 @@
 #include "Resources.h"
 #include "Audio.h"
 #include "AudioMixer.h"
+#include "Map.h"
 
 Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app) : GameObject(_x, _y, _app) {
     color = _color;
@@ -22,6 +23,13 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     power = GameConfig::get_start_power();
     can_kick = true; // TODO: Set to false by default, enable with power-up
     dead = false;
+    
+    // Initialize lives and respawn system
+    remaining_lives = 3; // Default 3 lives
+    respawning = false;
+    invincible = false;
+    respawn_timer = 0.0f;
+    invincible_timer = 0.0f;
     
     // Initialize new member variables
     bomber_team = 0;
@@ -46,6 +54,28 @@ void Bomber::act(float deltaTime) {
     if (dead || !controller) {
         return;
     }
+    
+    // Handle respawn timing
+    if (respawning) {
+        respawn_timer -= deltaTime;
+        if (respawn_timer <= 0.0f) {
+            respawning = false;
+            dead = false;
+            invincible = true;
+            invincible_timer = 3.0f; // 3 seconds of invincibility
+        } else {
+            return; // Don't process input while respawning
+        }
+    }
+    
+    // Handle invincibility timer
+    if (invincible) {
+        invincible_timer -= deltaTime;
+        if (invincible_timer <= 0.0f) {
+            invincible = false;
+        }
+    }
+    
     controller->update();
 
     // Update direction based on controller input
@@ -98,14 +128,54 @@ void Bomber::act(float deltaTime) {
 }
 
 void Bomber::die() {
-    if (!dead) {
+    if (!dead && !invincible) {
         dead = true;
         
         // Create corpse at current position
         BomberCorpse* corpse = new BomberCorpse(x, y, color, app);
         app->objects.push_back(corpse);
         
-        // Mark for deletion
-        delete_me = true;
+        // Check if bomber has lives remaining
+        lose_life();
+        
+        if (has_lives()) {
+            // Start respawn process
+            respawning = true;
+            respawn_timer = 2.0f; // 2 seconds until respawn
+        } else {
+            // No lives left, mark for deletion
+            delete_me = true;
+        }
     }
+}
+
+void Bomber::respawn() {
+    dead = false;
+    respawning = false;
+    invincible = true;
+    invincible_timer = 3.0f;
+    
+    // Reset position to spawn point
+    if (app && app->map) {
+        CL_Vector spawn_pos = app->map->get_bomber_pos(bomber_number);
+        x = spawn_pos.x * 40;
+        y = spawn_pos.y * 40;
+    }
+}
+
+void Bomber::show() {
+    // Handle invincibility flickering
+    if (invincible) {
+        // Flicker by showing/hiding based on timer
+        int flicker_rate = 8; // Flickers per second
+        float flicker_time = 1.0f / flicker_rate;
+        int flicker_frame = (int)(invincible_timer / flicker_time);
+        
+        if (flicker_frame % 2 == 0) {
+            return; // Skip rendering this frame
+        }
+    }
+    
+    // Call parent show() for normal rendering
+    GameObject::show();
 }

@@ -22,11 +22,24 @@ public:
     Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app);
     
     void act(float deltaTime) override;
+    void show() override; // Override to handle invincibility flickering
 
     COLOR get_color() const { return color; }
     void die(); // Kill the bomber
     bool is_dead() const { return dead; }
     ObjectType get_type() const override { return BOMBER; }
+    
+    // Lives system
+    void set_lives(int lives) { remaining_lives = lives; }
+    int get_lives() const { return remaining_lives; }
+    void lose_life() { if (remaining_lives > 0) remaining_lives--; }
+    bool has_lives() const { return remaining_lives > 0; }
+    
+    // Respawn system
+    void respawn(); 
+    bool is_respawning() const { return respawning; }
+    void set_invincible(bool inv) { invincible = inv; }
+    bool is_invincible() const { return invincible; }
 
     // Team management
     void set_team(int team) { bomber_team = team; }
@@ -52,6 +65,13 @@ public:
 public:
     bool can_kick;
     bool dead;
+    
+    // Lives and respawn
+    int remaining_lives;
+    bool respawning;
+    bool invincible;
+    float respawn_timer;
+    float invincible_timer;
 
 protected:
     float anim_count;

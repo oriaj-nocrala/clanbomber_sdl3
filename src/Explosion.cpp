@@ -6,6 +6,7 @@
 #include "Resources.h"
 #include "Bomb.h"
 #include "Timer.h"
+#include "ParticleSystem.h"
 #include <SDL3/SDL_timer.h>
 
 Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* app) : GameObject(_x, _y, app) {
@@ -13,6 +14,13 @@ Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberAppli
     power = _power;
     detonation_period = 0.5f; // seconds - exactly like original
     texture_name = "explosion";
+    
+    // Create explosion particle effects
+    ParticleSystem* explosion_sparks = new ParticleSystem(_x, _y, EXPLOSION_SPARKS, app);
+    app->objects.push_back(explosion_sparks);
+    
+    ParticleSystem* dust_cloud = new ParticleSystem(_x, _y, DUST_CLOUDS, app);
+    app->objects.push_back(dust_cloud);
 
     length_up = length_down = length_left = length_right = 0;
 

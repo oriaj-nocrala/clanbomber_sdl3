@@ -5,7 +5,11 @@
 #include "GameConfig.h"
 #include "Controller.h"
 #include "AudioMixer.h"
+#include "Resources.h"
 #include <algorithm>
+#include <set>
+#include <vector>
+#include <string>
 
 GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app) {
     init_game();
@@ -21,6 +25,13 @@ void GameplayScreen::init_game() {
     fps = 0;
     pause_game = false;
     show_fps = false;
+    
+    // Initialize victory/defeat state
+    game_over = false;
+    victory_achieved = false;
+    game_over_timer = 0.0f;
+    winning_team = 0;
+    winning_player = "";
 
     app->map = new Map(app);
     if (!app->map->any_valid_map()) {
@@ -49,6 +60,7 @@ void GameplayScreen::init_game() {
             bomber->set_name(GameConfig::bomber[i].get_name());
             bomber->set_team(GameConfig::bomber[i].get_team());
             bomber->set_number(i);
+            bomber->set_lives(3); // Start with 3 lives
             app->bomber_objects.push_back(bomber);
             
             // Smooth entry animation with proper Z-ordering
@@ -127,6 +139,17 @@ void GameplayScreen::update(float deltaTime) {
 
     delete_some();
     act_all();
+    
+    // Check for victory conditions
+    if (!game_over) {
+        check_victory_conditions();
+    } else {
+        game_over_timer += deltaTime;
+        // Return to menu after 5 seconds
+        if (game_over_timer > 5.0f) {
+            // TODO: Transition back to menu
+        }
+    }
 
     frame_time += Timer::time_elapsed();
     if (frame_time > 2) {
@@ -178,6 +201,11 @@ void GameplayScreen::act_all() {
     if (deltaTime > max_delta) {
         deltaTime = max_delta;
     }
+    
+    // Smooth delta time to prevent jitter
+    static float avg_delta = 1.0f / 60.0f;
+    avg_delta = avg_delta * 0.9f + deltaTime * 0.1f;
+    deltaTime = avg_delta;
     
     if (app->map != nullptr) {
         app->map->act();
@@ -243,4 +271,74 @@ void GameplayScreen::show_all() {
             obj->show();
         }
     }
+    
+    // Show victory/defeat overlay
+    if (game_over) {
+        render_victory_screen();
+    }
+}
+
+void GameplayScreen::check_victory_conditions() {
+    if (game_over) return;
+    
+    std::vector<Bomber*> alive_bombers;
+    std::set<int> alive_teams;
+    
+    // Count alive bombers and their teams
+    for (auto& bomber : app->bomber_objects) {
+        if (bomber && !bomber->delete_me && !bomber->is_dead() && bomber->has_lives()) {
+            alive_bombers.push_back(bomber);
+            if (bomber->get_team() > 0) {
+                alive_teams.insert(bomber->get_team());
+            }
+        }
+    }
+    
+    // Check victory conditions
+    if (alive_bombers.empty()) {
+        // No one left - draw
+        game_over = true;
+        victory_achieved = false;
+        winning_player = "Draw!";
+        
+        // Play game over sound
+        AudioPosition center_pos(400, 300, 0.0f);
+        AudioMixer::play_sound_3d("time_over", center_pos, 800.0f);
+        
+    } else if (alive_bombers.size() == 1 && alive_teams.size() <= 1) {
+        // Single winner or single team remaining
+        game_over = true;
+        victory_achieved = true;
+        
+        Bomber* winner = alive_bombers[0];
+        if (winner->get_team() > 0) {
+            winning_team = winner->get_team();
+            winning_player = "Team " + std::to_string(winning_team) + " Wins!";
+        } else {
+            winning_player = winner->get_name() + " Wins!";
+        }
+        
+        // Play victory sound
+        AudioPosition winner_pos(winner->get_x(), winner->get_y(), 0.0f);
+        AudioMixer::play_sound_3d("winlevel", winner_pos, 800.0f);
+    }
+}
+
+void GameplayScreen::render_victory_screen() {
+    SDL_Renderer* renderer = Resources::get_renderer();
+    if (!renderer) return;
+    
+    // Semi-transparent overlay
+    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
+    SDL_FRect overlay = {0.0f, 0.0f, 800.0f, 600.0f};
+    SDL_RenderFillRect(renderer, &overlay);
+    
+    // TODO: Render victory/defeat text using TTF fonts
+    // For now just change background color to indicate game over
+    if (victory_achieved) {
+        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 64); // Green tint for victory
+    } else {
+        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64); // Red tint for defeat/draw
+    }
+    SDL_RenderFillRect(renderer, &overlay);
 }

@@ -21,6 +21,15 @@ private:
     void show_all();
     void delete_some();
     void update_audio_listener();
+    void check_victory_conditions();
+    void render_victory_screen();
+    
+    // Victory/defeat state
+    bool game_over;
+    bool victory_achieved;
+    float game_over_timer;
+    int winning_team;
+    std::string winning_player;
 
     ClanBomberApplication* app;
     bool pause_game;
