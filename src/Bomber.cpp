@@ -2,6 +2,7 @@
 #include "Timer.h"
 #include "Controller.h"
 #include "Bomb.h"
+#include "BomberCorpse.h"
 #include "ClanBomber.h"
 #include "GameConfig.h"
 #include "Resources.h"
@@ -20,6 +21,7 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     bomb_cooldown = 0.0f;
     power = GameConfig::get_start_power();
     can_kick = true; // TODO: Set to false by default, enable with power-up
+    dead = false;
     
     // Initialize new member variables
     bomber_team = 0;
@@ -41,7 +43,7 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
 }
 
 void Bomber::act(float deltaTime) {
-    if (!controller) {
+    if (dead || !controller) {
         return;
     }
     controller->update();
@@ -93,4 +95,17 @@ void Bomber::act(float deltaTime) {
     }
 
     sprite_nr = (int)cur_dir * 10 + (int)anim_count;
+}
+
+void Bomber::die() {
+    if (!dead) {
+        dead = true;
+        
+        // Create corpse at current position
+        BomberCorpse* corpse = new BomberCorpse(x, y, color, app);
+        app->objects.push_back(corpse);
+        
+        // Mark for deletion
+        delete_me = true;
+    }
 }

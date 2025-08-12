@@ -1,5 +1,6 @@
 #include "Explosion.h"
 #include "Bomber.h"
+#include "BomberCorpse.h"
 #include "Map.h"
 #include "MapTile.h"
 #include "Resources.h"
@@ -45,8 +46,10 @@ Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberAppli
 }
 
 void Explosion::act(float deltaTime) {
-    // Detonate other bombs in chain reaction
+    // Detonate other bombs, kill bombers, and explode corpses
     detonate_other_bombs();
+    kill_bombers();
+    explode_corpses();
     
     // Update explosion timer
     detonation_period -= deltaTime;
@@ -165,5 +168,100 @@ void Explosion::draw_part(int px, int py, int spr_nr) {
     SDL_FRect dest_rect = { (float)px, (float)py, src_rect.w, src_rect.h };
 
     SDL_RenderTexture(Resources::get_renderer(), tex_info->texture, &src_rect, &dest_rect);
+}
+
+void Explosion::kill_bombers() {
+    // Check for bombers in explosion area and kill them
+    for (auto& bomber : app->bomber_objects) {
+        if (bomber && !bomber->delete_me && !bomber->is_dead()) {
+            int bomber_map_x = bomber->get_map_x();
+            int bomber_map_y = bomber->get_map_y();
+            
+            // Check if bomber is in explosion center
+            if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y()) {
+                bomber->die();
+                continue;
+            }
+            
+            // Check if bomber is in explosion rays
+            // Up ray
+            for (int i = 1; i <= length_up; ++i) {
+                if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y() - i) {
+                    bomber->die();
+                    break;
+                }
+            }
+            // Down ray
+            for (int i = 1; i <= length_down; ++i) {
+                if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y() + i) {
+                    bomber->die();
+                    break;
+                }
+            }
+            // Left ray
+            for (int i = 1; i <= length_left; ++i) {
+                if (bomber_map_x == get_map_x() - i && bomber_map_y == get_map_y()) {
+                    bomber->die();
+                    break;
+                }
+            }
+            // Right ray
+            for (int i = 1; i <= length_right; ++i) {
+                if (bomber_map_x == get_map_x() + i && bomber_map_y == get_map_y()) {
+                    bomber->die();
+                    break;
+                }
+            }
+        }
+    }
+}
+
+void Explosion::explode_corpses() {
+    // Check for corpses in explosion area and make them explode with gore
+    for (auto& obj : app->objects) {
+        if (obj && obj->get_type() == BOMBER_CORPSE) {
+            BomberCorpse* corpse = static_cast<BomberCorpse*>(obj);
+            if (!corpse->is_exploded()) {
+                int corpse_map_x = corpse->get_map_x();
+                int corpse_map_y = corpse->get_map_y();
+                
+                // Check if corpse is in explosion area (same logic as bombers)
+                bool in_explosion = false;
+                
+                // Center
+                if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y()) {
+                    in_explosion = true;
+                }
+                
+                // Rays
+                if (!in_explosion) {
+                    for (int i = 1; i <= length_up && !in_explosion; ++i) {
+                        if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y() - i) {
+                            in_explosion = true;
+                        }
+                    }
+                    for (int i = 1; i <= length_down && !in_explosion; ++i) {
+                        if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y() + i) {
+                            in_explosion = true;
+                        }
+                    }
+                    for (int i = 1; i <= length_left && !in_explosion; ++i) {
+                        if (corpse_map_x == get_map_x() - i && corpse_map_y == get_map_y()) {
+                            in_explosion = true;
+                        }
+                    }
+                    for (int i = 1; i <= length_right && !in_explosion; ++i) {
+                        if (corpse_map_x == get_map_x() + i && corpse_map_y == get_map_y()) {
+                            in_explosion = true;
+                        }
+                    }
+                }
+                
+                if (in_explosion) {
+                    corpse->explode(); // This creates the gore explosion!
+                }
+            }
+        }
+    }
 }
 

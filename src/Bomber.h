@@ -24,6 +24,8 @@ public:
     void act(float deltaTime) override;
 
     COLOR get_color() const { return color; }
+    void die(); // Kill the bomber
+    bool is_dead() const { return dead; }
     ObjectType get_type() const override { return BOMBER; }
 
     // Team management
@@ -49,6 +51,7 @@ public:
     
 public:
     bool can_kick;
+    bool dead;
 
 protected:
     float anim_count;

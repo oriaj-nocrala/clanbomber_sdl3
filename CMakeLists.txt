@@ -29,6 +29,8 @@ add_executable(clanbomber-modern
     src/Audio.cpp
     src/AudioMixer.cpp
     src/Extra.cpp
+    src/CorpsePart.cpp
+    src/BomberCorpse.cpp
     src/Game.cpp
     src/MainMenuScreen.cpp
     src/GameplayScreen.cpp
