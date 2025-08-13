@@ -5,9 +5,7 @@
 #include "GameConfig.h"
 #include "Map.h"
 #include "MapTile.h"
-#include "Audio.h"
 #include "AudioMixer.h"
-#include "Resources.h"
 #include "Bomber.h"
 
 Bomb::Bomb(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* app) : GameObject(_x, _y, app) {
@@ -65,13 +63,7 @@ void Bomb::explode() {
     
     // Play explosion sound with 3D positioning
     AudioPosition bomb_pos(x, y, 0.0f);
-    if (!AudioMixer::play_sound_3d("explode", bomb_pos, 600.0f)) {
-        // Fallback to old system
-        Sound* explode_sound = Resources::get_sound("explode");
-        if (explode_sound) {
-            Audio::play(explode_sound);
-        }
-    }
+    AudioMixer::play_sound_3d("explode", bomb_pos, 600.0f);
     
     // Create explosion
     app->objects.push_back(new Explosion(x, y, power, owner, app));

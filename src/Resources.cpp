@@ -7,7 +7,6 @@
 SDL_Renderer* Resources::renderer = nullptr;
 std::string Resources::base_path;
 std::map<std::string, TextureInfo*> Resources::textures;
-std::map<std::string, Sound*> Resources::sounds;
 std::map<std::string, TTF_Font*> Resources::fonts;
 
 void Resources::init(SDL_Renderer* renderer) {
@@ -77,12 +76,6 @@ void Resources::init(SDL_Renderer* renderer) {
         if (mixer_audio) {
             AudioMixer::add_sound(sound_name, mixer_audio);
         }
-        
-        // Also load with old system for compatibility
-        Sound* sound = load_sound(file_path);
-        if (sound) {
-            sounds[sound_name] = sound;
-        }
     }
 }
 
@@ -94,12 +87,6 @@ void Resources::shutdown() {
         delete val;
     }
     textures.clear();
-
-    for (auto const& [key, val] : sounds) {
-        SDL_free(val->buffer);
-        delete val;
-    }
-    sounds.clear();
 
     for (auto const& [key, val] : fonts) {
         TTF_CloseFont(val);
@@ -121,17 +108,6 @@ TextureInfo* Resources::load_texture(const std::string& path, int sprite_width, 
     return tex_info;
 }
 
-Sound* Resources::load_sound(const std::string& path) {
-    std::string full_path = base_path + path;
-    Sound* sound = new Sound();
-    if (!SDL_LoadWAV(full_path.c_str(), &sound->spec, &sound->buffer, &sound->length)) {
-        std::cerr << "Failed to load sound: " << full_path << " - " << SDL_GetError() << std::endl;
-        delete sound;
-        return nullptr;
-    }
-    return sound;
-}
-
 TTF_Font* Resources::load_font(const std::string& path, int size) {
     std::string full_path = base_path + path;
     TTF_Font* font = TTF_OpenFont(full_path.c_str(), size);
@@ -144,13 +120,6 @@ TTF_Font* Resources::load_font(const std::string& path, int size) {
 TextureInfo* Resources::get_texture(const std::string& name) {
     if (textures.count(name)) {
         return textures[name];
-    }
-    return nullptr;
-}
-
-Sound* Resources::get_sound(const std::string& name) {
-    if (sounds.count(name)) {
-        return sounds[name];
     }
     return nullptr;
 }

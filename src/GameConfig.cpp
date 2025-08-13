@@ -85,7 +85,7 @@ BomberConfig::BomberConfig()
 	client_index = -1;
 	config_index = -1;
 	client_ip = NULL;
-	enabled = true;
+	enabled = false; // Start disabled by default
 	team = 0;
 	skin = 0;
 	controller = 0;
@@ -563,18 +563,32 @@ void GameConfig::set_fullscreen(bool val)
 
 bool GameConfig::save(bool init)
 {
+	SDL_Log("GameConfig::save(init=%s)", init ? "true" : "false");
 	if (init) {
+		SDL_Log("GameConfig::save() - Initializing default bomber configuration");
 		for (int i=0; i<8; i++) {
 			bomber[i].set_skin(i);
 		}
-		bomber[0].set_name( "Are" );
-		bomber[1].set_name( "You" );
-		bomber[2].set_name( "Still" );
-		bomber[3].set_name( "Watching" );
+		bomber[0].set_name( "Player1" );
+		bomber[1].set_name( "Player2" );
+		bomber[2].set_name( "Player3" );
+		bomber[3].set_name( "Player4" );
 		bomber[4].set_name( "AIs" );
 		bomber[5].set_name( "Playing" );
 		bomber[6].set_name( "For" );
 		bomber[7].set_name( "You" );
+		
+		// Enable first 2 players and set different controllers
+		bomber[0].enable();
+		bomber[0].set_controller(2); // KEYMAP_1 (value 2 in enum)
+		
+		bomber[1].enable();
+		bomber[1].set_controller(3); // KEYMAP_2 (value 3 in enum)
+		
+		// Rest stay disabled by default
+		for (int i = 2; i < 8; i++) {
+			bomber[i].disable();
+		}
 	}
 
 	std::ofstream configfile(path / filename);
@@ -634,8 +648,10 @@ bool GameConfig::save(bool init)
 bool GameConfig::load()
 {
   std::ifstream configfile(path / filename);
+  SDL_Log("GameConfig::load() - Attempting to load config from: %s", (path / filename).c_str());
 
   if (configfile.fail()) {
+    SDL_Log("GameConfig::load() - Config file not found, creating new config with default settings");
     configfile.close();
     save(true);
     return false;

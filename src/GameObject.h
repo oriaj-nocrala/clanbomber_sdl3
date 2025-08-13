@@ -109,7 +109,9 @@ public:
   void set_orig( int _x, int _y );
   void move_pos( int _x, int _y );
   void snap();
+  // @DEPRECATED: This function will be removed in a future version. Use move_dist instead.
   bool move(float deltaTime, int _speed, Direction _dir=DIR_NONE);
+  bool move_dist(float distance, Direction dir);
   void inc_speed( int _c=1 );
   void dec_speed( int _c=1 );
   void set_speed( int _speed );
@@ -209,6 +211,7 @@ protected:
   Direction cur_dir;
   int speed;
 	
+  // @DEPRECATED: These functions will be removed in a future version.
   bool move(float deltaTime);
   bool move_left();
   bool move_right();
@@ -248,6 +251,7 @@ protected:
   int server_y;
   void reset_next_fly_job();
 private:
+  bool is_blocked(float check_x, float check_y);
   bool is_next_fly_job();
   int next_fly_job[3];
   void init(ClanBomberApplication *_app);

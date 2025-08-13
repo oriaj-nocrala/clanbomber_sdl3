@@ -16,8 +16,10 @@ public:
     bool is_down() override;
     bool is_bomb() override;
 
+    static void update_keyboard_state();
+
 private:
-    const bool* keyboard_state;
+    static const bool* keyboard_state;
     SDL_Scancode key_left;
     SDL_Scancode key_right;
     SDL_Scancode key_up;

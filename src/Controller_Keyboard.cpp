@@ -1,26 +1,51 @@
 #include "Controller_Keyboard.h"
 
+const bool* Controller_Keyboard::keyboard_state = nullptr;
+
 Controller_Keyboard::Controller_Keyboard(int keymap_index) {
-    // Hardcoded keymaps for now
-    if (keymap_index == 0) {
-        key_up = SDL_SCANCODE_UP;
-        key_down = SDL_SCANCODE_DOWN;
-        key_left = SDL_SCANCODE_LEFT;
-        key_right = SDL_SCANCODE_RIGHT;
-        key_bomb = SDL_SCANCODE_RCTRL;
-    } else {
-        // Default to player 1 keys
-        key_up = SDL_SCANCODE_UP;
-        key_down = SDL_SCANCODE_DOWN;
-        key_left = SDL_SCANCODE_LEFT;
-        key_right = SDL_SCANCODE_RIGHT;
-        key_bomb = SDL_SCANCODE_RCTRL;
+    switch (keymap_index) {
+        case 0:
+            // Arrow keys + Enter
+            key_left = SDL_SCANCODE_LEFT;
+            key_right = SDL_SCANCODE_RIGHT;
+            key_up = SDL_SCANCODE_UP;
+            key_down = SDL_SCANCODE_DOWN;
+            key_bomb = SDL_SCANCODE_RETURN;
+            break;
+        case 1:
+            // WASD + Tab
+            key_left = SDL_SCANCODE_A;
+            key_right = SDL_SCANCODE_D;
+            key_up = SDL_SCANCODE_W;
+            key_down = SDL_SCANCODE_S;
+            key_bomb = SDL_SCANCODE_TAB;
+            break;
+        case 2:
+            // IJKL + Space
+            key_left = SDL_SCANCODE_J;
+            key_right = SDL_SCANCODE_L;
+            key_up = SDL_SCANCODE_I;
+            key_down = SDL_SCANCODE_K;
+            key_bomb = SDL_SCANCODE_SPACE;
+            break;
+        default:
+            // Default to arrow keys
+            key_left = SDL_SCANCODE_LEFT;
+            key_right = SDL_SCANCODE_RIGHT;
+            key_up = SDL_SCANCODE_UP;
+            key_down = SDL_SCANCODE_DOWN;
+            key_bomb = SDL_SCANCODE_RETURN;
+            break;
     }
+}
+
+void Controller_Keyboard::update_keyboard_state() {
     keyboard_state = SDL_GetKeyboardState(nullptr);
 }
 
 void Controller_Keyboard::update() {
-    // The state is updated by SDL_PumpEvents in the main loop
+    // This is now handled by the static update_keyboard_state() method
+    // called once per frame in the main loop.
 }
 
 void Controller_Keyboard::reset() {

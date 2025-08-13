@@ -5,8 +5,6 @@
 #include "BomberCorpse.h"
 #include "ClanBomber.h"
 #include "GameConfig.h"
-#include "Resources.h"
-#include "Audio.h"
 #include "AudioMixer.h"
 #include "Map.h"
 
@@ -127,19 +125,13 @@ void Bomber::act(float deltaTime) {
     }
 
     if (controller->active && !flying && controller->is_bomb() && bomb_cooldown <= 0) {
-        SDL_Log("Bomber placing bomb at pixel (%d,%d), maps to grid (%d,%d)", x, y, get_map_x(), get_map_y());
+        SDL_Log("Bomber placing bomb at pixel (%f,%f), maps to grid (%d,%d)", x, y, get_map_x(), get_map_y());
         app->objects.push_back(new Bomb(x, y, power, this, app));
         bomb_cooldown = 0.5f; // 0.5 second cooldown
         
         // Play bomb placement sound with 3D positioning
         AudioPosition bomber_pos(x, y, 0.0f);
-        if (!AudioMixer::play_sound_3d("putbomb", bomber_pos, 400.0f)) {
-            // Fallback to old system
-            Sound* putbomb_sound = Resources::get_sound("putbomb");
-            if (putbomb_sound) {
-                Audio::play(putbomb_sound);
-            }
-        }
+        AudioMixer::play_sound_3d("putbomb", bomber_pos, 400.0f);
     }
 
     if (moved) {

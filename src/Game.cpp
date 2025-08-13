@@ -4,6 +4,7 @@
 #include "MainMenuScreen.h"
 #include "GameplayScreen.h"
 #include "SettingsScreen.h"
+#include "Controller_Keyboard.h"
 
 Game::Game() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -76,6 +77,7 @@ void Game::handle_events() {
         }
         current_screen->handle_events(event);
     }
+    Controller_Keyboard::update_keyboard_state();
 }
 
 void Game::update(float deltaTime) {

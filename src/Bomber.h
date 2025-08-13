@@ -56,6 +56,9 @@ public:
     // Controller access
     Controller* get_controller() { return controller; }
     
+    // Animation
+    void fly_to(int target_x, int target_y, float duration_ms);
+    
     // Power-up effects
     void inc_speed(int amount) { speed += amount; }
     void dec_speed(int amount) { speed = std::max(30, speed - amount); }
@@ -72,6 +75,13 @@ public:
     bool invincible;
     float respawn_timer;
     float invincible_timer;
+    
+    // Flight animation
+    bool flying;
+    float flight_timer;
+    float flight_duration;
+    int start_x, start_y;
+    int target_x, target_y;
 
 protected:
     float anim_count;

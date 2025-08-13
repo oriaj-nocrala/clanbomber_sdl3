@@ -69,6 +69,14 @@ void Controller::bomb_always()
 Controller* Controller::create( CONTROLLER_TYPE _type )
 {
 	switch( _type ) {
+		case AI:
+			// AI not implemented yet, fallback to keyboard
+			SDL_Log("AI controller not implemented, using KEYMAP_1 instead");
+			return new Controller_Keyboard(0);
+		case AI_mass:
+			// AI_mass not implemented yet, fallback to keyboard
+			SDL_Log("AI_mass controller not implemented, using KEYMAP_1 instead");
+			return new Controller_Keyboard(0);
 		case KEYMAP_1:
 			return new Controller_Keyboard(0);
 		case KEYMAP_2:
@@ -93,14 +101,10 @@ Controller* Controller::create( CONTROLLER_TYPE _type )
 		// 	return new Controller_Joystick(6);
 		// case JOYSTICK_8:
 		// 	return new Controller_Joystick(7);
-		// case AI:
-		// 	return new Controller_AI();
-		// case AI_mass:
-		//   return new Controller_AI_mass();
 		default:
-		    ;
+			SDL_Log("Unknown controller type: %d, using KEYMAP_1 instead", _type);
+			return new Controller_Keyboard(0);
 	}
-	return NULL; // fuck, wrong type!?
 }
 
 Controller::CONTROLLER_TYPE Controller::get_type()

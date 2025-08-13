@@ -1,3 +1,4 @@
+#include <set>
 #include <SDL3/SDL.h>
 
 /* This file is part of ClanBomber <http://www.nongnu.org/clanbomber>.
@@ -344,6 +345,119 @@ bool GameObject::move_down()
 	return true;
 }
 
+
+bool GameObject::is_blocked(float check_x, float check_y) {
+    float bbox_left = check_x + 10;
+    float bbox_right = check_x + 29;
+    float bbox_top = check_y + 10;
+    float bbox_bottom = check_y + 29;
+
+    int map_x1 = (int)bbox_left / 40;
+    int map_y1 = (int)bbox_top / 40;
+    int map_x2 = (int)bbox_right / 40;
+    int map_y2 = (int)bbox_bottom / 40;
+
+    std::set<MapTile*> current_tiles;
+    int cx1 = (int)x / 40, cy1 = (int)y / 40;
+    int cx2 = (int)(x+39) / 40, cy2 = (int)(y+39) / 40;
+    for (int my = cy1; my <= cy2; ++my) {
+        for (int mx = cx1; mx <= cx2; ++mx) {
+            current_tiles.insert(app->map->get_tile(mx, my));
+        }
+    }
+
+    for (int my = map_y1; my <= map_y2; ++my) {
+        for (int mx = map_x1; mx <= map_x2; ++mx) {
+            MapTile* tile = app->map->get_tile(mx, my);
+            if (tile->is_blocking()) {
+                return true; // Wall collision
+            }
+            if (tile->bomb != NULL && get_type() != BOMB) {
+                if (current_tiles.find(tile) == current_tiles.end()) {
+                    return true; // Bomb collision
+                }
+            }
+            if (!can_pass_bomber && tile->has_bomber() && current_tiles.find(tile) == current_tiles.end()) {
+                return true; // Bomber collision
+            }
+        }
+    }
+    return false;
+}
+
+bool GameObject::move_dist(float distance, Direction dir) {
+    if (flying || falling) {
+        return false;
+    }
+
+    float move_x = 0;
+    float move_y = 0;
+
+    switch (dir) {
+           case DIR_LEFT:  move_x = -distance; break;
+           case DIR_RIGHT: move_x =  distance; break;
+           case DIR_UP:    move_y = -distance; break;
+           case DIR_DOWN:  move_y =  distance; break;
+           default: return false;
+       }
+   
+       float next_x = x + move_x;
+       float next_y = y + move_y;
+   
+       if (!is_blocked(next_x, next_y)) {
+           // Direct path is clear
+           x = next_x;
+           y = next_y;
+           return true;
+       }
+   
+       // Path is blocked, try partial movement first (for wiggling)
+       float d = distance;
+       while (d > 0) {
+           d -= 1.0;
+           if (d < 0) d = 0;
+           float p_x = x + (move_x * d / distance);
+           float p_y = y + (move_y * d / distance);
+           if (!is_blocked(p_x, p_y)) {
+               x = p_x;
+               y = p_y;
+               return true;
+           }
+           if (d == 0) break;
+       }
+   
+       // No partial move possible, now try to slide for cornering
+       const float slide_amount = 1.0;
+       if (dir == DIR_LEFT || dir == DIR_RIGHT) {
+           // Try sliding vertically
+           if (!is_blocked(next_x, y + slide_amount)) {
+               y += slide_amount;
+               x = next_x;
+               return true;
+           }
+           if (!is_blocked(next_x, y - slide_amount)) {
+               y -= slide_amount;
+               x = next_x;
+               return true;
+           }
+       } else { // Moving vertically
+           // Try sliding horizontally
+           if (!is_blocked(x + slide_amount, next_y)) {
+               x += slide_amount;
+               y = next_y;
+               return true;
+           }
+           if (!is_blocked(x - slide_amount, next_y)) {
+               x -= slide_amount;
+               y = next_y;
+               return true;
+           }
+       }
+   
+       return false; // Completely blocked
+   }
+
+
 bool GameObject::move(float deltaTime)
 {
 	if (!flying) {
@@ -503,6 +617,7 @@ void GameObject::continue_flying(float deltaTime)
 	}
 }
 
+// @DEPRECATED: This function will be removed in a future version. Use move_dist instead.
 bool GameObject::move(float deltaTime, int _speed, Direction _dir )
 {
 	if (_dir == DIR_NONE && cur_dir != DIR_NONE) {
