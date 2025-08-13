@@ -1,10 +1,20 @@
 # Build artifacts
 build/
+buildES/
 *.o
 *.a
 *.so
 *.dll
 clanbomber-modern
+test_gpu_compile
+gmon.out
+
+# Dependencies (now managed by FetchContent)
+lib/
+_deps/
+
+# Generated config files
+clanbomber.cfg
 
 # VSCode
 .vscode/
