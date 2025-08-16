@@ -5,14 +5,17 @@
 #include "Timer.h"
 #include "Bomb.h"
 #include "MapTile.h"
+#include "TileEntity.h"
+#include "TileManager.h"
 #include "Extra.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
 #include <queue>
 
-// Helper functions for time management
+// Helper functions for time management and tile access
 namespace {
+    
     static float total_time_accumulator = 0.0f;
     
     float get_total_time() {
@@ -135,9 +138,8 @@ void AIJob_PutBomb::execute() {
     controller->put_bomb = true;
     finished = true;
     
-    // Check if there's already a bomb here
-    MapTile* tile = app->map->get_tile((bomber->get_x() + 20) / 40, (bomber->get_y() + 20) / 40);
-    if (tile && tile->bomb) {
+    // Check if there's already a bomb here using new architecture
+    if (bomber->has_bomb_at(bomber->get_x() + 20, bomber->get_y() + 20)) {
         obsolete = true;
         return;
     }
@@ -300,14 +302,11 @@ void Controller_AI_Modern::generate_rating_map() {
         }
     }
     
-    // Apply map tile ratings
+    // Apply map tile ratings using new architecture
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
-            MapTile* tile = map->get_tile(x, y);
-            if (tile) {
-                if (tile->is_blocking()) {
-                    rating_map[x][y] += RATING_BLOCKING;
-                }
+            if (bomber->app->tile_manager->is_tile_blocking_at(x, y)) {
+                rating_map[x][y] += RATING_BLOCKING;
             }
         }
     }
@@ -326,28 +325,24 @@ void Controller_AI_Modern::apply_bomb_rating(int x, int y, int power, float coun
     // Apply rating to bomb position
     rating_map[x][y] = rating;
     
-    // Apply explosion rays
+    // Apply explosion rays using new architecture
     for (int i = 1; i <= power && x + i < MAP_WIDTH; i++) {
-        MapTile* tile = map->get_tile(x + i, y);
-        if (!tile || tile->is_blocking()) break;
+        if (bomber->app->tile_manager->is_tile_blocking_at(x + i, y)) break;
         rating_map[x + i][y] += rating;
     }
     
     for (int i = 1; i <= power && x - i >= 0; i++) {
-        MapTile* tile = map->get_tile(x - i, y);
-        if (!tile || tile->is_blocking()) break;
+        if (bomber->app->tile_manager->is_tile_blocking_at(x - i, y)) break;
         rating_map[x - i][y] += rating;
     }
     
     for (int i = 1; i <= power && y + i < MAP_HEIGHT; i++) {
-        MapTile* tile = map->get_tile(x, y + i);
-        if (!tile || tile->is_blocking()) break;
+        if (bomber->app->tile_manager->is_tile_blocking_at(x, y + i)) break;
         rating_map[x][y + i] += rating;
     }
     
     for (int i = 1; i <= power && y - i >= 0; i++) {
-        MapTile* tile = map->get_tile(x, y - i);
-        if (!tile || tile->is_blocking()) break;
+        if (bomber->app->tile_manager->is_tile_blocking_at(x, y - i)) break;
         rating_map[x][y - i] += rating;
     }
 }
@@ -455,9 +450,8 @@ bool Controller_AI_Modern::find_bombing_opportunities(int max_distance) {
         return false;
     }
     
-    // Check if there's already a bomb at current position
-    MapTile* current_tile = map->get_tile(x, y);
-    if (current_tile && current_tile->bomb) {
+    // Check if there's already a bomb at current position using new architecture
+    if (bomber->app->tile_manager->has_bomb_at(x, y)) {
         return false;
     }
     
@@ -696,8 +690,7 @@ bool Controller_AI_Modern::can_escape_from_bomb_safely(int x, int y) const {
                 break;
             }
             
-            MapTile* tile = map->get_tile(nx, ny);
-            if (tile && tile->is_blocking()) {
+            if (bomber->app->tile_manager->is_tile_blocking_at(nx, ny)) {
                 route_safe = false;
                 break;
             }
@@ -737,15 +730,12 @@ bool Controller_AI_Modern::bombing_is_beneficial(int x, int y) const {
             
             if (nx < 0 || nx >= MAP_WIDTH || ny < 0 || ny >= MAP_HEIGHT) break;
             
-            MapTile* tile = map->get_tile(nx, ny);
-            if (tile) {
-                if (tile->is_blocking() && !tile->is_destructible()) {
-                    break; // Hit wall, stop checking this direction
-                }
-                if (tile->is_destructible()) {
-                    benefit_score += 10; // Points for destroying boxes
-                    break; // Stop after hitting destructible box
-                }
+            if (bomber->app->tile_manager->is_tile_blocking_at(nx, ny) && !bomber->app->tile_manager->is_tile_destructible_at(nx, ny)) {
+                break; // Hit wall, stop checking this direction
+            }
+            if (bomber->app->tile_manager->is_tile_destructible_at(nx, ny)) {
+                benefit_score += 10; // Points for destroying boxes
+                break; // Stop after hitting destructible box
             }
         }
     }
@@ -877,8 +867,7 @@ int Controller_AI_Modern::evaluate_escape_direction(int bomb_x, int bomb_y, int 
             break;
         }
         
-        MapTile* tile = map->get_tile(nx, ny);
-        if (tile && tile->is_blocking()) {
+        if (bomber->app->tile_manager->is_tile_blocking_at(nx, ny)) {
             break; // Hit wall
         }
         

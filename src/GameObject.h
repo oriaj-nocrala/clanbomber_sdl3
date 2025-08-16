@@ -123,9 +123,38 @@ public:
 
   int get_speed() const;
 
-  MapTile* get_tile() const;
-	
-  MapTile* get_maptile() const;
+  [[deprecated("Use GameContext::is_position_blocked() or TileManager instead")]]
+  MapTile* get_tile() const;          // Legacy compatibility - returns MapTile
+  
+  // NEW ARCHITECTURE SUPPORT: Dual tile access
+  MapTile* get_legacy_tile() const;   // Get legacy MapTile
+  class TileEntity* get_tile_entity() const;  // Get new TileEntity
+  
+  // NEW ARCHITECTURE SUPPORT: Unified tile type checking (works with both architectures)
+  int get_tile_type_at(int pixel_x, int pixel_y) const;   // Get tile type at pixel position
+  bool is_tile_blocking_at(int pixel_x, int pixel_y) const; // Check if tile is blocking at pixel position
+  bool has_bomb_at(int pixel_x, int pixel_y) const;       // Check if tile has bomb at pixel position
+  bool has_bomber_at(int pixel_x, int pixel_y) const;     // Check if tile has bomber at pixel position
+  
+  // NEW ARCHITECTURE SUPPORT: Bomb kicking helpers
+  bool try_kick_right();   // Try to kick bomb to the right
+  bool try_kick_left();    // Try to kick bomb to the left  
+  bool try_kick_up();      // Try to kick bomb up
+  bool try_kick_down();    // Try to kick bomb down
+  
+  // COORDINATE CALCULATION HELPERS (reduces code duplication)
+  int pixel_to_map_x(int pixel_x) const { return pixel_x / 40; }
+  int pixel_to_map_y(int pixel_y) const { return pixel_y / 40; }
+  int map_to_pixel_x(int map_x) const { return map_x * 40; }
+  int map_to_pixel_y(int map_y) const { return map_y * 40; }
+  
+  // Common object-to-tile coordinate conversions
+  int get_center_map_x() const { return (x + 20) / 40; }
+  int get_center_map_y() const { return (y + 20) / 40; }
+  
+  // NEW ARCHITECTURE SUPPORT: Bomb-tile synchronization
+  void set_bomb_on_tile(class Bomb* bomb) const;   // Sets bomb on both MapTile and TileEntity
+  void remove_bomb_from_tile(class Bomb* bomb) const; // Removes bomb from both architectures
 	
   bool is_flying() const;
   bool is_stopped() const;

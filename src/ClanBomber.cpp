@@ -21,6 +21,8 @@
 #include "GameObject.h"
 #include "Bomber.h"
 #include "TileManager.h"
+#include "ParticleEffectsManager.h"
+#include "GameContext.h"
 
 ClanBomberApplication::ClanBomberApplication() {
     map = nullptr;
@@ -31,6 +33,8 @@ ClanBomberApplication::ClanBomberApplication() {
     gpu_renderer = nullptr;
     lifecycle_manager = new LifecycleManager();
     tile_manager = new TileManager(this);
+    particle_effects = new ParticleEffectsManager(this);
+    game_context = nullptr; // Will be initialized after gpu_renderer is ready
 }
 
 ClanBomberApplication::~ClanBomberApplication() {
@@ -50,6 +54,14 @@ ClanBomberApplication::~ClanBomberApplication() {
     if (tile_manager) {
         delete tile_manager;
         tile_manager = nullptr;
+    }
+    if (particle_effects) {
+        delete particle_effects;
+        particle_effects = nullptr;
+    }
+    if (game_context) {
+        delete game_context;
+        game_context = nullptr;
     }
 }
 

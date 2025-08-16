@@ -5,14 +5,17 @@
 #include "Timer.h"
 #include "Bomb.h"
 #include "MapTile.h"
+#include "TileEntity.h"
+#include "TileManager.h"
 #include "Extra.h"
 #include <algorithm>
 #include <cmath>
 #include <random>
 #include <cstdlib>
 
-// Helper functions for CL_Vector operations that are missing
+// Helper functions for CL_Vector operations and tile access
 namespace {
+    
     float vector_distance(const CL_Vector& a, const CL_Vector& b) {
         float dx = a.x - b.x;
         float dy = a.y - b.y;
@@ -356,8 +359,7 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
         int grid_x = (int)(next_pos.x / 40);
         int grid_y = (int)(next_pos.y / 40);
         
-        MapTile* tile = bomber->app->map->get_tile(grid_x, grid_y);
-        if (tile && !tile->is_blocking()) {
+        if (!bomber->app->tile_manager->is_tile_blocking_at(grid_x, grid_y)) {
             path.push_back(next_pos);
         } else {
             // Simple obstacle avoidance - try perpendicular directions
@@ -370,12 +372,12 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
             int alt1_x = (int)(alt1.x / 40), alt1_y = (int)(alt1.y / 40);
             int alt2_x = (int)(alt2.x / 40), alt2_y = (int)(alt2.y / 40);
             
-            MapTile* tile1 = bomber->app->map->get_tile(alt1_x, alt1_y);
-            MapTile* tile2 = bomber->app->map->get_tile(alt2_x, alt2_y);
+            bool tile1_blocking = bomber->app->tile_manager->is_tile_blocking_at(alt1_x, alt1_y);
+            bool tile2_blocking = bomber->app->tile_manager->is_tile_blocking_at(alt2_x, alt2_y);
             
-            if (tile1 && !tile1->is_blocking()) {
+            if (!tile1_blocking) {
                 path.push_back(alt1);
-            } else if (tile2 && !tile2->is_blocking()) {
+            } else if (!tile2_blocking) {
                 path.push_back(alt2);
             }
             break;
@@ -453,8 +455,7 @@ CL_Vector Controller_AI_Smart::find_safe_position() {
                 int grid_x = (int)(test_pos.x / 40);
                 int grid_y = (int)(test_pos.y / 40);
                 
-                MapTile* tile = bomber->app->map->get_tile(grid_x, grid_y);
-                if (!tile || tile->is_blocking()) continue;
+                if (bomber->app->tile_manager->is_tile_blocking_at(grid_x, grid_y)) continue;
                 
                 float danger = calculate_danger_level(test_pos);
                 if (danger < lowest_danger) {

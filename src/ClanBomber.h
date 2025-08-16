@@ -128,6 +128,8 @@ class ClanBomberApplication
   class TextRenderer* text_renderer;
   LifecycleManager* lifecycle_manager;
   TileManager* tile_manager;
+  class ParticleEffectsManager* particle_effects;
+  class GameContext* game_context;
 
   bool init_server_game();
   bool init_client_game();

@@ -6,6 +6,7 @@
 #include "UtilsCL_Vector.h"
 
 class MapTile;
+class TileEntity;
 class GameObject;
 class Bomb;
 class Bomber;
@@ -39,6 +40,11 @@ public:
     bool is_position_walkable(int map_x, int map_y);
     bool is_position_blocked(int map_x, int map_y);
     MapTile* get_tile_at(int map_x, int map_y);
+    
+    // === DUAL ARCHITECTURE OPTIMIZED QUERIES ===
+    bool is_tile_blocking_at(int map_x, int map_y);
+    bool has_bomb_at(int map_x, int map_y);
+    bool is_tile_destructible_at(int map_x, int map_y);
     
     // === GESTIÓN DE OBJETOS EN TILES ===
     void register_bomb_at(int map_x, int map_y, Bomb* bomb);

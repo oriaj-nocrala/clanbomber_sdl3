@@ -18,13 +18,9 @@
 
 #include "Controller.h"
 
-// #include "Controller_AI.h"
-// #include "Controller_AI_mass.h"
 #include "Controller_AI_Smart.h"
 #include "Controller_AI_Modern.h"
 #include "Controller_Keyboard.h"
-// #include "Controller_Joystick.h"
-// #include "Controller_RCMouse.h"
 
 #include "Bomber.h"
 

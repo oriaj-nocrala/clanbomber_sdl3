@@ -6,6 +6,7 @@
 #include "Timer.h"
 #include "ParticleSystem.h"
 #include "GPUAcceleratedRenderer.h"
+#include "ParticleEffectsManager.h"
 #include <random>
 #include <cmath>
 
@@ -253,13 +254,10 @@ void MapTile_Box::destroy() {
         // to avoid power-ups being destroyed by the same explosion
         // (We'll spawn it when the destruction animation finishes)
         
-        // SPECTACULAR tile fragmentation effects!
-        if (app->gpu_renderer) {
-            // Emit debris particles
-            app->gpu_renderer->emit_particles(get_x(), get_y(), 25, GPUAcceleratedRenderer::SPARK, nullptr, 1.0f);
-            app->gpu_renderer->emit_particles(get_x(), get_y(), 15, GPUAcceleratedRenderer::SMOKE, nullptr, 2.0f);
-            
-            SDL_Log("SPECTACULAR tile destruction effects at (%d,%d)!", get_x(), get_y());
+        // Request destruction effect through centralized system
+        if (app->particle_effects) {
+            app->particle_effects->create_box_destruction_effect(get_x(), get_y(), 1.0f);
+            SDL_Log("Box destruction effect requested at (%d,%d)", get_x(), get_y());
         }
         
         // Add traditional particle effects for destruction

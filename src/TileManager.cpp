@@ -2,10 +2,12 @@
 #include "ClanBomber.h"
 #include "Map.h"
 #include "MapTile.h"
+#include "TileEntity.h"
 #include "LifecycleManager.h"
 #include "Bomb.h"
 #include "Bomber.h"
 #include <SDL3/SDL.h>
+#include <cassert>
 
 TileManager::TileManager(ClanBomberApplication* app) : app(app) {
     SDL_Log("TileManager: Initialized intelligent tile coordination system");
@@ -127,6 +129,56 @@ MapTile* TileManager::get_tile_at(int map_x, int map_y) {
     if (!is_valid_position(map_x, map_y) || !app->map) return nullptr;
     
     return app->map->get_tile(map_x, map_y);
+}
+
+// === DUAL ARCHITECTURE OPTIMIZED QUERIES ===
+
+bool TileManager::is_tile_blocking_at(int map_x, int map_y) {
+    if (!is_valid_position(map_x, map_y) || !app->map) return false;
+    
+    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    if (legacy_tile) {
+        return legacy_tile->is_blocking();
+    }
+    
+    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    if (tile_entity) {
+        return tile_entity->is_blocking();
+    }
+    
+    return false;
+}
+
+bool TileManager::has_bomb_at(int map_x, int map_y) {
+    if (!is_valid_position(map_x, map_y) || !app->map) return false;
+    
+    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    if (legacy_tile) {
+        return legacy_tile->bomb != nullptr;
+    }
+    
+    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    if (tile_entity) {
+        return tile_entity->get_bomb() != nullptr;
+    }
+    
+    return false;
+}
+
+bool TileManager::is_tile_destructible_at(int map_x, int map_y) {
+    if (!is_valid_position(map_x, map_y) || !app->map) return false;
+    
+    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    if (legacy_tile) {
+        return legacy_tile->is_destructible();
+    }
+    
+    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    if (tile_entity) {
+        return tile_entity->is_destructible();
+    }
+    
+    return false;
 }
 
 // === GESTIÓN DE OBJETOS EN TILES ===
@@ -258,5 +310,10 @@ void TileManager::perform_tile_replacement(int map_x, int map_y, int new_tile_ty
 // === VALIDACIÓN ===
 
 bool TileManager::is_valid_position(int map_x, int map_y) const {
+    // Debug assertions for development builds
+    assert(MAP_WIDTH > 0 && MAP_HEIGHT > 0);
+    assert(map_x >= -1000 && map_x <= 1000); // Sanity check for extreme values
+    assert(map_y >= -1000 && map_y <= 1000);
+    
     return map_x >= 0 && map_x < MAP_WIDTH && map_y >= 0 && map_y < MAP_HEIGHT;
 }

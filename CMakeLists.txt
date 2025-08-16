@@ -138,6 +138,11 @@ add_executable(clanbomber-modern
     src/SettingsScreen.cpp
     src/LifecycleManager.cpp
     src/TileManager.cpp
+    src/MapTile_Pure.cpp
+    src/TileEntity.cpp
+    src/ParticleEffectsManager.cpp
+    src/GameContext.cpp
+    src/GameSystems.cpp
 )
 
 # --- ENLACE DE BIBLIOTECAS ---
