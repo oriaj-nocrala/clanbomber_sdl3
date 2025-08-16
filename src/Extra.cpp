@@ -23,6 +23,10 @@ Extra::Extra(int _x, int _y, EXTRA_TYPE _type, ClanBomberApplication* app)
     // Snap to grid center
     x = ((int)x + 20) / 40 * 40;
     y = ((int)y + 20) / 40 * 40;
+    
+    const char* type_names[] = {"FLAME", "BOMB", "SPEED", "KICK", "GLOVE", "SKATE", "DISEASE", "VIAGRA", "KOKS"};
+    SDL_Log("Extra created: type=%s at pixel (%d,%d), grid (%d,%d), texture=%s", 
+            type_names[(int)extra_type], (int)x, (int)y, get_map_x(), get_map_y(), texture_name.c_str());
 }
 
 Extra::~Extra() {
@@ -41,10 +45,21 @@ void Extra::act(float deltaTime) {
     bounce_timer += deltaTime * 4.0f; // 4x speed for nice bounce
     bounce_offset = std::sin(bounce_timer) * 3.0f; // 3 pixel bounce
     
-    // Check for collision with bombers
-    MapTile* tile = get_tile();
-    if (tile && tile->has_bomber()) {
-        collect();
+    // Check for collision with bombers directly
+    for (auto& bomber : app->bomber_objects) {
+        if (bomber && !bomber->delete_me && !bomber->is_dead()) {
+            // Check if bomber is close enough to collect (within 20 pixels)
+            float dx = bomber->get_x() - x;
+            float dy = bomber->get_y() - y;
+            float distance = sqrt(dx*dx + dy*dy);
+            
+            if (distance < 20.0f) {
+                SDL_Log("Extra collected by bomber at distance %.1f", distance);
+                apply_effect_to_bomber(bomber);
+                collect();
+                break;
+            }
+        }
     }
 }
 
@@ -52,9 +67,6 @@ void Extra::show() {
     if (collected) {
         // Fade out during collection
         float alpha = 1.0f - (collect_animation / 0.3f);
-        SDL_SetTextureAlphaMod(Resources::get_texture(texture_name)->texture, (Uint8)(alpha * 255));
-        GameObject::show();
-        SDL_SetTextureAlphaMod(Resources::get_texture(texture_name)->texture, 255);
     } else {
         // Save current position
         float original_y = y;
@@ -83,12 +95,7 @@ void Extra::collect() {
         AudioMixer::play_sound_3d("wow", extra_pos, 400.0f); // Positive sound
     }
     
-    // Apply effect to bomber
-    MapTile* tile = get_tile();
-    if (tile && tile->has_bomber()) {
-        Bomber* bomber = tile->get_bomber();
-        apply_effect_to_bomber(bomber);
-    }
+    // Effect is already applied in act() method
 }
 
 void Extra::apply_effect_to_bomber(Bomber* bomber) {
@@ -96,32 +103,60 @@ void Extra::apply_effect_to_bomber(Bomber* bomber) {
     
     switch (extra_type) {
         case BOMB:
-            // Increase bomb capacity
+            // Increase bomb capacity by 1
+            bomber->inc_max_bombs(1);
+            SDL_Log("Bomber gained extra bomb! Max bombs: %d", bomber->get_max_bombs());
             break;
+            
         case FLAME:
-            // Increase explosion power/range
+            // Increase explosion power/range by 1
+            bomber->inc_power(1);
+            SDL_Log("Bomber gained flame power! Power: %d", bomber->get_power());
             break;
+            
         case SPEED:
-            bomber->inc_speed(30); // Increase speed by 30
+            // Increase movement speed
+            bomber->inc_speed(20);
+            SDL_Log("Bomber gained speed boost!");
             break;
+            
         case KICK:
+            // Allow bomb kicking
             bomber->can_kick = true;
+            SDL_Log("Bomber gained kick ability!");
             break;
+            
         case GLOVE:
-            // Allow bomb throwing (not implemented yet)
+            // Allow bomb throwing
+            bomber->can_throw = true;
+            SDL_Log("Bomber gained glove ability! Can now throw bombs!");
             break;
+            
         case SKATE:
-            // Ice skates effect (not implemented yet) 
+            // Ice skates effect - increase speed but add sliding
+            bomber->inc_speed(10);
+            SDL_Log("Bomber gained skates! (Basic speed boost)");
             break;
+            
         case DISEASE:
-            // Constipation - can't place bombs for a while
+            // Constipation - reduce speed and disable bombing temporarily
+            bomber->dec_speed(40);
+            SDL_Log("Bomber got constipation! Speed reduced!");
+            // TODO: Add temporary bomb disable
             break;
+            
         case KOKS:
-            bomber->inc_speed(60); // Make very fast
+            // Make very fast but harder to control
+            bomber->inc_speed(50);
+            SDL_Log("Bomber took speed! Very fast but harder to control!");
             // TODO: Add uncontrollable movement effect
             break;
+            
         case VIAGRA:
-            // Bombs stick to bomber (not implemented yet)
+            // Negative effect - could make bombs stick or other penalty
+            bomber->dec_speed(20);
+            SDL_Log("Bomber took viagra! Movement affected!");
+            // TODO: Implement sticky bomb effect
             break;
     }
 }

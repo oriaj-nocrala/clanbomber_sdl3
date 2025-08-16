@@ -716,9 +716,11 @@ bool GameConfig::load()
     bomber[i].set_team(version);
 
     configfile >> version;
+    SDL_Log("Bomber %d: setting controller=%d", i, version);
     bomber[i].set_controller(version);
 
     configfile >> version;
+    SDL_Log("Bomber %d: setting enabled=%d", i, version);
     bomber[i].set_enabled(version != 0);
 
     configfile >> version;

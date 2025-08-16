@@ -152,28 +152,7 @@ void CorpsePart::act(float deltaTime) {
 }
 
 void CorpsePart::show() {
-    if (lifetime > max_lifetime - 1.0f) {
-        // Fade out in the last second
-        float fade_time = max_lifetime - lifetime;
-        float alpha = fade_time; // 0.0 to 1.0
-        TextureInfo* tex_info = Resources::get_texture(texture_name);
-        if (tex_info && tex_info->texture) {
-            SDL_SetTextureAlphaMod(tex_info->texture, (Uint8)(alpha * 255));
-        }
-    }
-    
-    // TODO: Apply rotation to sprite rendering
-    // For now, just show normal sprite
-    GameObject::show();
-    
-    // Reset alpha
-    TextureInfo* tex_info = Resources::get_texture(texture_name);
-    if (tex_info && tex_info->texture) {
-        SDL_SetTextureAlphaMod(tex_info->texture, 255);
-    }
-    
-    // Render visceral blood trails
-    render_blood_trails();
+    // TODO
 }
 
 void CorpsePart::apply_force(const Vector2D& force) {
@@ -279,22 +258,10 @@ void CorpsePart::emit_blood() {
     }
 }
 
+// TODO
 void CorpsePart::render_blood_trails() {
-    SDL_Renderer* renderer = Resources::get_renderer();
-    if (!renderer) return;
     
     for (const auto& drop : blood_trails) {
-        // Render blood drops as red circles
-        SDL_SetRenderDrawColor(renderer, 139, 0, 0, drop.alpha); // Dark red
-        
-        // Draw a small filled circle (approximated with rect for performance)
-        SDL_FRect blood_rect;
-        blood_rect.x = drop.position.x - drop.size/2;
-        blood_rect.y = drop.position.y - drop.size/2;
-        blood_rect.w = drop.size;
-        blood_rect.h = drop.size;
-        
-        SDL_RenderFillRect(renderer, &blood_rect);
     }
 }
 

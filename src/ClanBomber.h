@@ -23,6 +23,7 @@
 #include <filesystem>
 
 #include "Resources.h"
+#include "GPUAcceleratedRenderer.h"
 
 class Menu;
 class Observer;
@@ -120,6 +121,8 @@ class ClanBomberApplication
   Map* map;
   std::list<GameObject*> objects;
   std::list<Bomber*> bomber_objects;
+  GPUAcceleratedRenderer* gpu_renderer;
+  class TextRenderer* text_renderer;
 
   bool init_server_game();
   bool init_client_game();

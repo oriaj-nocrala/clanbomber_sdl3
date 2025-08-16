@@ -1,16 +1,18 @@
 #include "Resources.h"
 #include "AudioMixer.h"
+#include "GPUAcceleratedRenderer.h"
 #include <SDL3_image/SDL_image.h>
+#include <glad/gl.h>
 #include <iostream>
+#include <fstream>
+#include <sstream>
 #include <vector>
 
-SDL_Renderer* Resources::renderer = nullptr;
 std::string Resources::base_path;
 std::map<std::string, TextureInfo*> Resources::textures;
 std::map<std::string, TTF_Font*> Resources::fonts;
 
-void Resources::init(SDL_Renderer* renderer) {
-    Resources::renderer = renderer;
+void Resources::init() {
 
     const char* sdl_base_path = SDL_GetBasePath();
     if (sdl_base_path) {
@@ -20,9 +22,7 @@ void Resources::init(SDL_Renderer* renderer) {
         base_path = "./";
     }
 
-    // Load fonts
-    fonts["big"] = load_font("data/fonts/DejaVuSans-Bold.ttf", 28);
-    fonts["small"] = load_font("data/fonts/DejaVuSans-Bold.ttf", 18);
+    // Note: Fonts are now loaded by TextRenderer
 
     // Load textures
     textures["titlescreen"] = load_texture("data/pics/clanbomber_title_andi.png");
@@ -49,6 +49,18 @@ void Resources::init(SDL_Renderer* renderer) {
     textures["maptile_addons"] = load_texture("data/pics/maptile_addons.png", 40, 40);
     textures["bombs"] = load_texture("data/pics/bombs.png", 40, 40);
     textures["explosion"] = load_texture("data/pics/explosion2.png", 40, 40);
+    SDL_Log("DEBUG: Loaded explosion texture, pointer: %p", textures["explosion"]);
+    
+    // Load power-up textures (extras2_X)
+    textures["extras2_0"] = load_texture("data/pics/extras2_0.png", 40, 40);  // BOMB
+    textures["extras2_1"] = load_texture("data/pics/extras2_1.png", 40, 40);  // FLAME
+    textures["extras2_2"] = load_texture("data/pics/extras2_2.png", 40, 40);  // SPEED
+    textures["extras2_3"] = load_texture("data/pics/extras2_3.png", 40, 40);  // KICK
+    textures["extras2_4"] = load_texture("data/pics/extras2_4.png", 40, 40);  // GLOVE
+    textures["extras2_5"] = load_texture("data/pics/extras2_5.png", 40, 40);  // SKATE
+    textures["extras2_6"] = load_texture("data/pics/extras2_6.png", 40, 40);  // DISEASE
+    textures["extras2_7"] = load_texture("data/pics/extras2_7.png", 40, 40);  // KOKS
+    textures["extras2_8"] = load_texture("data/pics/extras2_8.png", 40, 40);  // VIAGRA
     textures["cb_logo_small"] = load_texture("data/pics/cb_logo_small.png");
     textures["map_editor_background"] = load_texture("data/pics/map_editor.png");
     textures["corpse_parts"] = load_texture("data/pics/corpse_parts.png", 40, 40);
@@ -82,29 +94,65 @@ void Resources::init(SDL_Renderer* renderer) {
 void Resources::shutdown() {
     AudioMixer::shutdown();
     
-    for (auto const& [key, val] : textures) {
-        SDL_DestroyTexture(val->texture);
-        delete val;
+    for(auto& pair : textures) {
+        if (pair.second) {
+            if (pair.second->gl_texture != 0) {
+                glDeleteTextures(1, &pair.second->gl_texture);
+            }
+            delete pair.second;
+        }
     }
     textures.clear();
 
-    for (auto const& [key, val] : fonts) {
-        TTF_CloseFont(val);
-    }
+    // Note: Fonts are now managed by TextRenderer
     fonts.clear();
 }
 
 TextureInfo* Resources::load_texture(const std::string& path, int sprite_width, int sprite_height) {
     std::string full_path = base_path + path;
-    SDL_Texture* texture = IMG_LoadTexture(renderer, full_path.c_str());
-    if (!texture) {
-        std::cerr << "Failed to load texture: " << full_path << " - " << SDL_GetError() << std::endl;
+    
+    // CRITICAL FIX: Load as surface only, no SDL_Renderer needed
+    SDL_Surface* surface = IMG_Load(full_path.c_str());
+    if (!surface) {
+        std::cerr << "Failed to load surface: " << full_path << " - " << SDL_GetError() << std::endl;
         return nullptr;
     }
+    
     TextureInfo* tex_info = new TextureInfo();
-    tex_info->texture = texture;
     tex_info->sprite_width = sprite_width;
     tex_info->sprite_height = sprite_height;
+    tex_info->file_path = path; // Store path for GL texture creation
+    
+    // IMMEDIATE OpenGL texture creation from surface
+    glGenTextures(1, &tex_info->gl_texture);
+    glBindTexture(GL_TEXTURE_2D, tex_info->gl_texture);
+    
+    // Convert surface to consistent RGBA format for OpenGL
+    SDL_Surface* rgba_surface = SDL_ConvertSurface(surface, SDL_PIXELFORMAT_RGBA32);
+    SDL_DestroySurface(surface);
+    
+    if (!rgba_surface) {
+        std::cerr << "Failed to convert surface to RGBA: " << SDL_GetError() << std::endl;
+        delete tex_info;
+        return nullptr;
+    }
+    
+    // Now we know format is RGBA
+    GLenum format = GL_RGBA;
+    GLenum internal_format = GL_RGBA;
+    
+    // Create OpenGL texture from converted surface data
+    glTexImage2D(GL_TEXTURE_2D, 0, internal_format, rgba_surface->w, rgba_surface->h, 0, 
+                format, GL_UNSIGNED_BYTE, rgba_surface->pixels);
+    
+    // Set texture parameters
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    
+    SDL_DestroySurface(rgba_surface);
+    
     return tex_info;
 }
 
@@ -118,19 +166,87 @@ TTF_Font* Resources::load_font(const std::string& path, int size) {
 }
 
 TextureInfo* Resources::get_texture(const std::string& name) {
+    if (name == "explosion") {
+        SDL_Log("DEBUG: get_texture called for 'explosion', count=%zu, ptr=%p", textures.count(name), textures.count(name) ? textures[name] : nullptr);
+    }
     if (textures.count(name)) {
         return textures[name];
     }
     return nullptr;
 }
 
-TTF_Font* Resources::get_font(const std::string& name) {
-    if (fonts.count(name)) {
-        return fonts[name];
+GLuint Resources::get_gl_texture(const std::string& name) {
+    TextureInfo* tex_info = get_texture(name);
+    if (!tex_info) {
+        return 0;
     }
-    return nullptr;
+    
+    
+    // Create OpenGL texture from SDL texture if not already created
+    if (tex_info->gl_texture == 0) {
+        // FIXED: Load as surface to get proper format information
+        std::string full_path = base_path + tex_info->file_path;
+        SDL_Surface* surface = IMG_Load(full_path.c_str());
+        
+        if (surface) {
+            glGenTextures(1, &tex_info->gl_texture);
+            glBindTexture(GL_TEXTURE_2D, tex_info->gl_texture);
+            
+            // Use original format but determine correct OpenGL format
+            GLenum format = GL_RGBA;
+            GLenum internal_format = GL_RGBA;
+            
+            // Always use RGBA for simplicity since IMG_Load returns RGBA for PNGs
+            format = GL_RGBA;
+            internal_format = GL_RGBA;
+            
+            glTexImage2D(GL_TEXTURE_2D, 0, internal_format, surface->w, surface->h, 0, 
+                        format, GL_UNSIGNED_BYTE, surface->pixels);
+            
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+            
+            SDL_DestroySurface(surface);
+        } else if (!surface) {
+            // TODO: Handle error case
+        }
+    }
+    
+    return tex_info->gl_texture;
 }
 
-SDL_Renderer* Resources::get_renderer() {
-    return renderer;
+std::string Resources::load_shader_source(const std::string& path) {
+    std::string full_path = base_path + path;
+    std::ifstream file(full_path);
+    if (!file.is_open()) {
+        std::cerr << "Failed to open shader file: " << full_path << std::endl;
+        return "";
+    }
+    
+    std::stringstream buffer;
+    buffer << file.rdbuf();
+    return buffer.str();
+}
+
+void Resources::register_gl_texture_metadata(const std::string& texture_name, GPUAcceleratedRenderer* renderer) {
+    if (!renderer) return;
+    
+    TextureInfo* tex_info = get_texture(texture_name);
+    if (!tex_info || tex_info->gl_texture == 0) return;
+    
+    // Load surface to get dimensions
+    std::string full_path = base_path + tex_info->file_path;
+    SDL_Surface* surface = IMG_Load(full_path.c_str());
+    if (!surface) return;
+    
+    // Register metadata with GPU renderer
+    int sprite_width = (tex_info->sprite_width > 0) ? tex_info->sprite_width : 40;
+    int sprite_height = (tex_info->sprite_height > 0) ? tex_info->sprite_height : 40;
+    
+    renderer->register_texture_metadata(tex_info->gl_texture, surface->w, surface->h, 
+                                       sprite_width, sprite_height);
+    
+    SDL_DestroySurface(surface);
 }

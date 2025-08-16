@@ -61,6 +61,12 @@ void Bomb::explode() {
 
     delete_me = true;
     
+    // Decrement bomb count for the owner
+    if (owner) {
+        owner->dec_current_bombs();
+        SDL_Log("Bomb exploded, bomber now has %d/%d bombs", owner->get_current_bombs(), owner->get_max_bombs());
+    }
+    
     // Play explosion sound with 3D positioning
     AudioPosition bomb_pos(x, y, 0.0f);
     AudioMixer::play_sound_3d("explode", bomb_pos, 600.0f);

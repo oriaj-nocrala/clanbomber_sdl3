@@ -827,48 +827,31 @@ void GameObject::show()
     if (texture_name.empty() || delete_me) {
         return;
     }
+    
 
     TextureInfo* tex_info = Resources::get_texture(texture_name);
-    if (!tex_info || !tex_info->texture) {
+    if (!tex_info) {
         return;
     }
+    // NOTE: tex_info->texture is NULL because we only use OpenGL textures now
+    // We proceed to GPU rendering regardless
 
-    // Apply opacity if needed
-    if (opacity_scaled != 255) {
-        SDL_SetTextureAlphaMod(tex_info->texture, opacity_scaled);
-    }
-
-    SDL_FRect src_rect;
-    if (tex_info->sprite_width > 0 && tex_info->sprite_height > 0) {
-        float texture_width, texture_height;
-        SDL_GetTextureSize(tex_info->texture, &texture_width, &texture_height);
-        int num_cols = texture_width / tex_info->sprite_width;
+    // GPU rendering path
+    if (app && app->gpu_renderer && app->gpu_renderer->is_ready()) {
+        GLuint gl_texture = Resources::get_gl_texture(texture_name);
         
-        // Prevent division by zero
-        if (num_cols == 0) num_cols = 1;
-        
-        int row = sprite_nr / num_cols;
-        int col = sprite_nr % num_cols;
-        src_rect.x = col * tex_info->sprite_width;
-        src_rect.y = row * tex_info->sprite_height;
-        src_rect.w = tex_info->sprite_width;
-        src_rect.h = tex_info->sprite_height;
-    } else {
-        float w, h;
-        SDL_GetTextureSize(tex_info->texture, &w, &h);
-        src_rect.x = 0;
-        src_rect.y = 0;
-        src_rect.w = w;
-        src_rect.h = h;
-    }
-
-    SDL_FRect dest_rect = { (float)get_x(), (float)get_y(), src_rect.w, src_rect.h };
-
-    SDL_RenderTexture(Resources::get_renderer(), tex_info->texture, &src_rect, &dest_rect);
-    
-    // Reset alpha for next object
-    if (opacity_scaled != 255) {
-        SDL_SetTextureAlphaMod(tex_info->texture, 255);
+        if (gl_texture) {
+            float color[4] = {1.0f, 1.0f, 1.0f, opacity_scaled / 255.0f};
+            float scale[2] = {1.0f, 1.0f};
+            
+            app->gpu_renderer->add_sprite(
+                (float)get_x(), (float)get_y(), 
+                tex_info->sprite_width > 0 ? tex_info->sprite_width : 40.0f,
+                tex_info->sprite_height > 0 ? tex_info->sprite_height : 40.0f,
+                gl_texture, color, 0.0f, scale, sprite_nr
+            );
+            return;
+        }
     }
 }
 

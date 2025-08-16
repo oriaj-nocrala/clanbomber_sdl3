@@ -120,31 +120,7 @@ void ParticleSystem::update_particles(float deltaTime) {
 }
 
 void ParticleSystem::render_particles() {
-    SDL_Renderer* renderer = Resources::get_renderer();
-    if (!renderer) return;
-    
-    for (const auto& p : particles) {
-        SDL_SetRenderDrawColor(renderer, p.r, p.g, p.b, p.a);
-        
-        // Render particle as a filled circle (approximated with rect)
-        SDL_FRect particle_rect;
-        particle_rect.x = p.x - p.size/2;
-        particle_rect.y = p.y - p.size/2;
-        particle_rect.w = p.size;
-        particle_rect.h = p.size;
-        
-        SDL_RenderFillRect(renderer, &particle_rect);
-        
-        // Add glow effect for fire particles
-        if (particle_type == FIRE_PARTICLES) {
-            SDL_SetRenderDrawColor(renderer, 255, 255, 0, p.a/3); // Yellow glow
-            particle_rect.x -= 1;
-            particle_rect.y -= 1;
-            particle_rect.w += 2;
-            particle_rect.h += 2;
-            SDL_RenderFillRect(renderer, &particle_rect);
-        }
-    }
+    // TODO
 }
 
 void ParticleSystem::create_particle(float px, float py, float vel_x, float vel_y, 

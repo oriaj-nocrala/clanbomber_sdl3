@@ -4,8 +4,8 @@
 #include "Controller.h"
 #include <string.h>
 
-SettingsScreen::SettingsScreen(SDL_Renderer* renderer, TTF_Font* font)
-    : renderer(renderer), font(font), selected_item(0), selected_player(0), next_state(GameState::SETTINGS) {
+SettingsScreen::SettingsScreen(SDL_Renderer* renderer)
+    : renderer(renderer), selected_item(0), selected_player(0), next_state(GameState::SETTINGS) {
     menu_items.push_back("Player Setup");
     menu_items.push_back("Game Options"); 
     menu_items.push_back("Graphics Options");
@@ -52,16 +52,16 @@ void SettingsScreen::update(float deltaTime) {
 void SettingsScreen::render(SDL_Renderer* renderer) {
     // Render title
     SDL_Color title_color = {255, 255, 255, 255};
-    SDL_Surface* title_surface = TTF_RenderText_Solid(font, "SETTINGS", strlen("SETTINGS"), title_color);
-    SDL_Texture* title_texture = SDL_CreateTextureFromSurface(renderer, title_surface);
+        // SDL_Surface* title_surface = TTF_RenderText_Solid(font, "SETTINGS", strlen("SETTINGS"), title_color);
+    // SDL_Texture* title_texture = SDL_CreateTextureFromSurface(renderer, title_surface);
     
-    float title_width, title_height;
-    SDL_GetTextureSize(title_texture, &title_width, &title_height);
-    SDL_FRect title_rect = {400 - title_width / 2.0f, 50, title_width, title_height};
-    SDL_RenderTexture(renderer, title_texture, NULL, &title_rect);
+    // float title_width, title_height;
+    // SDL_GetTextureSize(title_texture, &title_width, &title_height);
+    // SDL_FRect title_rect = {400 - title_width / 2.0f, 50, title_width, title_height};
+    // SDL_RenderTexture(renderer, title_texture, NULL, &title_rect);
     
-    SDL_DestroySurface(title_surface);
-    SDL_DestroyTexture(title_texture);
+    // SDL_DestroySurface(title_surface);
+    // SDL_DestroyTexture(title_texture);
     
     // Render main menu
     int y = 120;
@@ -69,17 +69,17 @@ void SettingsScreen::render(SDL_Renderer* renderer) {
         SDL_Color color = (i == selected_item) ? SDL_Color{255, 255, 0, 255} : SDL_Color{255, 255, 255, 255};
         std::string item_text = (i == selected_item) ? "> " + menu_items[i] + " <" : "  " + menu_items[i] + "  ";
         
-        SDL_Surface* surface = TTF_RenderText_Solid(font, item_text.c_str(), strlen(item_text.c_str()), color);
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
+                // SDL_Surface* surface = TTF_RenderText_Solid(font, item_text.c_str(), strlen(item_text.c_str()), color);
+        // SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
         
-        float width, height;
-        SDL_GetTextureSize(texture, &width, &height);
-        SDL_FRect dst_rect = {400 - width / 2.0f, (float)y, width, height};
+        // float width, height;
+        // SDL_GetTextureSize(texture, &width, &height);
+        // SDL_FRect dst_rect = {400 - width / 2.0f, (float)y, width, height};
         
-        SDL_RenderTexture(renderer, texture, NULL, &dst_rect);
+        // SDL_RenderTexture(renderer, texture, NULL, &dst_rect);
         
-        SDL_DestroySurface(surface);
-        SDL_DestroyTexture(texture);
+        // SDL_DestroySurface(surface);
+        // SDL_DestroyTexture(texture);
         
         y += 35;
     }
@@ -93,16 +93,16 @@ void SettingsScreen::render(SDL_Renderer* renderer) {
     
     // Render instructions
     SDL_Color instructions_color = {150, 150, 150, 255};
-    SDL_Surface* instructions_surface = TTF_RenderText_Solid(font, "UP/DOWN: Navigate | ENTER: Select | ESC: Back", strlen("UP/DOWN: Navigate | ENTER: Select | ESC: Back"), instructions_color);
-    SDL_Texture* instructions_texture = SDL_CreateTextureFromSurface(renderer, instructions_surface);
+        // SDL_Surface* instructions_surface = TTF_RenderText_Solid(font, "UP/DOWN: Navigate | ENTER: Select | ESC: Back", strlen("UP/DOWN: Navigate | ENTER: Select | ESC: Back"), instructions_color);
+    // SDL_Texture* instructions_texture = SDL_CreateTextureFromSurface(renderer, instructions_surface);
     
-    float inst_width, inst_height;
-    SDL_GetTextureSize(instructions_texture, &inst_width, &inst_height);
-    SDL_FRect inst_rect = {400 - inst_width / 2.0f, 550, inst_width, inst_height};
-    SDL_RenderTexture(renderer, instructions_texture, NULL, &inst_rect);
+    // float inst_width, inst_height;
+    // SDL_GetTextureSize(instructions_texture, &inst_width, &inst_height);
+    // SDL_FRect inst_rect = {400 - inst_width / 2.0f, 550, inst_width, inst_height};
+    // SDL_RenderTexture(renderer, instructions_texture, NULL, &inst_rect);
     
-    SDL_DestroySurface(instructions_surface);
-    SDL_DestroyTexture(instructions_texture);
+    // SDL_DestroySurface(instructions_surface);
+    // SDL_DestroyTexture(instructions_texture);
 }
 
 GameState SettingsScreen::get_next_state() const {
@@ -111,16 +111,16 @@ GameState SettingsScreen::get_next_state() const {
 
 void SettingsScreen::render_player_setup() {
     SDL_Color header_color = {200, 200, 255, 255};
-    SDL_Surface* header_surface = TTF_RenderText_Solid(font, "PLAYER SETUP", strlen("PLAYER SETUP"), header_color);
-    SDL_Texture* header_texture = SDL_CreateTextureFromSurface(renderer, header_surface);
+        // SDL_Surface* header_surface = TTF_RenderText_Solid(font, "PLAYER SETUP", strlen("PLAYER SETUP"), header_color);
+    // SDL_Texture* header_texture = SDL_CreateTextureFromSurface(renderer, header_surface);
     
-    float header_width, header_height;
-    SDL_GetTextureSize(header_texture, &header_width, &header_height);
-    SDL_FRect header_rect = {400 - header_width / 2.0f, 260, header_width, header_height};
-    SDL_RenderTexture(renderer, header_texture, NULL, &header_rect);
+    // float header_width, header_height;
+    // SDL_GetTextureSize(header_texture, &header_width, &header_height);
+    // SDL_FRect header_rect = {400 - header_width / 2.0f, 260, header_width, header_height};
+    // SDL_RenderTexture(renderer, header_texture, NULL, &header_rect);
     
-    SDL_DestroySurface(header_surface);
-    SDL_DestroyTexture(header_texture);
+    // SDL_DestroySurface(header_surface);
+    // SDL_DestroyTexture(header_texture);
     
     // Display players
     int y = 300;
@@ -142,16 +142,16 @@ void SettingsScreen::render_player_setup() {
             player_color = {255, 255, 0, 255};
         }
         
-        SDL_Surface* player_surface = TTF_RenderText_Solid(font, player_text.c_str(), strlen(player_text.c_str()), player_color);
-        SDL_Texture* player_texture = SDL_CreateTextureFromSurface(renderer, player_surface);
+                // SDL_Surface* player_surface = TTF_RenderText_Solid(font, player_text.c_str(), strlen(player_text.c_str()), player_color);
+        // SDL_Texture* player_texture = SDL_CreateTextureFromSurface(renderer, player_surface);
         
-        float player_width, player_height;
-        SDL_GetTextureSize(player_texture, &player_width, &player_height);
-        SDL_FRect player_rect = {50, (float)y, player_width, player_height};
-        SDL_RenderTexture(renderer, player_texture, NULL, &player_rect);
+        // float player_width, player_height;
+        // SDL_GetTextureSize(player_texture, &player_width, &player_height);
+        // SDL_FRect player_rect = {50, (float)y, player_width, player_height};
+        // SDL_RenderTexture(renderer, player_texture, NULL, &player_rect);
         
-        SDL_DestroySurface(player_surface);
-        SDL_DestroyTexture(player_texture);
+        // SDL_DestroySurface(player_surface);
+        // SDL_DestroyTexture(player_texture);
         
         y += 30;
     }
@@ -159,16 +159,16 @@ void SettingsScreen::render_player_setup() {
 
 void SettingsScreen::render_game_options() {
     SDL_Color header_color = {200, 255, 200, 255};
-    SDL_Surface* header_surface = TTF_RenderText_Solid(font, "GAME OPTIONS", strlen("GAME OPTIONS"), header_color);
-    SDL_Texture* header_texture = SDL_CreateTextureFromSurface(renderer, header_surface);
+        // SDL_Surface* header_surface = TTF_RenderText_Solid(font, "GAME OPTIONS", strlen("GAME OPTIONS"), header_color);
+    // SDL_Texture* header_texture = SDL_CreateTextureFromSurface(renderer, header_surface);
     
-    float header_width, header_height;
-    SDL_GetTextureSize(header_texture, &header_width, &header_height);
-    SDL_FRect header_rect = {400 - header_width / 2.0f, 260, header_width, header_height};
-    SDL_RenderTexture(renderer, header_texture, NULL, &header_rect);
+    // float header_width, header_height;
+    // SDL_GetTextureSize(header_texture, &header_width, &header_height);
+    // SDL_FRect header_rect = {400 - header_width / 2.0f, 260, header_width, header_height};
+    // SDL_RenderTexture(renderer, header_texture, NULL, &header_rect);
     
-    SDL_DestroySurface(header_surface);
-    SDL_DestroyTexture(header_texture);
+    // SDL_DestroySurface(header_surface);
+    // SDL_DestroyTexture(header_texture);
     
     // Display game options
     int y = 300;
@@ -181,16 +181,16 @@ void SettingsScreen::render_game_options() {
     
     for (const auto& option : options) {
         SDL_Color option_color = {255, 255, 255, 255};
-        SDL_Surface* option_surface = TTF_RenderText_Solid(font, option.c_str(), strlen(option.c_str()), option_color);
-        SDL_Texture* option_texture = SDL_CreateTextureFromSurface(renderer, option_surface);
+                // SDL_Surface* option_surface = TTF_RenderText_Solid(font, option.c_str(), strlen(option.c_str()), option_color);
+        // SDL_Texture* option_texture = SDL_CreateTextureFromSurface(renderer, option_surface);
         
-        float option_width, option_height;
-        SDL_GetTextureSize(option_texture, &option_width, &option_height);
-        SDL_FRect option_rect = {50, (float)y, option_width, option_height};
-        SDL_RenderTexture(renderer, option_texture, NULL, &option_rect);
+        // float option_width, option_height;
+        // SDL_GetTextureSize(option_texture, &option_width, &option_height);
+        // SDL_FRect option_rect = {50, (float)y, option_width, option_height};
+        // SDL_RenderTexture(renderer, option_texture, NULL, &option_rect);
         
-        SDL_DestroySurface(option_surface);
-        SDL_DestroyTexture(option_texture);
+        // SDL_DestroySurface(option_surface);
+        // SDL_DestroyTexture(option_texture);
         
         y += 30;
     }

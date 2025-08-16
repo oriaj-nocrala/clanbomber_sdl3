@@ -9,6 +9,7 @@
 #include "Controller_Keyboard.h"
 #include "GameState.h"
 #include "Screen.h"
+#include "GPUAcceleratedRenderer.h"
 
 class Game {
 public:
@@ -28,7 +29,6 @@ private:
     SDL_Window* window;
     SDL_Renderer* renderer;
     bool running;
-    TTF_Font* font;
     Screen* current_screen;
 
     // Game-specific objects

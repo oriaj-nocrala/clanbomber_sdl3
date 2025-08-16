@@ -9,7 +9,7 @@
 
 class SettingsScreen : public Screen {
 public:
-    SettingsScreen(SDL_Renderer* renderer, TTF_Font* font);
+    SettingsScreen(SDL_Renderer* renderer);
     ~SettingsScreen();
 
     void handle_events(SDL_Event& event) override;
@@ -20,7 +20,6 @@ public:
 
 private:
     SDL_Renderer* renderer;
-    TTF_Font* font;
     std::vector<std::string> menu_items;
     int selected_item;
     int selected_player;

@@ -2,11 +2,13 @@
 #include "Timer.h"
 #include "Controller.h"
 #include "Bomb.h"
+#include "ThrownBomb.h"
 #include "BomberCorpse.h"
 #include "ClanBomber.h"
 #include "GameConfig.h"
 #include "AudioMixer.h"
 #include "Map.h"
+#include "MapTile.h"
 
 Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app) : GameObject(_x, _y, _app) {
     color = _color;
@@ -19,7 +21,10 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     speed = 90;
     bomb_cooldown = 0.0f;
     power = GameConfig::get_start_power();
-    can_kick = true; // TODO: Set to false by default, enable with power-up
+    max_bombs = 1; // Start with 1 bomb capacity
+    current_bombs = 0;
+    can_kick = false; // Start without kick ability
+    can_throw = false; // Start without throw ability
     dead = false;
     
     // Initialize lives and respawn system
@@ -39,6 +44,10 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
     bomber_team = 0;
     bomber_number = 0;
     bomber_name = "Bomber";
+    
+    // Initialize bomb throwing mechanics
+    bomb_hold_timer = 0.0f;
+    bomb_button_held = false;
 
     // Set texture based on color - using proper bomber skins
     switch (color) {
@@ -124,14 +133,35 @@ void Bomber::act(float deltaTime) {
         bomb_cooldown -= deltaTime;
     }
 
-    if (controller->active && !flying && controller->is_bomb() && bomb_cooldown <= 0) {
-        SDL_Log("Bomber placing bomb at pixel (%f,%f), maps to grid (%d,%d)", x, y, get_map_x(), get_map_y());
-        app->objects.push_back(new Bomb(x, y, power, this, app));
-        bomb_cooldown = 0.5f; // 0.5 second cooldown
+    // Handle bomb button state and throwing mechanics
+    if (controller->active && !flying && bomb_cooldown <= 0) {
+        bool bomb_pressed = controller->is_bomb();
         
-        // Play bomb placement sound with 3D positioning
-        AudioPosition bomber_pos(x, y, 0.0f);
-        AudioMixer::play_sound_3d("putbomb", bomber_pos, 400.0f);
+        if (bomb_pressed && !bomb_button_held) {
+            // Button just pressed - start holding timer
+            bomb_button_held = true;
+            bomb_hold_timer = 0.0f;
+        } else if (bomb_pressed && bomb_button_held) {
+            // Button still held - increment timer
+            bomb_hold_timer += deltaTime;
+        } else if (!bomb_pressed && bomb_button_held) {
+            // Button just released
+            bomb_button_held = false;
+            
+            if (bomb_hold_timer >= THROW_HOLD_TIME && can_throw) {
+                // Held long enough and has glove - throw bomb
+                throw_bomb();
+            } else if (can_place_bomb()) {
+                // Quick press or no glove - place bomb normally
+                place_bomb();
+            }
+            
+            bomb_hold_timer = 0.0f;
+        }
+    } else if (!controller->is_bomb()) {
+        // Reset if button not pressed
+        bomb_button_held = false;
+        bomb_hold_timer = 0.0f;
     }
 
     if (moved) {
@@ -208,4 +238,55 @@ void Bomber::fly_to(int target_x, int target_y, float duration_ms) {
     start_y = y;
     this->target_x = target_x;
     this->target_y = target_y;
+}
+
+void Bomber::place_bomb() {
+    // Check if there's already a bomb at this position
+    MapTile* tile = app->map->get_tile(get_map_x(), get_map_y());
+    if (tile && tile->has_bomb()) {
+        SDL_Log("Cannot place bomb - position already occupied!");
+        return;
+    }
+    
+    SDL_Log("Bomber placing bomb %d/%d at pixel (%f,%f), maps to grid (%d,%d)", 
+            current_bombs + 1, max_bombs, x, y, get_map_x(), get_map_y());
+    
+    app->objects.push_back(new Bomb(x, y, power, this, app));
+    inc_current_bombs();
+    bomb_cooldown = 0.5f;
+    
+    // Play bomb placement sound
+    AudioPosition bomber_pos(x, y, 0.0f);
+    AudioMixer::play_sound_3d("putbomb", bomber_pos, 400.0f);
+}
+
+void Bomber::throw_bomb() {
+    SDL_Log("Bomber throwing bomb with glove power!");
+    
+    // Calculate throw target based on facing direction
+    float throw_distance = 120.0f; // 3 tiles
+    float target_x = x;
+    float target_y = y;
+    
+    // Determine throw direction based on current direction
+    switch (cur_dir) {
+        case DIR_UP:    target_y -= throw_distance; break;
+        case DIR_DOWN:  target_y += throw_distance; break;
+        case DIR_LEFT:  target_x -= throw_distance; break;
+        case DIR_RIGHT: target_x += throw_distance; break;
+    }
+    
+    // Clamp to map bounds
+    target_x = std::max(20.0f, std::min(target_x, 780.0f));
+    target_y = std::max(20.0f, std::min(target_y, 580.0f));
+    
+    SDL_Log("Throwing bomb from (%.1f,%.1f) to (%.1f,%.1f)", x, y, target_x, target_y);
+    
+    app->objects.push_back(new ThrownBomb(x, y, power, this, target_x, target_y, app));
+    inc_current_bombs();
+    bomb_cooldown = 0.8f; // Longer cooldown for thrown bombs
+    
+    // Play throw sound (using different sound)
+    AudioPosition bomber_pos(x, y, 0.0f);
+    AudioMixer::play_sound_3d("whoosh", bomber_pos, 400.0f);
 }

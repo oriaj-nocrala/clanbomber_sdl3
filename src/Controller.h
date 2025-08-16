@@ -54,7 +54,7 @@ public:
 	
 	static Controller* create( CONTROLLER_TYPE _type );
 	
-	void attach(Bomber* _bomber);
+	virtual void attach(Bomber* _bomber);
 
 	virtual void update() {};
 	virtual void reset() = 0;

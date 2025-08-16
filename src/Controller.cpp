@@ -20,6 +20,8 @@
 
 // #include "Controller_AI.h"
 // #include "Controller_AI_mass.h"
+#include "Controller_AI_Smart.h"
+#include "Controller_AI_Modern.h"
 #include "Controller_Keyboard.h"
 // #include "Controller_Joystick.h"
 // #include "Controller_RCMouse.h"
@@ -70,13 +72,11 @@ Controller* Controller::create( CONTROLLER_TYPE _type )
 {
 	switch( _type ) {
 		case AI:
-			// AI not implemented yet, fallback to keyboard
-			SDL_Log("AI controller not implemented, using KEYMAP_1 instead");
-			return new Controller_Keyboard(0);
+			SDL_Log("Creating Modern AI controller (NORMAL difficulty)");
+			return new Controller_AI_Modern(ModernAIPersonality::NORMAL);
 		case AI_mass:
-			// AI_mass not implemented yet, fallback to keyboard
-			SDL_Log("AI_mass controller not implemented, using KEYMAP_1 instead");
-			return new Controller_Keyboard(0);
+			SDL_Log("Creating Modern AI controller (HARD difficulty)");
+			return new Controller_AI_Modern(ModernAIPersonality::HARD);
 		case KEYMAP_1:
 			return new Controller_Keyboard(0);
 		case KEYMAP_2:

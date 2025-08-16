@@ -59,14 +59,27 @@ public:
     // Animation
     void fly_to(int target_x, int target_y, float duration_ms);
     
+    // Bomb mechanics
+    void place_bomb();
+    void throw_bomb();
+    
     // Power-up effects
     void inc_speed(int amount) { speed += amount; }
     void dec_speed(int amount) { speed = std::max(30, speed - amount); }
     int get_power() const { return power; }
     void inc_power(int amount) { power += amount; }
     
+    // Bomb management
+    int get_max_bombs() const { return max_bombs; }
+    void inc_max_bombs(int amount) { max_bombs += amount; }
+    int get_current_bombs() const { return current_bombs; }
+    void inc_current_bombs() { current_bombs++; }
+    void dec_current_bombs() { if (current_bombs > 0) current_bombs--; }
+    bool can_place_bomb() const { return current_bombs < max_bombs; }
+    
 public:
     bool can_kick;
+    bool can_throw;
     bool dead;
     
     // Lives and respawn
@@ -89,9 +102,16 @@ protected:
     Controller* controller;
     float bomb_cooldown;
     int power;
+    int max_bombs;
+    int current_bombs;
     int bomber_team;
     int bomber_number;
     std::string bomber_name;
+    
+    // Bomb throwing mechanics
+    float bomb_hold_timer;
+    bool bomb_button_held;
+    const float THROW_HOLD_TIME = 0.3f; // 300ms hold to throw
 };
 
 #endif

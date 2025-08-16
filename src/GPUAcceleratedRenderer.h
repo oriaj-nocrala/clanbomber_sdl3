@@ -2,7 +2,7 @@
 #define GPU_ACCELERATED_RENDERER_H
 
 #include <SDL3/SDL.h>
-#include <glad/glad.h>
+#include <glad/gl.h>
 #include <cglm/cglm.h>
 #include <vector>
 #include <unordered_map>
@@ -20,6 +20,12 @@ public:
         vec2 scale;
         int effectType;
         float _padding;
+    };
+    
+    // Simple vertex structure for basic rendering - PACKED to prevent alignment issues
+    struct __attribute__((packed)) SimpleVertex {
+        vec2 position;
+        vec2 texCoord;
     };
     
     // GPU particle structure matching compute shader
@@ -44,7 +50,9 @@ public:
         PARTICLE_GLOW = 1,
         EXPLOSION_HEAT = 2,
         INVINCIBLE_CHROME = 3,
-        BLOOD_SPLATTER = 4
+        BLOOD_SPLATTER = 4,
+        TILE_FRAGMENTATION = 5,
+        MATRIX_DIGITAL = 6
     };
     
     enum ParticleType {
@@ -76,10 +84,14 @@ public:
     // Batch rendering with effects
     void begin_batch(EffectType effect = NORMAL);
     void add_sprite(float x, float y, float w, float h, GLuint texture, 
-                   const float* color = nullptr, float rotation = 0.0f, const float* scale = nullptr);
+                   const float* color = nullptr, float rotation = 0.0f, const float* scale = nullptr, int sprite_number = 0);
     void add_animated_sprite(float x, float y, float w, float h, GLuint texture,
-                           const float* color, float rotation, const float* scale, EffectType effect);
+                           const float* color, float rotation, const float* scale, EffectType effect, int sprite_number = 0);
     void end_batch();
+    
+    // Explosion control
+    void set_explosion_info(float center_x, float center_y, float age, int up, int down, int left, int right);
+    void clear_explosion_info();
     
     // GPU particle system
     bool init_particle_system(int max_particles = 100000);
@@ -88,22 +100,33 @@ public:
                        const float* velocity = nullptr, float life = 2.0f);
     void render_particles();
     
-    // Advanced effects
+    // SPECTACULAR effect controls
     void set_camera(const float* position, float zoom = 1.0f);
+    void set_explosion_effect(float center_x, float center_y, float radius, float strength);
+    void set_vortex_effect(float center_x, float center_y, float radius, float strength);
+    void set_environmental_effects(float air_density, const float* magnetic_field);
+    void clear_effects(); // Reset all special effects
     void set_global_effect_params(const float* params);
     void set_wind(const float* wind) { if(wind) { wind_force[0] = wind[0]; wind_force[1] = wind[1]; } }
     
     // Texture management
     GLuint create_texture_from_surface(SDL_Surface* surface);
     GLuint load_texture_from_file(const std::string& path);
+    void register_texture_metadata(GLuint texture_id, int width, int height, int sprite_width = 40, int sprite_height = 40);
     
     // Debug and profiling
     void enable_debug_overlay(bool enable) { debug_overlay = enable; }
     void print_performance_stats();
+    
+    // Safety checks
+    bool is_ready() const { return gl_context && main_program && sprite_vao && sprite_vbo; }
+    
+    // Public access to OpenGL context for external management
+    SDL_GLContext gl_context;
 
 private:
-    // OpenGL context and window
-    SDL_GLContext gl_context;
+    // OpenGL context and window (moved to public)
+    SDL_Window* window;  // Store window reference to restore context
     int screen_width, screen_height;
     
     // Shader programs
@@ -125,16 +148,31 @@ private:
     mat4 model_matrix;
     
     // Uniform locations
+    // Rendering uniforms
     GLint u_projection, u_view, u_model, u_time;
     GLint u_effect_type, u_effect_params;
+    GLint u_texture, u_resolution;
+    GLint u_explosion_center, u_explosion_size;
+    
+    // SPECTACULAR effect uniforms
+    GLint u_explosion_data;      // x,y=center, z=radius, w=strength
+    GLint u_vortex_data;         // x,y=center, z=radius, w=strength
+    GLint u_air_density;         // Environmental air density
+    GLint u_magnetic_field;      // Magnetic field for charged particles
+    GLint u_noise_lut;           // Noise lookup texture
+    
+    // Particle system uniforms
     GLint u_delta_time, u_gravity, u_wind, u_world_size;
+    GLint u_physics_constants;   // Combined physics parameters
+    GLint u_turbulence_field;    // Turbulence field texture
     
     // Batching system
-    std::vector<AdvancedVertex> batch_vertices;
+    std::vector<SimpleVertex> batch_vertices;
     std::vector<GLuint> batch_indices;
     int current_quad_count;
     EffectType current_effect;
-    static const int MAX_QUADS = 10000;
+    GLuint current_texture;  // Track current texture to flush on change
+    static const int MAX_QUADS = 1000;  // Reasonable batch size
     
     // Particle system
     int max_gpu_particles;
@@ -145,9 +183,21 @@ private:
     float current_time;
     vec2 camera_position;
     float camera_zoom;
+    
+    // Explosion state
+    vec4 current_explosion_center; // x,y=center, z=age, w=active
+    vec4 current_explosion_size;   // x=up, y=down, z=left, w=right
     vec4 global_effect_params;
     vec2 gravity_force;
     vec2 wind_force;
+    
+    // SPECTACULAR effect parameters
+    vec4 explosion_data;         // x,y=center, z=radius, w=strength
+    vec4 vortex_data;           // x,y=center, z=radius, w=strength
+    float air_density;
+    vec2 magnetic_field;
+    GLuint noise_lut_texture;    // Noise lookup table
+    GLuint turbulence_texture;   // Turbulence field texture
     
     // Debug and profiling
     bool debug_overlay;
@@ -165,11 +215,23 @@ private:
     void setup_particle_rendering();
     void update_uniforms();
     void flush_batch();
-    std::string load_shader_source(const std::string& filename);
     void check_gl_error(const std::string& operation);
+    void calculate_sprite_uv(GLuint texture, int sprite_number, float& u_start, float& u_end, float& v_start, float& v_end);
+    std::string preprocess_shader_includes(const std::string& source);
+    
+    // Texture metadata for atlas UV calculation
+    struct TextureInfo {
+        int width;
+        int height;
+        int sprite_width;
+        int sprite_height;
+        int sprites_per_row;
+        int sprites_per_col;
+    };
     
     // Resource management
     std::unordered_map<std::string, GLuint> loaded_textures;
+    std::unordered_map<GLuint, TextureInfo> texture_metadata;  // Store metadata by GL texture ID
     std::unordered_map<std::string, GLuint> shader_programs;
 };
 

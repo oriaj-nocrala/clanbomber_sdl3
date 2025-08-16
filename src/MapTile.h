@@ -49,6 +49,9 @@ public:
     
     void set_bomber(Bomber* _bomber) { bomber = _bomber; }
     Bomber* get_bomber() { return bomber; }
+    
+    // Power-up spawning system
+    void spawn_extra();
 
 public:
     Bomb* bomb;

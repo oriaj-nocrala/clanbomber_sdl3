@@ -1,9 +1,11 @@
 #include "MainMenuScreen.h"
 #include "Resources.h"
+#include "TextRenderer.h"
+#include "GPUAcceleratedRenderer.h"
 #include <string.h>
 
-MainMenuScreen::MainMenuScreen(SDL_Renderer* renderer, TTF_Font* font)
-    : renderer(renderer), font(font), selected_item(0), next_state(GameState::MAIN_MENU) {
+MainMenuScreen::MainMenuScreen(TextRenderer* text_renderer, GPUAcceleratedRenderer* gpu_renderer)
+    : selected_item(0), next_state(GameState::MAIN_MENU), text_renderer(text_renderer), gpu_renderer(gpu_renderer) {
     menu_items.push_back("Local Game");
     menu_items.push_back("Player Setup");
     menu_items.push_back("Game Options");
@@ -60,67 +62,37 @@ void MainMenuScreen::update(float deltaTime) {
 }
 
 void MainMenuScreen::render(SDL_Renderer* renderer) {
-    // Render title
-    SDL_Color title_color = {255, 255, 255, 255};
-    SDL_Surface* title_surface = TTF_RenderText_Solid(font, "CLANBOMBER", strlen("CLANBOMBER"), title_color);
-    SDL_Texture* title_texture = SDL_CreateTextureFromSurface(renderer, title_surface);
+    if (!text_renderer || !gpu_renderer) {
+        return; // Can't render without text and GPU renderer
+    }
     
-    float title_width, title_height;
-    SDL_GetTextureSize(title_texture, &title_width, &title_height);
-    SDL_FRect title_rect = {400 - title_width / 2.0f, 100, title_width, title_height};
-    SDL_RenderTexture(renderer, title_texture, NULL, &title_rect);
+    // Colors for text
+    SDL_Color title_color = {255, 255, 255, 255};      // White
+    SDL_Color selected_color = {255, 255, 0, 255};     // Yellow
+    SDL_Color normal_color = {200, 200, 200, 255};     // Light gray
+    SDL_Color instructions_color = {150, 150, 150, 255}; // Dark gray
     
-    SDL_DestroySurface(title_surface);
-    SDL_DestroyTexture(title_texture);
+    // Render title (centered at x=400 for 800px wide screen)
+    text_renderer->draw_text_centered(gpu_renderer, "CLANBOMBER", "big", 400, 100, title_color);
     
-    // Render version
-    SDL_Color version_color = {200, 200, 200, 255};
-    SDL_Surface* version_surface = TTF_RenderText_Solid(font, "SDL3 Modern Edition", strlen("SDL3 Modern Edition"), version_color);
-    SDL_Texture* version_texture = SDL_CreateTextureFromSurface(renderer, version_surface);
+    // Render version (centered)
+    text_renderer->draw_text_centered(gpu_renderer, "SDL3 Modern Edition", "small", 400, 140, normal_color);
     
-    float version_width, version_height;
-    SDL_GetTextureSize(version_texture, &version_width, &version_height);
-    SDL_FRect version_rect = {400 - version_width / 2.0f, 140, version_width, version_height};
-    SDL_RenderTexture(renderer, version_texture, NULL, &version_rect);
-    
-    SDL_DestroySurface(version_surface);
-    SDL_DestroyTexture(version_texture);
-
-    // Render menu items
-    int y = 220;
+    // Render menu items (centered)
+    float y = 220;
     for (int i = 0; i < menu_items.size(); ++i) {
-        SDL_Color color = (i == selected_item) ? SDL_Color{255, 255, 0, 255} : SDL_Color{255, 255, 255, 255};
+        SDL_Color color = (i == selected_item) ? selected_color : normal_color;
         
         // Add selection indicator
         std::string item_text = (i == selected_item) ? "> " + menu_items[i] + " <" : "  " + menu_items[i] + "  ";
         
-        SDL_Surface* surface = TTF_RenderText_Solid(font, item_text.c_str(), strlen(item_text.c_str()), color);
-        SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-        
-        float width, height;
-        SDL_GetTextureSize(texture, &width, &height);
-        SDL_FRect dst_rect = {400 - width / 2.0f, (float)y, width, height};
-        
-        SDL_RenderTexture(renderer, texture, NULL, &dst_rect);
-        
-        SDL_DestroySurface(surface);
-        SDL_DestroyTexture(texture);
+        text_renderer->draw_text_centered(gpu_renderer, item_text, "big", 400, y, color);
         
         y += 40;
     }
     
-    // Render instructions
-    SDL_Color instructions_color = {150, 150, 150, 255};
-    SDL_Surface* instructions_surface = TTF_RenderText_Solid(font, "Use UP/DOWN arrows to navigate, ENTER to select", strlen("Use UP/DOWN arrows to navigate, ENTER to select"), instructions_color);
-    SDL_Texture* instructions_texture = SDL_CreateTextureFromSurface(renderer, instructions_surface);
-    
-    float inst_width, inst_height;
-    SDL_GetTextureSize(instructions_texture, &inst_width, &inst_height);
-    SDL_FRect inst_rect = {400 - inst_width / 2.0f, 550, inst_width, inst_height};
-    SDL_RenderTexture(renderer, instructions_texture, NULL, &inst_rect);
-    
-    SDL_DestroySurface(instructions_surface);
-    SDL_DestroyTexture(instructions_texture);
+    // Render instructions (centered)
+    text_renderer->draw_text_centered(gpu_renderer, "Use UP/DOWN arrows to navigate, ENTER to select", "small", 400, 550, instructions_color);
 }
 
 GameState MainMenuScreen::get_next_state() const {

@@ -6,6 +6,7 @@
 #include "Controller.h"
 #include "AudioMixer.h"
 #include "Resources.h"
+#include "Extra.h"
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -73,9 +74,12 @@ void GameplayScreen::init_game() {
 
     int j = 0;
     for (int i = 0; i < 8; i++) {
+        SDL_Log("Bomber %d: enabled=%d, controller=%d", i, GameConfig::bomber[i].is_enabled(), GameConfig::bomber[i].get_controller());
         if (GameConfig::bomber[i].is_enabled()) {
             CL_Vector pos = app->map->get_bomber_pos(j++);
-            Controller* controller = Controller::create(static_cast<Controller::CONTROLLER_TYPE>(GameConfig::bomber[i].get_controller()));
+            int controller_type = GameConfig::bomber[i].get_controller();
+            SDL_Log("Creating controller type %d for bomber %d", controller_type, i);
+            Controller* controller = Controller::create(static_cast<Controller::CONTROLLER_TYPE>(controller_type));
             if (!controller) {
                 SDL_Log("Failed to create controller for bomber %d, skipping", i);
                 continue;
@@ -107,6 +111,10 @@ void GameplayScreen::init_game() {
             bomber->z = 10 + i;
         }
     }
+
+    // Power-ups now spawn naturally when destroying boxes!
+    // Includes positive effects: BOMB, FLAME, SPEED, KICK, GLOVE, SKATE
+    // And negative effects: DISEASE (constipation), KOKS (speed), VIAGRA (sticky bombs)
 
     // Remove teams with only one player
     int team_count[] = {0, 0, 0, 0};
@@ -320,6 +328,8 @@ void GameplayScreen::delete_some() {
 }
 
 void GameplayScreen::show_all() {
+    // Clear is now handled by Game.cpp
+    
     std::vector<GameObject*> draw_list;
     for(auto const& value: app->objects) {
         draw_list.push_back(value);
@@ -410,21 +420,6 @@ void GameplayScreen::check_victory_conditions() {
     }
 }
 
+// TODO
 void GameplayScreen::render_victory_screen() {
-    SDL_Renderer* renderer = Resources::get_renderer();
-    if (!renderer) return;
-    
-    // Semi-transparent overlay
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 128);
-    SDL_FRect overlay = {0.0f, 0.0f, 800.0f, 600.0f};
-    SDL_RenderFillRect(renderer, &overlay);
-    
-    // TODO: Render victory/defeat text using TTF fonts
-    // For now just change background color to indicate game over
-    if (victory_achieved) {
-        SDL_SetRenderDrawColor(renderer, 0, 255, 0, 64); // Green tint for victory
-    } else {
-        SDL_SetRenderDrawColor(renderer, 255, 0, 0, 64); // Red tint for defeat/draw
-    }
-    SDL_RenderFillRect(renderer, &overlay);
 }

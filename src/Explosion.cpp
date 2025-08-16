@@ -7,6 +7,7 @@
 #include "Bomb.h"
 #include "Timer.h"
 #include "ParticleSystem.h"
+#include "GPUAcceleratedRenderer.h"
 #include <SDL3/SDL_timer.h>
 
 Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* app) : GameObject(_x, _y, app) {
@@ -15,7 +16,21 @@ Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberAppli
     detonation_period = 0.5f; // seconds - exactly like original
     texture_name = "explosion";
     
-    // Create explosion particle effects
+    // SPECTACULAR EXPLOSION EFFECTS!
+    if (app->gpu_renderer) {
+        // Set up spectacular explosion effect
+        float explosion_radius = power * 60.0f; // Radius based on power
+        app->gpu_renderer->set_explosion_effect(_x, _y, explosion_radius, 1.0f);
+        
+        // Emit spectacular particles
+        app->gpu_renderer->emit_particles(_x, _y, power * 50, GPUAcceleratedRenderer::FIRE, nullptr, 2.0f);
+        app->gpu_renderer->emit_particles(_x, _y, power * 30, GPUAcceleratedRenderer::SPARK, nullptr, 1.5f);
+        app->gpu_renderer->emit_particles(_x, _y, power * 20, GPUAcceleratedRenderer::SMOKE, nullptr, 3.0f);
+        
+        SDL_Log("SPECTACULAR explosion effects activated at (%d,%d) with power %d!", _x, _y, power);
+    }
+    
+    // Create additional particle effects
     ParticleSystem* explosion_sparks = new ParticleSystem(_x, _y, EXPLOSION_SPARKS, app);
     app->objects.push_back(explosion_sparks);
     
@@ -88,6 +103,11 @@ void Explosion::act(float deltaTime) {
     // Update explosion timer
     detonation_period -= deltaTime;
     if (detonation_period < 0) {
+        // Clear spectacular explosion effects when explosion ends
+        if (app->gpu_renderer) {
+            app->gpu_renderer->set_explosion_effect(x, y, 0.0f, 0.0f); // Clear explosion effect
+            SDL_Log("Explosion effects cleared at (%.0f,%.0f)", x, y);
+        }
         delete_me = true;
     }
 }
@@ -153,64 +173,177 @@ void Explosion::detonate_other_bombs() {
 }
 
 
-void Explosion::show() {
-    // Improved animation sequence with better timing
-    float normalized_time = (0.5f - detonation_period) / 0.5f; // 0.0 to 1.0
-    int anim_frame = 0;
+// void Explosion::show() {
+//     // Calculate explosion age (0.0 = just exploded, 0.5 = expired)
+//     float explosion_age = 0.5f - detonation_period;
+//     float normalized_time = explosion_age / 0.5f; // 0.0 to 1.0
     
-    if (normalized_time < 0.2f) {
-        anim_frame = 0; // Initial expansion
-    } else if (normalized_time < 0.5f) {
-        anim_frame = 7; // Peak intensity
-    } else if (normalized_time < 0.8f) {
-        anim_frame = 14; // Sustained burn
-    } else {
-        anim_frame = 7; // Fade out
+//     // Only render if explosion is still active
+//     if (normalized_time >= 1.0f) {
+//         return;
+//     }
+
+//     // Draw explosion using OpenGL batch rendering with procedural shader effects
+//     if (app && app->gpu_renderer) {
+//         // Calculate tile-aligned center position
+//         float tile_size = 40.0f;
+//         int map_x = get_map_x();
+//         int map_y = get_map_y();
+        
+//         // Asegurar que las coordenadas estén exactamente centradas en el tile
+//         float aligned_x = map_x * tile_size + tile_size / 2.0f;  // Center of tile
+//         float aligned_y = map_y * tile_size + tile_size / 2.0f;  // Center of tile
+        
+//         SDL_Log("DEBUG: Explosion center - original:(%.1f,%.1f) map:(%d,%d) aligned:(%.1f,%.1f)", 
+//                 x, y, map_x, map_y, aligned_x, aligned_y);
+        
+//         // Set explosion information for shader
+//         app->gpu_renderer->set_explosion_info(
+//             aligned_x, aligned_y,                    // Tile-aligned center position
+//             explosion_age,                           // Age of explosion
+//             length_up, length_down,                  // Vertical reach
+//             length_left, length_right                // Horizontal reach
+//         );
+        
+//         // Use explosion shader mode
+//         app->gpu_renderer->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
+        
+//         // Render each tile of the explosion separately using aligned coordinates
+//         // This ensures proper depth sorting and allows the shader to work per-tile
+        
+//         // Center tile
+//         draw_explosion_tile(aligned_x, aligned_y);
+        
+//         // Up direction
+//         for (int i = 1; i <= length_up; i++) {
+//             draw_explosion_tile(aligned_x, aligned_y - i * tile_size);
+//         }
+        
+//         // Down direction
+//         for (int i = 1; i <= length_down; i++) {
+//             draw_explosion_tile(aligned_x, aligned_y + i * tile_size);
+//         }
+        
+//         // Left direction
+//         for (int i = 1; i <= length_left; i++) {
+//             draw_explosion_tile(aligned_x - i * tile_size, aligned_y);
+//         }
+        
+//         // Right direction
+//         for (int i = 1; i <= length_right; i++) {
+//             draw_explosion_tile(aligned_x + i * tile_size, aligned_y);
+//         }
+        
+//         app->gpu_renderer->end_batch();
+        
+//         // Clear explosion information after rendering
+//         app->gpu_renderer->clear_explosion_info();
+//     }
+// }
+
+void Explosion::draw_explosion_tile(float tile_x, float tile_y) {
+    if (!app || !app->gpu_renderer) {
+        return;
     }
-
-    // Add alpha blending for fade effect near end
-    if (normalized_time > 0.9f) {
-        float alpha = 1.0f - ((normalized_time - 0.9f) / 0.1f);
-        SDL_SetTextureAlphaMod(Resources::get_texture(texture_name)->texture, (Uint8)(alpha * 255));
-    }
-
-    // Draw center explosion
-    draw_part(x, y, EXPLODE_X + anim_frame);
-
-    // Draw explosion rays with proper sprites
-    for (int i = 1; i < length_up; ++i) draw_part(x, y - i * 40, EXPLODE_V + anim_frame);
-    for (int i = 1; i < length_down; ++i) draw_part(x, y + i * 40, EXPLODE_V + anim_frame);
-    for (int i = 1; i < length_left; ++i) draw_part(x - i * 40, y, EXPLODE_H + anim_frame);
-    for (int i = 1; i < length_right; ++i) draw_part(x + i * 40, y, EXPLODE_H + anim_frame);
-
-    // Draw explosion tips
-    if (length_up > 0) draw_part(x, y - length_up * 40, EXPLODE_UP + anim_frame);
-    if (length_down > 0) draw_part(x, y + length_down * 40, EXPLODE_DOWN + anim_frame);
-    if (length_left > 0) draw_part(x - length_left * 40, y, EXPLODE_LEFT + anim_frame);
-    if (length_right > 0) draw_part(x + length_right * 40, y, EXPLODE_RIGHT + anim_frame);
     
-    // Reset alpha for next frame
-    SDL_SetTextureAlphaMod(Resources::get_texture(texture_name)->texture, 255);
+    // Use a dummy white texture or a simple 1x1 white pixel texture
+    // The shader will generate the explosion effect procedurally
+    GLuint dummy_texture = get_dummy_white_texture();
+    
+    float tile_size = 40.0f;
+    float white_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+    float scale[2] = {1.0f, 1.0f};
+    
+    // Add sprite for this tile
+    // The shader will detect it's in the explosion area and apply the effect
+    // NOTE: add_sprite usa posición central del sprite
+    app->gpu_renderer->add_sprite(
+        tile_x, tile_y,               // Position (center) of this tile
+        tile_size, tile_size,         // Size of one tile
+        dummy_texture,                // Dummy texture (shader ignores this)
+        white_color,                  // Color (full white, no tinting)
+        0.0f,                        // No rotation
+        scale,                       // No additional scaling
+        0                            // Sprite frame (ignored)
+    );
 }
 
-void Explosion::draw_part(int px, int py, int spr_nr) {
-    TextureInfo* tex_info = Resources::get_texture(texture_name);
-    if (!tex_info || !tex_info->texture) {
+// Helper function to get or create a 1x1 white pixel texture
+GLuint Explosion::get_dummy_white_texture() {
+    static GLuint white_texture = 0;
+    
+    if (white_texture == 0) {
+        // Create a 1x1 white pixel texture
+        unsigned char white_pixel[4] = {255, 255, 255, 255};
+        
+        glGenTextures(1, &white_texture);
+        glBindTexture(GL_TEXTURE_2D, white_texture);
+        
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, 1, 1, 0, GL_RGBA, GL_UNSIGNED_BYTE, white_pixel);
+        
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    }
+    
+    return white_texture;
+}
+
+void Explosion::show() {
+    float explosion_age = 0.5f - detonation_period;
+    float normalized_time = explosion_age / 0.5f;
+    
+    if (normalized_time >= 1.0f) {
         return;
     }
 
-    SDL_FRect src_rect;
-    src_rect.w = 40; // Assuming 40x40 sprites
-    src_rect.h = 40;
-    
-    int sprites_per_row = 21; // The original explosion sheet has 21 columns
-
-    src_rect.x = (spr_nr % sprites_per_row) * src_rect.w;
-    src_rect.y = (spr_nr / sprites_per_row) * src_rect.h;
-
-    SDL_FRect dest_rect = { (float)px, (float)py, src_rect.w, src_rect.h };
-
-    SDL_RenderTexture(Resources::get_renderer(), tex_info->texture, &src_rect, &dest_rect);
+    if (app && app->gpu_renderer) {
+        float tile_size = 40.0f;
+        float half_tile = tile_size * 0.5f;
+        
+        // CORRECCIÓN PRINCIPAL: x,y vienen como esquina superior izquierda del tile
+        // Necesitamos el CENTRO del tile para la explosión
+        float explosion_center_x = x + half_tile;
+        float explosion_center_y = y + half_tile;
+        
+        // Set explosion info con el centro CORRECTO
+        app->gpu_renderer->set_explosion_info(
+            explosion_center_x, explosion_center_y, explosion_age,
+            length_up, length_down,
+            length_left, length_right
+        );
+        
+        app->gpu_renderer->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
+        
+        // Calcular el quad que cubre toda el área de explosión
+        // Desde el centro, extenderse N tiles en cada dirección
+        float min_x = explosion_center_x - (length_left + 0.5f) * tile_size;
+        float max_x = explosion_center_x + (length_right + 0.5f) * tile_size;
+        float min_y = explosion_center_y - (length_up + 0.5f) * tile_size;
+        float max_y = explosion_center_y + (length_down + 0.5f) * tile_size;
+        
+        float width = max_x - min_x;
+        float height = max_y - min_y;
+        
+        GLuint dummy_texture = get_dummy_white_texture();
+        float white_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+        float scale[2] = {1.0f, 1.0f};
+        
+        // add_sprite espera esquina superior izquierda
+        app->gpu_renderer->add_sprite(
+            min_x, min_y,
+            width, height,
+            dummy_texture,
+            white_color,
+            0.0f,
+            scale,
+            0
+        );
+        
+        app->gpu_renderer->end_batch();
+        app->gpu_renderer->clear_explosion_info();
+    }
 }
 
 void Explosion::kill_bombers() {

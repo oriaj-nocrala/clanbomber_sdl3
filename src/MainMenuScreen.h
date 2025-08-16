@@ -7,23 +7,26 @@
 #include <string>
 #include "GameState.h"
 
+class TextRenderer;
+class GPUAcceleratedRenderer;
+
 class MainMenuScreen : public Screen {
 public:
-    MainMenuScreen(SDL_Renderer* renderer, TTF_Font* font);
+    MainMenuScreen(TextRenderer* text_renderer, GPUAcceleratedRenderer* gpu_renderer);
     ~MainMenuScreen();
 
     void handle_events(SDL_Event& event) override;
     void update(float deltaTime) override;
-    void render(SDL_Renderer* renderer) override;
+    void render(SDL_Renderer* renderer = nullptr) override;
 
     GameState get_next_state() const;
 
 private:
-    SDL_Renderer* renderer;
-    TTF_Font* font;
     std::vector<std::string> menu_items;
     int selected_item;
     GameState next_state;
+    TextRenderer* text_renderer;
+    GPUAcceleratedRenderer* gpu_renderer;
 };
 
 #endif

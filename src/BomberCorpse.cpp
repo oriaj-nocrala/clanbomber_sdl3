@@ -61,24 +61,7 @@ void BomberCorpse::act(float deltaTime) {
 }
 
 void BomberCorpse::show() {
-    if (!exploded) {
-        // Maybe add some flickering or decay effect
-        float alpha = 1.0f;
-        if (death_animation_timer > 8.0f) {
-            // Start fading in last 2 seconds
-            alpha = 1.0f - ((death_animation_timer - 8.0f) / 2.0f);
-        }
-        
-        if (alpha > 0.0f) {
-            TextureInfo* tex_info = Resources::get_texture(texture_name);
-            if (tex_info && tex_info->texture) {
-                SDL_SetTextureAlphaMod(tex_info->texture, (Uint8)(alpha * 255));
-                GameObject::show();
-                SDL_SetTextureAlphaMod(tex_info->texture, 255);
-            }
-        }
-    }
-    // Don't show anything if exploded (gore parts handle the visuals)
+    // TODO
 }
 
 void BomberCorpse::explode() {

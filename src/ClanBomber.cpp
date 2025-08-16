@@ -27,6 +27,7 @@ ClanBomberApplication::ClanBomberApplication() {
     pause_game = false;
     client_disconnected_from_server = false;
     client_connecting_to_new_server = false;
+    gpu_renderer = nullptr;
 }
 
 ClanBomberApplication::~ClanBomberApplication() {
@@ -34,6 +35,10 @@ ClanBomberApplication::~ClanBomberApplication() {
     if (map) {
         delete map;
         map = nullptr;
+    }
+    if (gpu_renderer) {
+        delete gpu_renderer;
+        gpu_renderer = nullptr;
     }
 }
 

@@ -25,7 +25,9 @@ public:
     ObjectType get_type() const override { return EXPLOSION; }
 
 private:
-    void draw_part(int x, int y, int sprite_nr);
+    void draw_explosion_tile(float tile_x, float tile_y);
+    static GLuint get_dummy_white_texture();
+    void show_single_quad(); // Alternativa
     void detonate_other_bombs();
     void kill_bombers();
     void explode_corpses();
