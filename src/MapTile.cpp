@@ -17,17 +17,29 @@ MapTile::~MapTile() {
 }
 
 MapTile* MapTile::create(MAPTILE_TYPE type, int x, int y, ClanBomberApplication* app) {
+    MapTile* tile = nullptr;
     switch (type) {
         case GROUND:
-            return new MapTile_Ground(x, y, app);
+            tile = new MapTile_Ground(x, y, app);
+            break;
         case WALL:
-            return new MapTile_Wall(x, y, app);
+            tile = new MapTile_Wall(x, y, app);
+            break;
         case BOX:
-            return new MapTile_Box(x, y, app);
+            tile = new MapTile_Box(x, y, app);
+            break;
         case NONE:
         default:
-            return new MapTile_Ground(x, y, app); // Default to ground
+            tile = new MapTile_Ground(x, y, app); // Default to ground
+            break;
     }
+    
+    // Register with LifecycleManager
+    if (tile && app && app->lifecycle_manager) {
+        app->lifecycle_manager->register_tile(tile, x/40, y/40);
+    }
+    
+    return tile;
 }
 
 void MapTile::act() {

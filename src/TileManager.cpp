@@ -1,0 +1,262 @@
+#include "TileManager.h"
+#include "ClanBomber.h"
+#include "Map.h"
+#include "MapTile.h"
+#include "LifecycleManager.h"
+#include "Bomb.h"
+#include "Bomber.h"
+#include <SDL3/SDL.h>
+
+TileManager::TileManager(ClanBomberApplication* app) : app(app) {
+    SDL_Log("TileManager: Initialized intelligent tile coordination system");
+}
+
+TileManager::~TileManager() {
+    SDL_Log("TileManager: Shutdown complete");
+}
+
+// === COORDINACIÓN PRINCIPAL ===
+
+void TileManager::update_tiles(float deltaTime) {
+    if (!app || !app->map) return;
+    
+    // PASO 1: Coordinar con LifecycleManager PRIMERO
+    coordinate_with_lifecycle_manager();
+    
+    // PASO 2: Procesar tiles que están muriendo
+    process_dying_tiles();
+    
+    // PASO 3: Procesar tiles que están listos para reemplazo
+    process_dead_tiles();
+    
+    // PASO 4: Actualizar tiles individuales
+    handle_tile_updates();
+}
+
+void TileManager::handle_tile_updates() {
+    iterate_all_tiles([this](MapTile* tile, int x, int y) {
+        if (tile) {
+            update_single_tile(tile, x, y);
+        }
+    });
+}
+
+// === COORDINACIÓN CON LIFECYCLE ===
+
+void TileManager::coordinate_with_lifecycle_manager() {
+    if (!app->lifecycle_manager) {
+        SDL_Log("TileManager: ERROR - No LifecycleManager available for coordination");
+        return;
+    }
+    
+    // TileManager es el ÚNICO autorizado para coordinar con LifecycleManager
+    // Esto elimina la coordinación cruzada que nos ha estado jodiendo
+    app->lifecycle_manager->update_states(0.016f); // ~60 FPS delta
+}
+
+void TileManager::process_dying_tiles() {
+    iterate_all_tiles([this](MapTile* tile, int x, int y) {
+        if (!tile || !app->lifecycle_manager) return;
+        
+        LifecycleManager::ObjectState state = app->lifecycle_manager->get_tile_state(tile);
+        if (state == LifecycleManager::ObjectState::DYING) {
+            SDL_Log("TileManager: Tile at (%d,%d) is dying - monitoring", x, y);
+            // Tile está en animación de muerte - solo monitorear
+        }
+    });
+}
+
+void TileManager::process_dead_tiles() {
+    iterate_all_tiles([this](MapTile* tile, int x, int y) {
+        if (!tile || !app->lifecycle_manager) return;
+        
+        LifecycleManager::ObjectState state = app->lifecycle_manager->get_tile_state(tile);
+        if (state == LifecycleManager::ObjectState::DELETED) {
+            SDL_Log("TileManager: Tile at (%d,%d) ready for replacement - executing", x, y);
+            replace_tile_when_ready(x, y, MapTile::GROUND);
+        }
+    });
+}
+
+// === GESTIÓN DE TILES ===
+
+void TileManager::request_tile_destruction(int map_x, int map_y) {
+    if (!is_valid_position(map_x, map_y)) return;
+    
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (!tile || !tile->is_destructible()) return;
+    
+    SDL_Log("TileManager: Processing destruction request for tile at (%d,%d)", map_x, map_y);
+    
+    // Coordinar SOLO a través de TileManager - NO coordinación cruzada
+    tile->destroy();
+    
+    SDL_Log("TileManager: Destruction initiated for tile at (%d,%d)", map_x, map_y);
+}
+
+void TileManager::replace_tile_when_ready(int map_x, int map_y, int new_tile_type) {
+    if (!is_valid_position(map_x, map_y) || !app->map) return;
+    
+    perform_tile_replacement(map_x, map_y, new_tile_type);
+}
+
+bool TileManager::is_tile_ready_for_replacement(MapTile* tile) {
+    if (!tile || !app->lifecycle_manager) return false;
+    
+    LifecycleManager::ObjectState state = app->lifecycle_manager->get_tile_state(tile);
+    return state == LifecycleManager::ObjectState::DELETED;
+}
+
+// === QUERY INTELIGENTE ===
+
+bool TileManager::is_position_walkable(int map_x, int map_y) {
+    if (!is_valid_position(map_x, map_y)) return false;
+    
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (!tile) return false;
+    
+    // Un tile es caminable si NO está bloqueando
+    return !tile->is_blocking();
+}
+
+bool TileManager::is_position_blocked(int map_x, int map_y) {
+    return !is_position_walkable(map_x, map_y);
+}
+
+MapTile* TileManager::get_tile_at(int map_x, int map_y) {
+    if (!is_valid_position(map_x, map_y) || !app->map) return nullptr;
+    
+    return app->map->get_tile(map_x, map_y);
+}
+
+// === GESTIÓN DE OBJETOS EN TILES ===
+
+void TileManager::register_bomb_at(int map_x, int map_y, Bomb* bomb) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (tile && bomb) {
+        tile->set_bomb(bomb);
+        SDL_Log("TileManager: Registered bomb %p at (%d,%d)", bomb, map_x, map_y);
+    }
+}
+
+void TileManager::unregister_bomb_at(int map_x, int map_y) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (tile) {
+        tile->set_bomb(nullptr);
+        SDL_Log("TileManager: Unregistered bomb at (%d,%d)", map_x, map_y);
+    }
+}
+
+Bomb* TileManager::get_bomb_at(int map_x, int map_y) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    return tile ? tile->get_bomb() : nullptr;
+}
+
+void TileManager::register_bomber_at(int map_x, int map_y, Bomber* bomber) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (tile && bomber) {
+        tile->set_bomber(bomber);
+        SDL_Log("TileManager: Registered bomber %p at (%d,%d)", bomber, map_x, map_y);
+    }
+}
+
+void TileManager::unregister_bomber_at(int map_x, int map_y) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (tile) {
+        tile->set_bomber(nullptr);
+        SDL_Log("TileManager: Unregistered bomber at (%d,%d)", map_x, map_y);
+    }
+}
+
+Bomber* TileManager::get_bomber_at(int map_x, int map_y) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    return tile ? tile->get_bomber() : nullptr;
+}
+
+bool TileManager::has_bomber_at(int map_x, int map_y) {
+    return get_bomber_at(map_x, map_y) != nullptr;
+}
+
+// === UTILITIES ===
+
+void TileManager::iterate_all_tiles(std::function<void(MapTile*, int, int)> callback) {
+    if (!app->map || !callback) return;
+    
+    for (int x = 0; x < MAP_WIDTH; x++) {
+        for (int y = 0; y < MAP_HEIGHT; y++) {
+            MapTile* tile = app->map->get_tile(x, y);
+            callback(tile, x, y);
+        }
+    }
+}
+
+std::vector<MapTile*> TileManager::get_destructible_tiles_in_radius(int center_x, int center_y, int radius) {
+    std::vector<MapTile*> result;
+    
+    for (int dx = -radius; dx <= radius; dx++) {
+        for (int dy = -radius; dy <= radius; dy++) {
+            int x = center_x + dx;
+            int y = center_y + dy;
+            
+            if (is_valid_position(x, y)) {
+                MapTile* tile = get_tile_at(x, y);
+                if (tile && tile->is_destructible()) {
+                    result.push_back(tile);
+                }
+            }
+        }
+    }
+    
+    return result;
+}
+
+// === COORDINACIÓN INTERNA ===
+
+void TileManager::update_single_tile(MapTile* tile, int map_x, int map_y) {
+    if (!tile) return;
+    
+    // IMPORTANTE: Solo TileManager coordina - NO coordinación cruzada
+    tile->act();
+    
+    // Si el tile se marcó para destrucción, lo procesaremos en el próximo update
+    if (tile->delete_me) {
+        SDL_Log("TileManager: Tile at (%d,%d) marked for destruction", map_x, map_y);
+    }
+}
+
+void TileManager::handle_tile_destruction_request(int map_x, int map_y) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (!tile) return;
+    
+    SDL_Log("TileManager: Handling destruction request for tile at (%d,%d)", map_x, map_y);
+    request_tile_destruction(map_x, map_y);
+}
+
+void TileManager::perform_tile_replacement(int map_x, int map_y, int new_tile_type) {
+    if (!app->map) return;
+    
+    SDL_Log("TileManager: Replacing tile at (%d,%d) with type %d", map_x, map_y, new_tile_type);
+    
+    // Eliminar tile anterior
+    MapTile* old_tile = get_tile_at(map_x, map_y);
+    if (old_tile) {
+        delete old_tile;
+    }
+    
+    // Crear nuevo tile
+    MapTile* new_tile = MapTile::create(
+        static_cast<MapTile::MAPTILE_TYPE>(new_tile_type),
+        map_x * 40, map_y * 40, app
+    );
+    
+    // Actualizar grid usando el setter
+    app->map->set_tile(map_x, map_y, new_tile);
+    
+    SDL_Log("TileManager: Tile replacement complete at (%d,%d)", map_x, map_y);
+}
+
+// === VALIDACIÓN ===
+
+bool TileManager::is_valid_position(int map_x, int map_y) const {
+    return map_x >= 0 && map_x < MAP_WIDTH && map_y >= 0 && map_y < MAP_HEIGHT;
+}

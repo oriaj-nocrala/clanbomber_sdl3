@@ -109,8 +109,6 @@ public:
   void set_orig( int _x, int _y );
   void move_pos( int _x, int _y );
   void snap();
-  // @DEPRECATED: This function will be removed in a future version. Use move_dist instead.
-  bool move(float deltaTime, int _speed, Direction _dir=DIR_NONE);
   bool move_dist(float distance, Direction dir);
   void inc_speed( int _c=1 );
   void dec_speed( int _c=1 );
@@ -211,7 +209,7 @@ protected:
   Direction cur_dir;
   int speed;
 	
-  // @DEPRECATED: These functions will be removed in a future version.
+  // Internal movement functions - used by main move() and move_dist()
   bool move(float deltaTime);
   bool move_left();
   bool move_right();

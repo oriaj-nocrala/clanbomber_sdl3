@@ -7,6 +7,7 @@
 #include "AudioMixer.h"
 #include "Resources.h"
 #include "Extra.h"
+#include "TileManager.h"
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -195,8 +196,20 @@ void GameplayScreen::update(float deltaTime) {
     //     // Handle end of game
     // }
 
-    delete_some();
-    act_all();
+    // CLEAN ARCHITECTURE: Each manager handles its own responsibility
+    
+    // TileManager coordinates ALL tile-related logic (eliminates coordination crossing!)
+    if (app->tile_manager) {
+        app->tile_manager->update_tiles(deltaTime);
+    }
+    
+    delete_some();  // Clean up objects marked as DELETED by LifecycleManager
+    act_all();      // Update objects still ACTIVE or DYING
+    
+    // Final cleanup of dead objects
+    if (app->lifecycle_manager) {
+        app->lifecycle_manager->cleanup_dead_objects();
+    }
     
     // Handle gore delay and victory checking
     if (!game_over) {
@@ -291,9 +304,8 @@ void GameplayScreen::act_all() {
     avg_delta = avg_delta * 0.9f + deltaTime * 0.1f;
     deltaTime = avg_delta;
     
-    if (app->map != nullptr) {
-        app->map->act();
-    }
+    // Map is now a PURE GRID MANAGER - no act() needed!
+    // TileManager handles all coordination in update() above
 
     // Update all objects with consistent delta time
     for (auto& obj : app->objects) {
@@ -310,16 +322,21 @@ void GameplayScreen::act_all() {
 }
 
 void GameplayScreen::delete_some() {
-    app->objects.remove_if([](GameObject* obj) {
-        if (obj->delete_me) {
+    // LifecycleManager handles all object deletion coordination
+    app->objects.remove_if([this](GameObject* obj) {
+        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(obj);
+        if (state == LifecycleManager::ObjectState::DELETED) {
+            SDL_Log("GameplayScreen: Deleting object %p (LifecycleManager approved)", obj);
             delete obj;
             return true;
         }
         return false;
     });
 
-    app->bomber_objects.remove_if([](Bomber* bomber) {
-        if (bomber->delete_me) {
+    app->bomber_objects.remove_if([this](Bomber* bomber) {
+        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(bomber);
+        if (state == LifecycleManager::ObjectState::DELETED) {
+            SDL_Log("GameplayScreen: Deleting bomber %p (LifecycleManager approved)", bomber);
             delete bomber;
             return true;
         }

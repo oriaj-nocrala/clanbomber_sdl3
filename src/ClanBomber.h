@@ -24,6 +24,9 @@
 
 #include "Resources.h"
 #include "GPUAcceleratedRenderer.h"
+#include "LifecycleManager.h"
+
+class TileManager;
 
 class Menu;
 class Observer;
@@ -123,6 +126,8 @@ class ClanBomberApplication
   std::list<Bomber*> bomber_objects;
   GPUAcceleratedRenderer* gpu_renderer;
   class TextRenderer* text_renderer;
+  LifecycleManager* lifecycle_manager;
+  TileManager* tile_manager;
 
   bool init_server_game();
   bool init_client_game();

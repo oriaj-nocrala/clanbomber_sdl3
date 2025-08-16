@@ -99,6 +99,11 @@ GameObject::GameObject( int _x, int _y, ClanBomberApplication *_app )
 	server_x = (int)x;
 	server_y = (int)y;
 	reset_next_fly_job();
+	
+	// Register with LifecycleManager
+	if (app && app->lifecycle_manager) {
+		app->lifecycle_manager->register_object(this);
+	}
 }
 
 GameObject::~GameObject()
@@ -617,51 +622,6 @@ void GameObject::continue_flying(float deltaTime)
 	}
 }
 
-// @DEPRECATED: This function will be removed in a future version. Use move_dist instead.
-bool GameObject::move(float deltaTime, int _speed, Direction _dir )
-{
-	if (_dir == DIR_NONE && cur_dir != DIR_NONE) {
-		return move(deltaTime, _speed, cur_dir );
-	}
-
-	int span = (int)(deltaTime * _speed);
-	
-	remainder += deltaTime * _speed - (int)(deltaTime * _speed);
-	span += (int)(remainder);
-	remainder -= (int)(remainder);
-	
-	for (int i=0; i<span; i++) {
-		switch (_dir) {
-			case DIR_LEFT:
-				if (!move_left()) {
-					stop();
-					return false;
-				}
-				break;
-			case DIR_RIGHT:
-				if (!move_right()) {
-					stop();
-					return false;
-				}
-				break;
-			case DIR_UP:
-				if (!move_up()) {
-					stop();
-					return false;
-				}
-				break;
-			case DIR_DOWN:
-				if (!move_down()) {
-					stop();
-					return false;
-				}
-				break;
-			default:
-				break;
-		}
-	}
-	return true;
-}
 
 void GameObject::fall()
 {
@@ -824,9 +784,16 @@ MapTile* GameObject::get_tile() const
 
 void GameObject::show()
 {
-    if (texture_name.empty() || delete_me) {
+    if (texture_name.empty()) {
         return;
     }
+    
+    // LifecycleManager controls rendering: don't render if truly deleted, but allow DYING state
+    LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(this);
+    if (state == LifecycleManager::ObjectState::DELETED) {
+        return;  // Object is truly dead, don't render
+    }
+    // Continue rendering for ACTIVE, DYING, and DEAD states
     
 
     TextureInfo* tex_info = Resources::get_texture(texture_name);

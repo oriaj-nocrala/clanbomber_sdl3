@@ -20,6 +20,7 @@
 #include "Map.h"
 #include "GameObject.h"
 #include "Bomber.h"
+#include "TileManager.h"
 
 ClanBomberApplication::ClanBomberApplication() {
     map = nullptr;
@@ -28,6 +29,8 @@ ClanBomberApplication::ClanBomberApplication() {
     client_disconnected_from_server = false;
     client_connecting_to_new_server = false;
     gpu_renderer = nullptr;
+    lifecycle_manager = new LifecycleManager();
+    tile_manager = new TileManager(this);
 }
 
 ClanBomberApplication::~ClanBomberApplication() {
@@ -39,6 +42,14 @@ ClanBomberApplication::~ClanBomberApplication() {
     if (gpu_renderer) {
         delete gpu_renderer;
         gpu_renderer = nullptr;
+    }
+    if (lifecycle_manager) {
+        delete lifecycle_manager;
+        lifecycle_manager = nullptr;
+    }
+    if (tile_manager) {
+        delete tile_manager;
+        tile_manager = nullptr;
     }
 }
 

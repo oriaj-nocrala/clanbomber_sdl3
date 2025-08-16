@@ -26,7 +26,9 @@ public:
     void refresh_holes();
     void randomize_bomber_positions();
     
+    // === GRID MANAGEMENT (Pure Grid Manager) ===
     MapTile* get_tile(int tx, int ty);
+    void set_tile(int tx, int ty, MapTile* tile);  // Para TileManager
     CL_Vector get_bomber_pos(int nr);
     
     bool any_valid_map();

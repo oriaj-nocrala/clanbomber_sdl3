@@ -130,11 +130,23 @@ void Map::show() {
     }
 }
 
+// === PURE GRID MANAGER FUNCTIONS ===
+
 MapTile* Map::get_tile(int tx, int ty) {
     if (tx >= 0 && tx < MAP_WIDTH && ty >= 0 && ty < MAP_HEIGHT) {
         return maptiles[tx][ty];
     }
     return nullptr;
+}
+
+void Map::set_tile(int tx, int ty, MapTile* tile) {
+    if (tx < 0 || tx >= MAP_WIDTH || ty < 0 || ty >= MAP_HEIGHT) {
+        SDL_Log("Map::set_tile() - Invalid position (%d,%d)", tx, ty);
+        return;
+    }
+    
+    SDL_Log("Map: Setting tile at (%d,%d) to %p", tx, ty, tile);
+    maptiles[tx][ty] = tile;
 }
 
 void Map::load_random_valid() {
@@ -159,22 +171,11 @@ void Map::load_next_valid(int map_nr) {
 }
 
 void Map::act() {
-    // Update animated map tiles and handle destroyed boxes
-    for (int x = 0; x < MAP_WIDTH; x++) {
-        for (int y = 0; y < MAP_HEIGHT; y++) {
-            if (maptiles[x][y]) {
-                maptiles[x][y]->act();
-                
-                // Replace destroyed boxes with ground tiles
-                if (maptiles[x][y]->delete_me) {
-                    SDL_Log("Map::act() replacing tile at (%d,%d) with ground (was type %d)", 
-                            x, y, maptiles[x][y]->get_tile_type());
-                    delete maptiles[x][y];
-                    maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
-                }
-            }
-        }
-    }
+    // Map is now a PURE GRID MANAGER - NO coordination logic!
+    // TileManager handles ALL coordination between systems
+    
+    // Map only provides grid access - that's it!
+    // NO MORE coordination crossing here!
 }
 
 void Map::refresh_holes() {
