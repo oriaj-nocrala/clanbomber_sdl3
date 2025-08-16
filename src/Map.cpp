@@ -1,5 +1,7 @@
 #include "Map.h"
 #include "MapTile.h"
+#include "TileEntity.h"
+#include "MapTile_Pure.h"
 #include "MapEntry.h"
 #include "ClanBomber.h"
 #include <algorithm>
@@ -12,10 +14,11 @@ Map::Map(ClanBomberApplication* _app) {
     current_map_index = 0;
     current_map = nullptr;
     
-    // Initialize maptiles array
+    // Initialize both arrays
     for (int x = 0; x < MAP_WIDTH; x++) {
         for (int y = 0; y < MAP_HEIGHT; y++) {
-            maptiles[x][y] = nullptr;
+            maptiles[x][y] = nullptr;  // Legacy compatibility
+            tile_entities[x][y] = nullptr;  // NEW: TileEntity storage
         }
     }
     
@@ -70,11 +73,18 @@ void Map::load() {
 }
 
 void Map::clear() {
+    // Clear legacy tiles
     for (int x = 0; x < MAP_WIDTH; x++) {
         for (int y = 0; y < MAP_HEIGHT; y++) {
             if (maptiles[x][y]) {
                 delete maptiles[x][y];
                 maptiles[x][y] = nullptr;
+            }
+            
+            // Clear TileEntity (registered with LifecycleManager, don't delete directly)
+            if (tile_entities[x][y]) {
+                // TileEntity cleanup handled by LifecycleManager
+                tile_entities[x][y] = nullptr;
             }
         }
     }
@@ -85,45 +95,78 @@ void Map::reload() {
     
     clear();
     
+    SDL_Log("Map: Loading with NEW TileEntity architecture");
+    
     for (int y = 0; y < MAP_HEIGHT; y++) {
         for (int x = 0; x < MAP_WIDTH; x++) {
             char tile_char = current_map->get_data(x, y);
+            
+            MapTile_Pure::TILE_TYPE tile_type;
             
             switch (tile_char) {
                 case '0': case '1': case '2': case '3':
                 case '4': case '5': case '6': case '7':
                 case ' ':
-                    maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
+                    tile_type = MapTile_Pure::GROUND;
                     break;
                 case '*':
-                    maptiles[x][y] = MapTile::create(MapTile::WALL, x*40, y*40, app);
+                case '-':
+                    tile_type = MapTile_Pure::WALL;
                     break;
                 case '+':
-                    maptiles[x][y] = MapTile::create(MapTile::BOX, x*40, y*40, app);
+                    tile_type = MapTile_Pure::BOX;
                     break;
                 case 'R':
                     // Random box
-                    if (rand() % 3) {
-                        maptiles[x][y] = MapTile::create(MapTile::BOX, x*40, y*40, app);
-                    } else {
-                        maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
-                    }
-                    break;
-                case '-':
-                    maptiles[x][y] = MapTile::create(MapTile::WALL, x*40, y*40, app);
+                    tile_type = (rand() % 3) ? MapTile_Pure::BOX : MapTile_Pure::GROUND;
                     break;
                 default:
-                    maptiles[x][y] = MapTile::create(MapTile::GROUND, x*40, y*40, app);
+                    tile_type = MapTile_Pure::GROUND;
                     break;
             }
+            
+            // Create NEW architecture: MapTile_Pure + TileEntity
+            MapTile_Pure* tile_data = MapTile_Pure::create(tile_type, x, y);
+            
+            if (tile_type == MapTile_Pure::BOX) {
+                // Use specialized TileEntity_Box for box tiles
+                tile_entities[x][y] = new TileEntity_Box(tile_data, app);
+            } else {
+                // Use base TileEntity for other tiles
+                tile_entities[x][y] = new TileEntity(tile_data, app);
+            }
+            
+            // Register with LifecycleManager
+            if (app && app->lifecycle_manager) {
+                app->lifecycle_manager->register_tile_entity(tile_entities[x][y]);
+            }
+            
+            // Add to objects list for rendering and updates
+            if (app) {
+                app->objects.push_back(tile_entities[x][y]);
+            }
+            
+            // Legacy compatibility: also create old MapTile
+            maptiles[x][y] = MapTile::create(
+                tile_type == MapTile_Pure::GROUND ? MapTile::GROUND :
+                tile_type == MapTile_Pure::WALL ? MapTile::WALL :
+                MapTile::BOX, 
+                x*40, y*40, app);
         }
     }
+    
+    SDL_Log("Map: Created %d TileEntities with new architecture", MAP_WIDTH * MAP_HEIGHT);
 }
 
 void Map::show() {
+    // NEW ARCHITECTURE: TileEntities render themselves through GameObject system
+    // No need to render here - TileEntities are in app->objects and render automatically
+    
+    // Legacy compatibility: still show old tiles if needed
     for (int x = 0; x < MAP_WIDTH; x++) {
         for (int y = 0; y < MAP_HEIGHT; y++) {
-            if (maptiles[x][y]) {
+            if (maptiles[x][y] && !tile_entities[x][y]) {
+                // Only show legacy tiles if no TileEntity exists
                 maptiles[x][y]->show();
             }
         }
@@ -139,14 +182,43 @@ MapTile* Map::get_tile(int tx, int ty) {
     return nullptr;
 }
 
+TileEntity* Map::get_tile_entity(int tx, int ty) {
+    if (tx >= 0 && tx < MAP_WIDTH && ty >= 0 && ty < MAP_HEIGHT) {
+        return tile_entities[tx][ty];
+    }
+    return nullptr;
+}
+
 void Map::set_tile(int tx, int ty, MapTile* tile) {
     if (tx < 0 || tx >= MAP_WIDTH || ty < 0 || ty >= MAP_HEIGHT) {
         SDL_Log("Map::set_tile() - Invalid position (%d,%d)", tx, ty);
         return;
     }
     
-    SDL_Log("Map: Setting tile at (%d,%d) to %p", tx, ty, tile);
+    SDL_Log("Map: Setting legacy tile at (%d,%d) to %p", tx, ty, tile);
     maptiles[tx][ty] = tile;
+}
+
+void Map::set_tile_entity(int tx, int ty, TileEntity* tile_entity) {
+    if (tx < 0 || tx >= MAP_WIDTH || ty < 0 || ty >= MAP_HEIGHT) {
+        SDL_Log("Map::set_tile_entity() - Invalid position (%d,%d)", tx, ty);
+        return;
+    }
+    
+    SDL_Log("Map: Setting TileEntity at (%d,%d) to %p", tx, ty, tile_entity);
+    tile_entities[tx][ty] = tile_entity;
+}
+
+void Map::clear_tile_entity_at(int tx, int ty) {
+    if (tx < 0 || tx >= MAP_WIDTH || ty < 0 || ty >= MAP_HEIGHT) {
+        SDL_Log("Map::clear_tile_entity_at() - Invalid position (%d,%d)", tx, ty);
+        return;
+    }
+    
+    if (tile_entities[tx][ty]) {
+        SDL_Log("Map: Clearing TileEntity pointer at (%d,%d) - was %p", tx, ty, tile_entities[tx][ty]);
+        tile_entities[tx][ty] = nullptr;
+    }
 }
 
 void Map::load_random_valid() {

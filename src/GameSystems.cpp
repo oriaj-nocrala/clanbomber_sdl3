@@ -17,6 +17,11 @@ GameSystems::~GameSystems() {
 }
 
 void GameSystems::update_all_systems(float deltaTime) {
+    if (!systems_initialized) {
+        SDL_Log("WARNING: GameSystems not initialized, skipping update");
+        return;
+    }
+    
     // Cap delta time to prevent issues with large time steps
     const float max_delta = 1.0f / 30.0f; // 30 FPS minimum
     if (deltaTime > max_delta) {
@@ -33,6 +38,9 @@ void GameSystems::update_all_systems(float deltaTime) {
     update_physics_system(deltaTime);
     update_collision_system(deltaTime);
     update_animation_system(deltaTime);
+    
+    // Clean up destroyed objects after all updates
+    cleanup_destroyed_objects();
 }
 
 void GameSystems::render_all_systems() {
@@ -87,14 +95,53 @@ void GameSystems::render_ui() {
     // TODO: Extract UI rendering
 }
 
+void GameSystems::set_object_references(std::list<GameObject*>* objects, 
+                                        std::list<Bomber*>* bombers) {
+    objects_ref = objects;
+    bombers_ref = bombers;
+    SDL_Log("GameSystems: Object references set successfully");
+}
+
+void GameSystems::init_all_systems() {
+    if (!context) {
+        SDL_Log("ERROR: GameSystems cannot initialize without GameContext");
+        return;
+    }
+    
+    if (!objects_ref || !bombers_ref) {
+        SDL_Log("ERROR: GameSystems cannot initialize without object references");
+        return;
+    }
+    
+    // Initialize individual systems here
+    systems_initialized = true;
+    SDL_Log("GameSystems: All systems initialized successfully");
+}
+
 void GameSystems::register_object(GameObject* obj) {
-    // TODO: Implement proper object registration
+    if (objects_ref && obj) {
+        objects_ref->push_back(obj);
+        SDL_Log("GameSystems: Registered object %p", obj);
+    }
 }
 
 void GameSystems::register_bomber(Bomber* bomber) {
-    // TODO: Implement proper bomber registration
+    if (bombers_ref && bomber) {
+        bombers_ref->push_back(bomber);
+        SDL_Log("GameSystems: Registered bomber %p", bomber);
+    }
 }
 
 void GameSystems::cleanup_destroyed_objects() {
-    // TODO: Extract cleanup logic from GameplayScreen
+    // CRITICAL FIX: GameSystems should NOT delete objects directly!
+    // This was causing use-after-free because LifecycleManager still held references
+    // to objects that GameSystems was deleting.
+    //
+    // ARCHITECTURE DECISION: LifecycleManager has exclusive responsibility for object deletion
+    // GameSystems only coordinates behavior between objects, not their lifecycle
+    
+    SDL_Log("GameSystems: cleanup_destroyed_objects() called - delegating to LifecycleManager");
+    
+    // NO MORE DIRECT DELETION - LifecycleManager handles all object cleanup
+    // This eliminates the dual cleanup system that was causing use-after-free bugs
 }

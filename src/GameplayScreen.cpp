@@ -8,12 +8,14 @@
 #include "Resources.h"
 #include "Extra.h"
 #include "TileManager.h"
+#include "GameSystems.h"
+#include "TileEntity.h"
 #include <algorithm>
 #include <set>
 #include <vector>
 #include <string>
 
-GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app) {
+GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app), game_systems(nullptr) {
     SDL_Log("GameplayScreen::GameplayScreen() - Loading game configuration...");
     GameConfig::load(); // Load game configuration before initializing
     
@@ -26,6 +28,10 @@ GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app) {
 }
 
 GameplayScreen::~GameplayScreen() {
+    if (game_systems) {
+        delete game_systems;
+        game_systems = nullptr;
+    }
     deinit_game();
 }
 
@@ -133,19 +139,39 @@ void GameplayScreen::init_game() {
             }
         }
     }
+    
+    // Initialize GameContext now that Map exists
+    if (app->map) {
+        app->initialize_game_context();
+        SDL_Log("GameContext initialized after map creation");
+    }
+    
+    // Initialize GameSystems after GameContext is ready
+    if (app->game_context) {
+        game_systems = new GameSystems(app->game_context);
+        game_systems->set_object_references(&app->objects, &app->bomber_objects);
+        game_systems->init_all_systems();
+        SDL_Log("GameSystems initialized in GameplayScreen");
+    } else {
+        SDL_Log("WARNING: GameContext not available, using legacy act_all()");
+    }
 }
 
 void GameplayScreen::deinit_game() {
-    for (auto& obj : app->objects) {
-        delete obj;
-    }
+    // CRITICAL FIX: Do NOT delete objects directly here!
+    // This was causing use-after-free during shutdown because LifecycleManager
+    // still held references to objects that GameplayScreen was deleting.
+    //
+    // ARCHITECTURE DECISION: LifecycleManager has exclusive responsibility for object deletion
+    // GameplayScreen only clears its references, doesn't delete the objects
+    
+    SDL_Log("GameplayScreen: deinit_game() - clearing references (LifecycleManager will handle deletion)");
+    
+    // Clear references without deleting - LifecycleManager will handle cleanup
     app->objects.clear();
-
-    for (auto& bomber : app->bomber_objects) {
-        delete bomber;
-    }
     app->bomber_objects.clear();
 
+    // Map deletion is safe as it's not managed by LifecycleManager
     delete app->map;
     app->map = nullptr;
 
@@ -204,7 +230,13 @@ void GameplayScreen::update(float deltaTime) {
     }
     
     delete_some();  // Clean up objects marked as DELETED by LifecycleManager
-    act_all();      // Update objects still ACTIVE or DYING
+    
+    // Use GameSystems if available, fallback to legacy
+    if (game_systems) {
+        game_systems->update_all_systems(deltaTime);
+    } else {
+        act_all();  // Legacy fallback
+    }
     
     // Final cleanup of dead objects
     if (app->lifecycle_manager) {
@@ -327,6 +359,16 @@ void GameplayScreen::delete_some() {
         LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(obj);
         if (state == LifecycleManager::ObjectState::DELETED) {
             SDL_Log("GameplayScreen: Deleting object %p (LifecycleManager approved)", obj);
+            
+            // CRITICAL FIX: Clear Map grid pointer for TileEntity before deletion
+            if (obj->get_type() == GameObject::MAPTILE && app->map) {
+                TileEntity* tile_entity = static_cast<TileEntity*>(obj);
+                int map_x = tile_entity->get_map_x();
+                int map_y = tile_entity->get_map_y();
+                SDL_Log("GameplayScreen: Clearing Map grid pointer for TileEntity at (%d,%d) before deletion", map_x, map_y);
+                app->map->clear_tile_entity_at(map_x, map_y);
+            }
+            
             delete obj;
             return true;
         }

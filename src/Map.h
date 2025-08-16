@@ -9,6 +9,8 @@
 #define MAP_HEIGHT 15
 
 class MapTile;
+class TileEntity;
+class MapTile_Pure;
 class MapEntry;
 class ClanBomberApplication;
 class Bomber;
@@ -27,8 +29,11 @@ public:
     void randomize_bomber_positions();
     
     // === GRID MANAGEMENT (Pure Grid Manager) ===
-    MapTile* get_tile(int tx, int ty);
-    void set_tile(int tx, int ty, MapTile* tile);  // Para TileManager
+    MapTile* get_tile(int tx, int ty);  // Legacy compatibility
+    TileEntity* get_tile_entity(int tx, int ty);  // NEW: TileEntity access
+    void set_tile(int tx, int ty, MapTile* tile);  // Legacy compatibility
+    void set_tile_entity(int tx, int ty, TileEntity* tile_entity);  // NEW: TileEntity support
+    void clear_tile_entity_at(int tx, int ty);  // NEW: Clear TileEntity pointer (for use-after-free fix)
     CL_Vector get_bomber_pos(int nr);
     
     bool any_valid_map();
@@ -38,7 +43,10 @@ public:
 
 private:
     ClanBomberApplication* app;
-    MapTile* maptiles[MAP_WIDTH][MAP_HEIGHT];
+    
+    // NUEVO: Dual storage para transición
+    MapTile* maptiles[MAP_WIDTH][MAP_HEIGHT];  // Legacy storage
+    TileEntity* tile_entities[MAP_WIDTH][MAP_HEIGHT];  // NEW: TileEntity storage
     std::vector<MapEntry*> map_list;
     MapEntry* current_map;
     int current_map_index;
