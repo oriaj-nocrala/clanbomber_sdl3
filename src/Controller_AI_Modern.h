@@ -58,7 +58,7 @@ protected:
     
     Controller_AI_Modern* controller;
     Bomber* bomber;
-    ClanBomberApplication* app;
+    GameContext* context;
 };
 
 // Move job - go in a specific direction for a distance

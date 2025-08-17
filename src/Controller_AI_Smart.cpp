@@ -334,7 +334,7 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
     // Simplified pathfinding - in a real implementation, use A*
     std::vector<CL_Vector> path;
     
-    if (!bomber || !bomber->app || !bomber->get_context()->get_map()) {
+    if (!bomber || !bomber->get_context() || !bomber->get_context()->get_map()) {
         return path;
     }
     
@@ -443,7 +443,7 @@ float Controller_AI_Smart::calculate_danger_level(CL_Vector pos) {
 }
 
 CL_Vector Controller_AI_Smart::find_safe_position() {
-    if (!bomber || !bomber->app || !bomber->get_context()->get_map()) {
+    if (!bomber || !bomber->get_context() || !bomber->get_context()->get_map()) {
         return CL_Vector(bomber->get_x(), bomber->get_y());
     }
     

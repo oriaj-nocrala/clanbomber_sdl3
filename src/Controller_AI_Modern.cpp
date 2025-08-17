@@ -30,7 +30,7 @@ namespace {
 AIJob::AIJob(Controller_AI_Modern* _controller) 
     : controller(_controller)
     , bomber(_controller->bomber)
-    , app(_controller->bomber->app)
+    , context(_controller->bomber->get_context())
 {
 }
 
@@ -223,7 +223,7 @@ void Controller_AI_Modern::attach(Bomber* _bomber) {
     Controller::attach(_bomber);
     
     // Update map reference when bomber is attached
-    if (bomber && bomber->app) {
+    if (bomber && bomber->get_context()) {
         map = bomber->get_context()->get_map();
     }
 }
@@ -233,7 +233,7 @@ void Controller_AI_Modern::reset() {
     put_bomb = false;
     
     // Only set map if bomber is available
-    if (bomber && bomber->app) {
+    if (bomber && bomber->get_context()) {
         map = bomber->get_context()->get_map();
     } else {
         map = nullptr;
@@ -275,7 +275,7 @@ void Controller_AI_Modern::generate_rating_map() {
     }
     
     // Analyze all objects in the game
-    for (auto& obj : bomber->app->objects) {
+    for (auto& obj : *bomber->get_context()->get_object_lists()) {
         if (!obj) continue;
         
         int x = obj->get_map_x();
@@ -789,7 +789,7 @@ bool Controller_AI_Modern::should_move_to_better_position() const {
 int Controller_AI_Modern::count_active_bombs() const {
     int count = 0;
     // Count bombs on the map that belong to this bomber
-    for (auto& obj : bomber->app->objects) {
+    for (auto& obj : *bomber->get_context()->get_object_lists()) {
         if (obj && obj->get_type() == GameObject::BOMB) {
             // Simplified: count all bombs (could check ownership if bomber ID available)
             count++;

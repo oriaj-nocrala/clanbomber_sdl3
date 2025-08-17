@@ -269,7 +269,7 @@ void TileEntity_Box::render_fragmentation_effects() {
     float animation_progress = destroy_animation / 0.5f; // 0.0 to 1.0
     animation_progress = std::min(animation_progress, 1.0f);
     
-    if (app && get_context()->get_renderer()) {
+    if (get_context() && get_context()->get_renderer()) {
         GLuint gl_texture = Resources::get_gl_texture(texture_name);
         if (gl_texture) {
             try {

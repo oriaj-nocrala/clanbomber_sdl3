@@ -113,12 +113,17 @@ void GameplayScreen::init_game() {
             // Create bomber at temporary position (off-screen or center)
             int temp_x = 400 - i * 20;
             int temp_y = 300 - i * 20;
-            Bomber* bomber = new Bomber(temp_x, temp_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, app);
+            Bomber* bomber = new Bomber(temp_x, temp_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, app->game_context);
             bomber->set_name(GameConfig::bomber[i].get_name());
             bomber->set_team(GameConfig::bomber[i].get_team());
             bomber->set_number(i);
             bomber->set_lives(3); // Start with 3 lives
             app->bomber_objects.push_back(bomber);
+            
+            // Register bomber with GameContext for proper lifecycle management
+            if (app->game_context) {
+                app->game_context->register_object(bomber);
+            }
             
             // Start fly-to animation to final position
             bomber->fly_to((int)(pos.x*40), (int)(pos.y*40), 1000 + i * 200); // 1 second + stagger

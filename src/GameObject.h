@@ -46,14 +46,6 @@ class MapTile;
 class GameObject
 {
 public:
-  /**
-   * Constructor (Legacy).
-   * Used to create a game object with ClanBomberApplication dependency
-   * @param _x Object screen x coordinate.
-   * @param _y Object screen y coordinate.
-   * @param _app Pointer to parent ClanBomberApplication.
-   */
-  GameObject( int _x, int _y, ClanBomberApplication *_app );
   
   /**
    * Constructor (Preferred).
@@ -215,7 +207,6 @@ public:
    * If set to true this object should be deleted next act loop.
    */
   bool delete_me;
-  ClanBomberApplication *app;
   void set_next_fly_job(int flyjobx, int flyjoby, int flyjobspeed);
   
   // Texture management for components
@@ -300,7 +291,6 @@ private:
   bool is_blocked(float check_x, float check_y);
   bool is_next_fly_job();
   int next_fly_job[3];
-  void init(ClanBomberApplication *_app);
   GameContext* game_context = nullptr;
 };
 

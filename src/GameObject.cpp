@@ -60,17 +60,10 @@ const char* GameObject::objecttype2string(ObjectType t)
     return "*UNKNOWN*";
 }
 
-GameObject::GameObject( int _x, int _y, ClanBomberApplication *_app )
-{
-	init(_app);
-	x = orig_x = _x;
-	y = orig_y = _y;
-}
 
 GameObject::GameObject( int _x, int _y, GameContext* context )
 {
-	// NEW CONSTRUCTOR: GameContext dependency injection
-	app = nullptr; // Don't use legacy app directly
+	// GAMECONTEXT CONSTRUCTOR: Modern dependency injection
 	game_context = context;
 	
 	texture_name = "bomber_snake"; // placeholder
@@ -118,10 +111,8 @@ GameObject::GameObject( int _x, int _y, GameContext* context )
 
 GameContext* GameObject::get_context() const
 {
-	// Return GameContext from either source
-	if (game_context) return game_context;
-	if (app && app->game_context) return app->game_context;
-	return nullptr;
+	// GAMECONTEXT ONLY: All objects use GameContext constructor
+	return game_context;
 }
 
 GameObject::~GameObject()
@@ -250,11 +241,13 @@ bool GameObject::move_right()
 // Handle bomb kicking if movement failed due to bomb
 bool GameObject::try_kick_right()
 {
-	// DEFENSIVE: Null pointer protection
-	if (!app || !app->map) {
-		SDL_Log("ERROR: try_kick_right called with null app or map");
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: try_kick_right called with null context or map");
 		return false;
 	}
+	Map* map = context->get_map();
 	
 	// Check if there's a bomb to kick and we can kick
 	if (!can_kick || !has_bomb_at(x+40, y+20)) {
@@ -263,11 +256,11 @@ bool GameObject::try_kick_right()
 	
 	// Get bomb from either architecture
 	Bomb* bomb_to_kick = nullptr;
-	MapTile* legacy_tile = app->map->get_tile(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
+	MapTile* legacy_tile = map->get_tile(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
 	if (legacy_tile && legacy_tile->bomb) {
 		bomb_to_kick = legacy_tile->bomb;
 	} else {
-		TileEntity* tile_entity = app->map->get_tile_entity(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
+		TileEntity* tile_entity = map->get_tile_entity(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
 		if (tile_entity) {
 			bomb_to_kick = tile_entity->get_bomb();
 		}
@@ -285,11 +278,13 @@ bool GameObject::try_kick_right()
 // Handle bomb kicking if movement failed due to bomb
 bool GameObject::try_kick_left()
 {
-	// DEFENSIVE: Null pointer protection
-	if (!app || !app->map) {
-		SDL_Log("ERROR: try_kick_left called with null app or map");
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: try_kick_left called with null context or map");
 		return false;
 	}
+	Map* map = context->get_map();
 	
 	// Check if there's a bomb to kick and we can kick
 	if (!can_kick || !has_bomb_at(x-1, y+20)) {
@@ -298,11 +293,11 @@ bool GameObject::try_kick_left()
 	
 	// Get bomb from either architecture
 	Bomb* bomb_to_kick = nullptr;
-	MapTile* legacy_tile = app->map->get_tile(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
+	MapTile* legacy_tile = map->get_tile(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
 	if (legacy_tile && legacy_tile->bomb) {
 		bomb_to_kick = legacy_tile->bomb;
 	} else {
-		TileEntity* tile_entity = app->map->get_tile_entity(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
+		TileEntity* tile_entity = map->get_tile_entity(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
 		if (tile_entity) {
 			bomb_to_kick = tile_entity->get_bomb();
 		}
@@ -362,7 +357,15 @@ bool GameObject::move_left()
 
 bool GameObject::move_up()
 {
-	MapTile* up_maptile = app->map->get_tile((int)(x+20)/40, (int)(y-1)/40);
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: move_up called with null context or map");
+		return false;
+	}
+	Map* map = context->get_map();
+	
+	MapTile* up_maptile = map->get_tile((int)(x+20)/40, (int)(y-1)/40);
 	if (up_maptile->is_blocking()) {
 		return false;
 	}
@@ -371,12 +374,12 @@ bool GameObject::move_up()
 		y--;
 			
 		if (get_x()%40 > 19) {
-			if (app->map->get_tile((get_x()-20)/40,(get_y()-1)/40)->is_blocking()) {
+			if (map->get_tile((get_x()-20)/40,(get_y()-1)/40)->is_blocking()) {
 				x++;
 			}
 		}
 		else if (get_x()%40 > 0) {
-			if (app->map->get_tile((get_x()+60)/40,(get_y()-1)/40)->is_blocking()) {
+			if (map->get_tile((get_x()+60)/40,(get_y()-1)/40)->is_blocking()) {
 				x--;
 			}
 		}
@@ -409,7 +412,15 @@ bool GameObject::move_up()
 
 bool GameObject::move_down()
 {
-	MapTile* down_maptile = app->map->get_tile((int)(x+20)/40,(int)(y+40)/40);
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: move_down called with null context or map");
+		return false;
+	}
+	Map* map = context->get_map();
+	
+	MapTile* down_maptile = map->get_tile((int)(x+20)/40,(int)(y+40)/40);
 	
 	if (down_maptile->is_blocking()) {
 		return false;
@@ -419,12 +430,12 @@ bool GameObject::move_down()
 		y++;
 			
 		if (get_x()%40 > 19) {
-			if (app->map->get_tile((get_x()-20)/40,(get_y()+40)/40)->is_blocking()) {
+			if (map->get_tile((get_x()-20)/40,(get_y()+40)/40)->is_blocking()) {
 				x++;
 			}
 		}
 		else if (get_x()%40 > 0) {
-			if (app->map->get_tile((get_x()+60)/40,(get_y()+40)/40)->is_blocking()) {
+			if (map->get_tile((get_x()+60)/40,(get_y()+40)/40)->is_blocking()) {
 				x--;
 			}
 		}
@@ -457,6 +468,13 @@ bool GameObject::move_down()
 
 
 bool GameObject::is_blocked(float check_x, float check_y) {
+    // GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+    GameContext* context = get_context();
+    if (!context || !context->get_map()) {
+        return false; // If no context/map, consider not blocked (defensive)
+    }
+    Map* map = context->get_map();
+    
     float bbox_left = check_x + 10;
     float bbox_right = check_x + 29;
     float bbox_top = check_y + 10;
@@ -472,13 +490,13 @@ bool GameObject::is_blocked(float check_x, float check_y) {
     int cx2 = (int)(x+39) / 40, cy2 = (int)(y+39) / 40;
     for (int my = cy1; my <= cy2; ++my) {
         for (int mx = cx1; mx <= cx2; ++mx) {
-            current_tiles.insert(app->map->get_tile(mx, my));
+            current_tiles.insert(map->get_tile(mx, my));
         }
     }
 
     for (int my = map_y1; my <= map_y2; ++my) {
         for (int mx = map_x1; mx <= map_x2; ++mx) {
-            MapTile* tile = app->map->get_tile(mx, my);
+            MapTile* tile = map->get_tile(mx, my);
             if (tile->is_blocking()) {
                 return true; // Wall collision
             }
@@ -689,7 +707,11 @@ void GameObject::continue_flying(float deltaTime)
 		x += time_step * fly_speed * fly_dist_x;
 		y += time_step * fly_speed * fly_dist_y;
 		
-		if (get_type() == CORPSE_PART  &&  app->map != NULL) {
+		// GAMECONTEXT MIGRATION: Use GameContext for map checks
+		GameContext* context = get_context();
+		Map* map = context ? context->get_map() : nullptr;
+		
+		if (get_type() == CORPSE_PART  &&  map != nullptr) {
 			if (!can_fly_over_walls && get_tile_type_at(x+20, y+20) == MapTile::WALL) {
 				x -= time_step * fly_speed * fly_dist_x;
 				y -= time_step * fly_speed * fly_dist_y;
@@ -699,7 +721,7 @@ void GameObject::continue_flying(float deltaTime)
 			}
 		}
 		else {
-			if (!can_fly_over_walls  &&  app->map != NULL  &&  (
+			if (!can_fly_over_walls  &&  map != nullptr  &&  (
 				get_tile_type_at(x, y) == MapTile::WALL ||
 				get_tile_type_at(x+39, y) == MapTile::WALL ||
 				get_tile_type_at(x, y+39) == MapTile::WALL ||
@@ -884,41 +906,67 @@ int GameObject::whats_down()
 
 MapTile* GameObject::get_tile() const
 {
-	return app->map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: get_tile called with null context or map");
+		return nullptr;
+	}
+	Map* map = context->get_map();
+	
+	return map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
 }
 
 // NEW ARCHITECTURE SUPPORT: Get legacy tile
 MapTile* GameObject::get_legacy_tile() const
 {
-	return app->map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: get_legacy_tile called with null context or map");
+		return nullptr;
+	}
+	Map* map = context->get_map();
+	
+	return map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
 }
 
 // NEW ARCHITECTURE SUPPORT: Get new TileEntity
 TileEntity* GameObject::get_tile_entity() const
 {
-	return app->map->get_tile_entity( (int)(x+20)/40, (int)(y+20)/40 );
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: get_tile_entity called with null context or map");
+		return nullptr;
+	}
+	Map* map = context->get_map();
+	
+	return map->get_tile_entity( (int)(x+20)/40, (int)(y+20)/40 );
 }
 
 // NEW ARCHITECTURE SUPPORT: Get tile type at pixel position (works with both architectures)
 int GameObject::get_tile_type_at(int pixel_x, int pixel_y) const
 {
-	// DEFENSIVE: Null pointer protection
-	if (!app || !app->map) {
-		SDL_Log("ERROR: get_tile_type_at called with null app or map");
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: get_tile_type_at called with null context or map");
 		return MapTile::GROUND;
 	}
+	Map* map = context->get_map();
 	
 	int map_x = pixel_x / 40;
 	int map_y = pixel_y / 40;
 	
 	// Try legacy MapTile first
-	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+	MapTile* legacy_tile = map->get_tile(map_x, map_y);
 	if (legacy_tile) {
 		return legacy_tile->get_tile_type();
 	}
 	
 	// Try new TileEntity
-	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+	TileEntity* tile_entity = map->get_tile_entity(map_x, map_y);
 	if (tile_entity) {
 		return tile_entity->get_tile_type();
 	}
@@ -930,95 +978,55 @@ int GameObject::get_tile_type_at(int pixel_x, int pixel_y) const
 // NEW ARCHITECTURE SUPPORT: Check if tile is blocking at pixel position (works with both architectures)
 bool GameObject::is_tile_blocking_at(int pixel_x, int pixel_y) const
 {
-	// Try GameContext first (preferred)
-	GameContext* ctx = get_context();
-	if (ctx) {
-		int map_x = pixel_x / 40;
-		int map_y = pixel_y / 40;
-		return ctx->is_position_blocked(map_x, map_y);
-	}
-	
-	// Fallback to legacy approach
-	if (!app || !app->map) {
-		SDL_Log("ERROR: is_tile_blocking_at called with null app or map");
+	// GAMECONTEXT ONLY: No fallback needed - all objects use GameContext
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: is_tile_blocking_at called with null context or map");
 		return false;
 	}
 	
 	int map_x = pixel_x / 40;
 	int map_y = pixel_y / 40;
-	
-	// Try legacy MapTile first
-	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
-	if (legacy_tile) {
-		return legacy_tile->is_blocking();
-	}
-	
-	// Try new TileEntity
-	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
-	if (tile_entity) {
-		return tile_entity->is_blocking();
-	}
-	
-	// Default to non-blocking if no tile found
-	return false;
+	return context->is_position_blocked(map_x, map_y);
 }
 
-// NEW ARCHITECTURE SUPPORT: Check if tile has bomb at pixel position (works with both architectures)
+// NEW ARCHITECTURE SUPPORT: Check if tile has bomb at pixel position
 bool GameObject::has_bomb_at(int pixel_x, int pixel_y) const
 {
-	// Try GameContext first (preferred)
-	GameContext* ctx = get_context();
-	if (ctx) {
-		int map_x = pixel_x / 40;
-		int map_y = pixel_y / 40;
-		return ctx->has_bomb_at(map_x, map_y);
-	}
-	
-	// Fallback to legacy approach
-	if (!app || !app->map) {
-		SDL_Log("ERROR: has_bomb_at called with null app or map");
+	// GAMECONTEXT ONLY: No fallback needed - all objects use GameContext
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: has_bomb_at called with null context or map");
 		return false;
 	}
 	
 	int map_x = pixel_x / 40;
 	int map_y = pixel_y / 40;
-	
-	// Try legacy MapTile first
-	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
-	if (legacy_tile) {
-		return legacy_tile->bomb != nullptr;
-	}
-	
-	// Try new TileEntity
-	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
-	if (tile_entity) {
-		return tile_entity->get_bomb() != nullptr;
-	}
-	
-	// Default to no bomb if no tile found
-	return false;
+	return context->has_bomb_at(map_x, map_y);
 }
 
 // NEW ARCHITECTURE SUPPORT: Check if tile has bomber at pixel position (works with both architectures)
 bool GameObject::has_bomber_at(int pixel_x, int pixel_y) const
 {
-	// DEFENSIVE: Null pointer protection
-	if (!app || !app->map) {
-		SDL_Log("ERROR: has_bomber_at called with null app or map");
+	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+	GameContext* context = get_context();
+	if (!context || !context->get_map()) {
+		SDL_Log("ERROR: has_bomber_at called with null context or map");
 		return false;
 	}
+	Map* map = context->get_map();
 	
 	int map_x = pixel_x / 40;
 	int map_y = pixel_y / 40;
 	
 	// Try legacy MapTile first
-	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+	MapTile* legacy_tile = map->get_tile(map_x, map_y);
 	if (legacy_tile) {
 		return legacy_tile->has_bomber();
 	}
 	
 	// Try new TileEntity
-	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+	TileEntity* tile_entity = map->get_tile_entity(map_x, map_y);
 	if (tile_entity) {
 		return tile_entity->has_bomber();
 	}
@@ -1027,74 +1035,35 @@ bool GameObject::has_bomber_at(int pixel_x, int pixel_y) const
 	return false;
 }
 
-// NEW ARCHITECTURE SUPPORT: Synchronize bomb with both MapTile and TileEntity
+// NEW ARCHITECTURE SUPPORT: Synchronize bomb with TileManager
 void GameObject::set_bomb_on_tile(Bomb* bomb) const {
     int map_x = (int)(x+20)/40;
     int map_y = (int)(y+20)/40;
     
-    // Try GameContext first (preferred)
-    GameContext* ctx = get_context();
-    if (ctx && ctx->get_tile_manager()) {
-        ctx->get_tile_manager()->register_bomb_at(map_x, map_y, bomb);
-        SDL_Log("GameObject: Set bomb %p on tile at (%d,%d) through GameContext", bomb, map_x, map_y);
+    // GAMECONTEXT ONLY: No fallback needed - all objects use GameContext
+    GameContext* context = get_context();
+    if (!context || !context->get_tile_manager()) {
+        SDL_Log("ERROR: set_bomb_on_tile called with null context or tile_manager");
         return;
     }
     
-    // Fallback to direct tile access
-    if (!app || !app->map) {
-        SDL_Log("ERROR: set_bomb_on_tile called with null app or map");
-        return;
-    }
-    
-    // Set on legacy MapTile
-    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
-    if (legacy_tile) {
-        legacy_tile->bomb = bomb;
-    }
-    
-    // Set on new TileEntity
-    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
-    if (tile_entity) {
-        tile_entity->set_bomb(bomb);
-    }
-    
-    SDL_Log("GameObject: Set bomb %p on tile at (%d,%d) - Legacy: %s, TileEntity: %s", 
-            bomb, map_x, map_y, 
-            legacy_tile ? "YES" : "NO", 
-            tile_entity ? "YES" : "NO");
+    context->get_tile_manager()->register_bomb_at(map_x, map_y, bomb);
+    SDL_Log("GameObject: Set bomb %p on tile at (%d,%d) through GameContext", bomb, map_x, map_y);
 }
 
 void GameObject::remove_bomb_from_tile(Bomb* bomb) const {
     int map_x = (int)(x+20)/40;
     int map_y = (int)(y+20)/40;
     
-    // Try GameContext first (preferred)
-    GameContext* ctx = get_context();
-    if (ctx && ctx->get_tile_manager()) {
-        ctx->get_tile_manager()->unregister_bomb_at(map_x, map_y, bomb);
-        SDL_Log("GameObject: Removed bomb %p from tile at (%d,%d) through GameContext", bomb, map_x, map_y);
+    // GAMECONTEXT ONLY: No fallback needed - all objects use GameContext
+    GameContext* context = get_context();
+    if (!context || !context->get_tile_manager()) {
+        SDL_Log("ERROR: remove_bomb_from_tile called with null context or tile_manager");
         return;
     }
     
-    // Fallback to direct tile access
-    if (!app || !app->map) {
-        SDL_Log("ERROR: remove_bomb_from_tile called with null app or map");
-        return;
-    }
-    
-    // Remove from legacy MapTile
-    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
-    if (legacy_tile && legacy_tile->bomb == bomb) {
-        legacy_tile->bomb = nullptr;
-    }
-    
-    // Remove from new TileEntity
-    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
-    if (tile_entity && tile_entity->get_bomb() == bomb) {
-        tile_entity->set_bomb(nullptr);
-    }
-    
-    SDL_Log("GameObject: Removed bomb %p from tile at (%d,%d)", bomb, map_x, map_y);
+    context->get_tile_manager()->unregister_bomb_at(map_x, map_y, bomb);
+    SDL_Log("GameObject: Removed bomb %p from tile at (%d,%d) through GameContext", bomb, map_x, map_y);
 }
 
 void GameObject::show()
@@ -1103,63 +1072,44 @@ void GameObject::show()
         return;
     }
     
-    // LifecycleManager controls rendering: Use proper context access to support both architectures
-    GameContext* ctx = get_context();
-    if (ctx && ctx->get_lifecycle_manager()) {
-        LifecycleManager::ObjectState state = ctx->get_lifecycle_manager()->get_object_state(this);
-        if (state == LifecycleManager::ObjectState::DELETED) {
-            return;  // Object is truly dead, don't render
-        }
-    } else if (app && app->lifecycle_manager) {
-        // Legacy fallback for old constructor
-        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(this);
-        if (state == LifecycleManager::ObjectState::DELETED) {
-            return;  // Object is truly dead, don't render
-        }
+    // GAMECONTEXT ONLY: LifecycleManager controls rendering
+    GameContext* context = get_context();
+    if (!context || !context->get_lifecycle_manager()) {
+        SDL_Log("ERROR: show() called with null context or lifecycle_manager");
+        return;
+    }
+    
+    LifecycleManager::ObjectState state = context->get_lifecycle_manager()->get_object_state(this);
+    if (state == LifecycleManager::ObjectState::DELETED) {
+        return;  // Object is truly dead, don't render
     }
     // Continue rendering for ACTIVE, DYING, and DEAD states
-    
 
     TextureInfo* tex_info = Resources::get_texture(texture_name);
     if (!tex_info) {
         return;
     }
-    // NOTE: tex_info->texture is NULL because we only use OpenGL textures now
-    // We proceed to GPU rendering regardless
 
-    // GPU rendering path - use context for renderer access first
-    if (ctx && ctx->get_renderer() && ctx->get_renderer()->is_ready()) {
-        GLuint gl_texture = Resources::get_gl_texture(texture_name);
-        
-        if (gl_texture) {
-            float color[4] = {1.0f, 1.0f, 1.0f, opacity_scaled / 255.0f};
-            float scale[2] = {1.0f, 1.0f};
-            
-            ctx->get_renderer()->add_sprite(
-                (float)get_x(), (float)get_y(), 
-                tex_info->sprite_width > 0 ? tex_info->sprite_width : 40.0f,
-                tex_info->sprite_height > 0 ? tex_info->sprite_height : 40.0f,
-                gl_texture, color, 0.0f, scale, sprite_nr
-            );
-            return;
-        }
-    } else if (app && app->gpu_renderer && app->gpu_renderer->is_ready()) {
-        // Legacy fallback
-        GLuint gl_texture = Resources::get_gl_texture(texture_name);
-        
-        if (gl_texture) {
-            float color[4] = {1.0f, 1.0f, 1.0f, opacity_scaled / 255.0f};
-            float scale[2] = {1.0f, 1.0f};
-            
-            app->gpu_renderer->add_sprite(
-                (float)get_x(), (float)get_y(), 
-                tex_info->sprite_width > 0 ? tex_info->sprite_width : 40.0f,
-                tex_info->sprite_height > 0 ? tex_info->sprite_height : 40.0f,
-                gl_texture, color, 0.0f, scale, sprite_nr
-            );
-            return;
-        }
+    // GAMECONTEXT ONLY: GPU rendering through GameContext
+    if (!context->get_renderer() || !context->get_renderer()->is_ready()) {
+        SDL_Log("ERROR: show() called with null or unready renderer");
+        return;
     }
+    
+    GLuint gl_texture = Resources::get_gl_texture(texture_name);
+    if (!gl_texture) {
+        return;
+    }
+    
+    float color[4] = {1.0f, 1.0f, 1.0f, opacity_scaled / 255.0f};
+    float scale[2] = {1.0f, 1.0f};
+    
+    context->get_renderer()->add_sprite(
+        (float)get_x(), (float)get_y(), 
+        tex_info->sprite_width > 0 ? tex_info->sprite_width : 40.0f,
+        tex_info->sprite_height > 0 ? tex_info->sprite_height : 40.0f,
+        gl_texture, color, 0.0f, scale, sprite_nr
+    );
 }
 
 void GameObject::show(int _x, int _y) const
@@ -1214,50 +1164,3 @@ bool GameObject::is_next_fly_job()
     return (next_fly_job[0] != 0 || next_fly_job[1] != 0 || next_fly_job[2] != 0);
 }
 
-void GameObject::init(ClanBomberApplication *_app)
-{
-	app = _app;
-	game_context = app ? app->game_context : nullptr;
-
-	texture_name = "bomber_snake"; // placeholder
-	sprite_nr = 0;
-
-	offset_x = 60;
-	offset_y = 40;
-	delete_me = false;
-	remainder =0;
-	speed = 240;
-	
-	cur_dir = DIR_NONE;
-	can_kick = false;
-	can_pass_bomber = false;
-	can_fly_over_walls = true;
-	flying = false;
-	falling = false;
-	fallen_down = false;
-	stopped = false;
-	fly_progress = 0;	// must be set to 0!
-
-	z = 0;
-
-	opacity = 0xff;
-	opacity_scaled = 0xff;
-
-	if (ClanBomberApplication::is_server()) {
-		object_id = ClanBomberApplication::get_next_object_id();
-	}
-	else {
-		object_id = 0;
-	}
-	server_dir = cur_dir;
-	client_dir = cur_dir;
-	local_dir = cur_dir;
-	server_x = (int)x;
-	server_y = (int)y;
-	reset_next_fly_job();
-	
-	// Register with LifecycleManager
-	if (app && app->lifecycle_manager) {
-		app->lifecycle_manager->register_object(this);
-	}
-}
