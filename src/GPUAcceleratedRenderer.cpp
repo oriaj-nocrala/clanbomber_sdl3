@@ -401,22 +401,36 @@ void GPUAcceleratedRenderer::setup_sprite_rendering() {
     }
     glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(GLuint), indices.data(), GL_STATIC_DRAW);
     
-    // Setup vertex attributes for simple vertex structure
-    // Position
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), 
-                         (void*)offsetof(SimpleVertex, position));
+    // Setup vertex attributes for advanced vertex structure
+    // Position (location 0)
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(AdvancedVertex), 
+                         (void*)offsetof(AdvancedVertex, position));
     glEnableVertexAttribArray(0);
     
-    // Texture coordinates
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(SimpleVertex), 
-                         (void*)offsetof(SimpleVertex, texCoord));
+    // Texture coordinates (location 1)
+    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(AdvancedVertex), 
+                         (void*)offsetof(AdvancedVertex, texCoord));
     glEnableVertexAttribArray(1);
     
-    // Disable extra attributes not used by simple shader
-    glDisableVertexAttribArray(2);
-    glDisableVertexAttribArray(3);
-    glDisableVertexAttribArray(4);
-    glDisableVertexAttribArray(5);
+    // Color (location 2)
+    glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(AdvancedVertex), 
+                         (void*)offsetof(AdvancedVertex, color));
+    glEnableVertexAttribArray(2);
+    
+    // Rotation (location 3)
+    glVertexAttribPointer(3, 1, GL_FLOAT, GL_FALSE, sizeof(AdvancedVertex), 
+                         (void*)offsetof(AdvancedVertex, rotation));
+    glEnableVertexAttribArray(3);
+    
+    // Scale (location 4)
+    glVertexAttribPointer(4, 2, GL_FLOAT, GL_FALSE, sizeof(AdvancedVertex), 
+                         (void*)offsetof(AdvancedVertex, scale));
+    glEnableVertexAttribArray(4);
+    
+    // Effect type (location 5)
+    glVertexAttribIPointer(5, 1, GL_INT, sizeof(AdvancedVertex), 
+                          (void*)offsetof(AdvancedVertex, effectType));
+    glEnableVertexAttribArray(5);
     
     batch_vertices.reserve(MAX_QUADS * 4);
     batch_indices.reserve(MAX_QUADS * 6);
@@ -604,7 +618,7 @@ void GPUAcceleratedRenderer::flush_batch() {
     // Validate buffer size before upload
     GLint buffer_size = 0;
     glGetBufferParameteriv(GL_ARRAY_BUFFER, GL_BUFFER_SIZE, &buffer_size);
-    size_t data_size = batch_vertices.size() * sizeof(SimpleVertex);
+    size_t data_size = batch_vertices.size() * sizeof(AdvancedVertex);
     
     // If buffer is 0, try to recreate it
     if (buffer_size == 0) {
@@ -845,17 +859,29 @@ void GPUAcceleratedRenderer::add_animated_sprite(float x, float y, float w, floa
         u_start, v_end     // bottom-left
     };
     
-    // Create 4 simple vertices with EXPLICIT memory initialization
+    // Create 4 advanced vertices with EXPLICIT memory initialization
     for (int i = 0; i < 4; i++) {
-        SimpleVertex vertex;
+        AdvancedVertex vertex;
         // CRITICAL: Explicitly zero ALL memory to prevent any padding garbage
-        memset(&vertex, 0, sizeof(SimpleVertex));
+        memset(&vertex, 0, sizeof(AdvancedVertex));
         
         // Position
         glm_vec2_copy((vec2){positions[i * 2], positions[i * 2 + 1]}, vertex.position);
         
         // Texture coordinates
         glm_vec2_copy((vec2){texcoords[i * 2], texcoords[i * 2 + 1]}, vertex.texCoord);
+        
+        // Color (safe defaults)
+        glm_vec4_copy((vec4){use_color[0], use_color[1], use_color[2], use_color[3]}, vertex.color);
+        
+        // Rotation
+        vertex.rotation = rotation;
+        
+        // Scale (safe defaults)
+        glm_vec2_copy((vec2){use_scale[0], use_scale[1]}, vertex.scale);
+        
+        // Effect type
+        vertex.effectType = (int)effect;
         
         // Add to batch
         batch_vertices.push_back(vertex);
@@ -1055,30 +1081,6 @@ GLuint GPUAcceleratedRenderer::create_texture_from_surface(SDL_Surface* surface)
     // Directamente usamos GL_RGBA como en el test
     glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, surface->w, surface->h, 0, GL_RGBA, GL_UNSIGNED_BYTE, surface->pixels);
     glGenerateMipmap(GL_TEXTURE_2D);
-    
-    return texture;
-}
-
-GLuint GPUAcceleratedRenderer::load_texture_from_file(const std::string& path) {
-    // Check if already loaded
-    auto it = loaded_textures.find(path);
-    if (it != loaded_textures.end()) {
-        return it->second;
-    }
-    
-    // Load with SDL_image
-    SDL_Surface* surface = IMG_Load(path.c_str());
-    if (!surface) {
-        SDL_Log("Failed to load texture: %s - %s", path.c_str(), SDL_GetError());
-        return 0;
-    }
-    
-    GLuint texture = create_texture_from_surface(surface);
-    SDL_DestroySurface(surface);
-    
-    if (texture) {
-        loaded_textures[path] = texture;
-    }
     
     return texture;
 }

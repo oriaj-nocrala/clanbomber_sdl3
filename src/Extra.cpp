@@ -122,13 +122,13 @@ void Extra::apply_effect_to_bomber(Bomber* bomber) {
             
         case KICK:
             // Allow bomb kicking
-            bomber->can_kick = true;
+            bomber->set_can_kick(true);
             SDL_Log("Bomber gained kick ability!");
             break;
             
         case GLOVE:
             // Allow bomb throwing
-            bomber->can_throw = true;
+            bomber->set_can_throw(true);
             SDL_Log("Bomber gained glove ability! Can now throw bombs!");
             break;
             

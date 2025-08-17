@@ -44,3 +44,9 @@ void GameContext::mark_for_destruction(GameObject* obj) const {
         lifecycle_manager->mark_for_destruction(obj);
     }
 }
+
+void GameContext::register_object(GameObject* obj) const {
+    if (lifecycle_manager && obj) {
+        lifecycle_manager->register_object(obj);
+    }
+}

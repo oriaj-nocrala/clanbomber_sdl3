@@ -8,6 +8,7 @@
 // Forward declarations
 class GameObject;
 class MapTile;
+class TileEntity;
 
 /**
  * Unified lifecycle management for all game objects and tiles
@@ -51,10 +52,12 @@ public:
     // Registration
     void register_object(GameObject* obj);
     void register_tile(MapTile* tile, int map_x, int map_y);
+    void register_tile_entity(TileEntity* tile_entity);  // NEW: TileEntity support
     
     // State management
     void mark_for_destruction(GameObject* obj);
     void mark_tile_for_destruction(MapTile* tile, MapTile* replacement = nullptr);
+    void mark_tile_entity_for_destruction(TileEntity* tile_entity);  // NEW: TileEntity support
     
     // Core lifecycle update - called once per frame
     void update_states(float deltaTime);
@@ -63,8 +66,10 @@ public:
     // Query state
     ObjectState get_object_state(GameObject* obj) const;
     ObjectState get_tile_state(MapTile* tile) const;
+    ObjectState get_tile_entity_state(TileEntity* tile_entity) const;  // NEW: TileEntity support
     bool is_dying_or_dead(GameObject* obj) const;
     bool is_dying_or_dead(MapTile* tile) const;
+    bool is_dying_or_dead(TileEntity* tile_entity) const;  // NEW: TileEntity support
     
     // Utilities
     void clear_all();

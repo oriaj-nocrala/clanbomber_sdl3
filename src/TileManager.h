@@ -49,6 +49,7 @@ public:
     // === GESTIÓN DE OBJETOS EN TILES ===
     void register_bomb_at(int map_x, int map_y, Bomb* bomb);
     void unregister_bomb_at(int map_x, int map_y);
+    void unregister_bomb_at(int map_x, int map_y, Bomb* bomb);  // Overload for safety check
     Bomb* get_bomb_at(int map_x, int map_y);
     
     void register_bomber_at(int map_x, int map_y, Bomber* bomber);

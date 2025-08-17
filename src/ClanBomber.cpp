@@ -65,6 +65,31 @@ ClanBomberApplication::~ClanBomberApplication() {
     }
 }
 
+void ClanBomberApplication::initialize_game_context() {
+    if (gpu_renderer && text_renderer && lifecycle_manager && 
+        tile_manager && particle_effects && map) {
+        
+        game_context = new GameContext(
+            lifecycle_manager,
+            tile_manager,
+            particle_effects,
+            map,
+            gpu_renderer,
+            text_renderer
+        );
+        
+        SDL_Log("GameContext initialized successfully with all systems");
+    } else {
+        SDL_Log("ERROR: Cannot initialize GameContext - missing dependencies:");
+        SDL_Log("  gpu_renderer: %p", gpu_renderer);
+        SDL_Log("  text_renderer: %p", text_renderer);
+        SDL_Log("  lifecycle_manager: %p", lifecycle_manager);
+        SDL_Log("  tile_manager: %p", tile_manager);
+        SDL_Log("  particle_effects: %p", particle_effects);
+        SDL_Log("  map: %p", map);
+    }
+}
+
 bool ClanBomberApplication::is_server() {
     return false; // For now, simple local game
 }

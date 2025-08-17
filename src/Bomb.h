@@ -4,10 +4,11 @@
 #include "GameObject.h"
 
 class Bomber;
+class GameContext;
 
 class Bomb : public GameObject {
 public:
-    Bomb(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* app);
+    Bomb(int _x, int _y, int _power, Bomber* _owner, GameContext* context);
 
     ~Bomb();
 
@@ -25,7 +26,6 @@ private:
     Bomber* owner;
     float anim_timer;
     int base_sprite;
-    MapTile* current_tile;
 };
 
 #endif

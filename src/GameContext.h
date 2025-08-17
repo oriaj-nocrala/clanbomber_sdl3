@@ -38,6 +38,9 @@ public:
     
     void request_destruction_effect(float x, float y, float intensity = 1.0f) const;
     void mark_for_destruction(class GameObject* obj) const;
+    
+    // GameObject lifecycle management
+    void register_object(class GameObject* obj) const;
 
 private:
     LifecycleManager* lifecycle_manager;

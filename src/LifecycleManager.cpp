@@ -2,6 +2,7 @@
 #include "GameObject.h"
 #include "MapTile.h"
 #include "MapTile_Box.h"
+#include "TileEntity.h"
 #include <algorithm>
 #include <SDL3/SDL.h>
 
@@ -40,6 +41,14 @@ void LifecycleManager::register_tile(MapTile* tile, int map_x, int map_y) {
     SDL_Log("LifecycleManager: Registered tile %p at (%d,%d) (total: %zu)", tile, map_x, map_y, managed_tiles.size());
 }
 
+void LifecycleManager::register_tile_entity(TileEntity* tile_entity) {
+    if (!tile_entity) return;
+    
+    // TileEntity hereda de GameObject, así que lo registramos como objeto normal
+    register_object(tile_entity);
+    SDL_Log("LifecycleManager: Registered TileEntity %p as GameObject", tile_entity);
+}
+
 void LifecycleManager::mark_for_destruction(GameObject* obj) {
     if (!obj) return;
     
@@ -76,6 +85,14 @@ void LifecycleManager::mark_tile_for_destruction(MapTile* tile, MapTile* replace
         SDL_Log("LifecycleManager: Tile %p at (%d,%d) marked for destruction (ACTIVE → DYING)", 
                 tile, managed->map_x, managed->map_y);
     }
+}
+
+void LifecycleManager::mark_tile_entity_for_destruction(TileEntity* tile_entity) {
+    if (!tile_entity) return;
+    
+    // TileEntity hereda de GameObject, usa el método estándar
+    mark_for_destruction(tile_entity);
+    SDL_Log("LifecycleManager: TileEntity %p marked for destruction", tile_entity);
 }
 
 void LifecycleManager::update_states(float deltaTime) {
@@ -221,6 +238,11 @@ LifecycleManager::ObjectState LifecycleManager::get_tile_state(MapTile* tile) co
     return managed ? managed->state : ObjectState::DELETED;
 }
 
+LifecycleManager::ObjectState LifecycleManager::get_tile_entity_state(TileEntity* tile_entity) const {
+    // TileEntity hereda de GameObject, usa el método estándar
+    return get_object_state(tile_entity);
+}
+
 bool LifecycleManager::is_dying_or_dead(GameObject* obj) const {
     ObjectState state = get_object_state(obj);
     return state == ObjectState::DYING || state == ObjectState::DEAD;
@@ -229,6 +251,11 @@ bool LifecycleManager::is_dying_or_dead(GameObject* obj) const {
 bool LifecycleManager::is_dying_or_dead(MapTile* tile) const {
     ObjectState state = get_tile_state(tile);
     return state == ObjectState::DYING || state == ObjectState::DEAD;
+}
+
+bool LifecycleManager::is_dying_or_dead(TileEntity* tile_entity) const {
+    // TileEntity hereda de GameObject, usa el método estándar
+    return is_dying_or_dead(static_cast<GameObject*>(tile_entity));
 }
 
 void LifecycleManager::clear_all() {

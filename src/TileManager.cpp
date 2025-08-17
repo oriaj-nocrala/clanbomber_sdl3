@@ -85,15 +85,45 @@ void TileManager::process_dead_tiles() {
 void TileManager::request_tile_destruction(int map_x, int map_y) {
     if (!is_valid_position(map_x, map_y)) return;
     
-    MapTile* tile = get_tile_at(map_x, map_y);
-    if (!tile || !tile->is_destructible()) return;
-    
     SDL_Log("TileManager: Processing destruction request for tile at (%d,%d)", map_x, map_y);
     
-    // Coordinar SOLO a través de TileManager - NO coordinación cruzada
-    tile->destroy();
+    bool tile_destroyed = false;
+    Bomb* bomb_to_explode = nullptr;
     
-    SDL_Log("TileManager: Destruction initiated for tile at (%d,%d)", map_x, map_y);
+    // DUAL ARCHITECTURE COORDINATION: Handle legacy MapTile first
+    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    if (legacy_tile && legacy_tile->is_burnable()) {
+        SDL_Log("TileManager: Destroying legacy MapTile at (%d,%d)", map_x, map_y);
+        legacy_tile->destroy();
+        tile_destroyed = true;
+        if (legacy_tile->bomb && !bomb_to_explode) {
+            bomb_to_explode = legacy_tile->bomb;
+        }
+    }
+    
+    // Handle new TileEntity (only if legacy wasn't destroyed to avoid duplicate effects)
+    if (!tile_destroyed) {
+        TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+        if (tile_entity && !tile_entity->is_destroyed() && tile_entity->is_destructible()) {
+            SDL_Log("TileManager: Destroying TileEntity at (%d,%d)", map_x, map_y);
+            tile_entity->destroy();
+            tile_destroyed = true;
+            if (tile_entity->get_bomb() && !bomb_to_explode) {
+                bomb_to_explode = tile_entity->get_bomb();
+            }
+        }
+    }
+    
+    // Handle bomb explosion (avoid duplicate bomb explosions)
+    if (bomb_to_explode) {
+        bomb_to_explode->explode_delayed();
+    }
+    
+    if (tile_destroyed) {
+        SDL_Log("TileManager: Destruction completed for tile at (%d,%d)", map_x, map_y);
+    } else {
+        SDL_Log("TileManager: No destructible tile found at (%d,%d)", map_x, map_y);
+    }
 }
 
 void TileManager::replace_tile_when_ready(int map_x, int map_y, int new_tile_type) {
@@ -196,6 +226,17 @@ void TileManager::unregister_bomb_at(int map_x, int map_y) {
     if (tile) {
         tile->set_bomb(nullptr);
         SDL_Log("TileManager: Unregistered bomb at (%d,%d)", map_x, map_y);
+    }
+}
+
+void TileManager::unregister_bomb_at(int map_x, int map_y, Bomb* bomb) {
+    MapTile* tile = get_tile_at(map_x, map_y);
+    if (tile && tile->get_bomb() == bomb) {
+        tile->set_bomb(nullptr);
+        SDL_Log("TileManager: Unregistered bomb %p at (%d,%d) with safety check", bomb, map_x, map_y);
+    } else if (tile && tile->get_bomb() != bomb) {
+        SDL_Log("WARNING: TileManager: Attempted to unregister bomb %p at (%d,%d) but found different bomb %p", 
+                bomb, map_x, map_y, tile->get_bomb());
     }
 }
 

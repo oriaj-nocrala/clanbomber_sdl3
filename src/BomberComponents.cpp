@@ -164,10 +164,9 @@ void BomberCombatComponent::place_bomb() {
         return;
     }
     
-    // Create bomb - LEGACY: Need to refactor Bomb constructor to use GameContext
-    ClanBomberApplication* app = owner->app;
-    Bomb* bomb = new Bomb(map_x * 40, map_y * 40, power, static_cast<Bomber*>(owner), app);
-    app->objects.push_back(bomb); // TODO: Add GameObject registration method to GameContext
+    // Create bomb using GameContext - MODERN architecture
+    Bomb* bomb = new Bomb(map_x * 40, map_y * 40, power, static_cast<Bomber*>(owner), context);
+    context->register_object(bomb); // MODERN: Use GameContext for object registration
     
     // Register bomb with tile manager
     if (context->get_tile_manager()) {
@@ -197,14 +196,13 @@ void BomberCombatComponent::throw_bomb() {
     }
     
     // Create thrown bomb
-    // Create thrown bomb - LEGACY: Need to refactor ThrownBomb constructor to use GameContext
-    ClanBomberApplication* app = owner->app;
+    // Create thrown bomb using GameContext - MODERN architecture
     ThrownBomb* thrown_bomb = new ThrownBomb(
         owner->get_x(), owner->get_y(), power, 
         static_cast<Bomber*>(owner), 
-        target_x, target_y, app
+        target_x, target_y, context
     );
-    app->objects.push_back(thrown_bomb); // TODO: Add GameObject registration method to GameContext
+    context->register_object(thrown_bomb); // MODERN: Use GameContext for object registration
     
     // Update bomb tracking
     inc_current_bombs();
@@ -223,11 +221,10 @@ void BomberCombatComponent::die() {
     
     dead = true;
     
-    // Create corpse with bomber's color - LEGACY: Need to refactor BomberCorpse constructor to use GameContext
+    // Create corpse with bomber's color using GameContext - MODERN architecture  
     Bomber* bomber = static_cast<Bomber*>(owner);
-    ClanBomberApplication* app = owner->app;
-    BomberCorpse* corpse = new BomberCorpse(owner->get_x(), owner->get_y(), bomber->get_color(), app);
-    app->objects.push_back(corpse); // TODO: Add GameObject registration method to GameContext
+    BomberCorpse* corpse = new BomberCorpse(owner->get_x(), owner->get_y(), bomber->get_color(), context);
+    context->register_object(corpse); // MODERN: Use GameContext for object registration
     
     // Play death sound
     AudioPosition death_pos(owner->get_x(), owner->get_y(), 0.0f);

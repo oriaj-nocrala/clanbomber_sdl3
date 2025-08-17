@@ -6,8 +6,8 @@
 #include <cmath>
 
 ThrownBomb::ThrownBomb(int _x, int _y, int _power, Bomber* _owner, 
-                       float _target_x, float _target_y, ClanBomberApplication* app) 
-    : Bomb(_x, _y, _power, _owner, app) {
+                       float _target_x, float _target_y, GameContext* context) 
+    : Bomb(_x, _y, _power, _owner, context) {
     
     start_x = x;
     start_y = y;
@@ -49,16 +49,9 @@ void ThrownBomb::act(float deltaTime) {
             x = ((int)x + 20) / 40 * 40;
             y = ((int)y + 20) / 40 * 40;
             
-            // Update map tile reference
-            MapTile* old_tile = app->map->get_tile(get_map_x(), get_map_y());
-            if (old_tile && old_tile->bomb == this) {
-                old_tile->bomb = nullptr;
-            }
-            
-            MapTile* new_tile = app->map->get_tile(get_map_x(), get_map_y());
-            if (new_tile) {
-                new_tile->bomb = this;
-            }
+            // Update map tile reference using new architecture
+            remove_bomb_from_tile(this);  // Remove from old position
+            set_bomb_on_tile(this);       // Set at new position
             
             SDL_Log("ThrownBomb landed at grid (%d,%d)", get_map_x(), get_map_y());
         } else {

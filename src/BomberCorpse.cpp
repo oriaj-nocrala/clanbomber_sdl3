@@ -4,11 +4,12 @@
 #include "AudioMixer.h"
 #include "Timer.h"
 #include "ParticleSystem.h"
+#include "GameContext.h"
 #include <random>
 #include <cmath>
 
-BomberCorpse::BomberCorpse(int _x, int _y, Bomber::COLOR bomber_color, ClanBomberApplication* app) 
-    : GameObject(_x, _y, app) {
+BomberCorpse::BomberCorpse(int _x, int _y, Bomber::COLOR bomber_color, GameContext* context) 
+    : GameObject(_x, _y, context) {
     
     color = bomber_color;
     exploded = false;
@@ -81,10 +82,10 @@ void BomberCorpse::create_gore_explosion() {
     
     // Add particle effects for gore explosion
     ParticleSystem* blood_splatter = new ParticleSystem(x, y, FIRE_PARTICLES, app); // Red particles
-    app->objects.push_back(blood_splatter);
+    get_context()->register_object(blood_splatter);
     
     ParticleSystem* gore_smoke = new ParticleSystem(x, y, SMOKE_TRAILS, app);
-    app->objects.push_back(gore_smoke);
+    get_context()->register_object(gore_smoke);
     
     // Create 8-12 body parts with realistic explosion physics
     std::uniform_int_distribution<> part_count_dist(8, 12);
@@ -117,7 +118,7 @@ void BomberCorpse::create_gore_explosion() {
         
         // Create corpse part with advanced physics
         CorpsePart* part = new CorpsePart(start_x, start_y, part_type, vel_x, vel_y, explosion_force, app);
-        app->objects.push_back(part);
+        get_context()->register_object(part);
     }
     
     // Create additional blood splatter effect
@@ -135,6 +136,6 @@ void BomberCorpse::create_gore_explosion() {
         
         // Use part type 0 for blood droplets (smallest)
         CorpsePart* blood_drop = new CorpsePart(start_x, start_y, 0, vel_x, vel_y, force, app);
-        app->objects.push_back(blood_drop);
+        get_context()->register_object(blood_drop);
     }
 }

@@ -6,7 +6,7 @@
 class ThrownBomb : public Bomb {
 public:
     ThrownBomb(int _x, int _y, int _power, Bomber* _owner, 
-               float target_x, float target_y, ClanBomberApplication* app);
+               float target_x, float target_y, GameContext* context);
     
     void act(float deltaTime) override;
     void show() override;

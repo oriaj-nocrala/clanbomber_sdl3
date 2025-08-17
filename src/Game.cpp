@@ -63,6 +63,9 @@ Game::Game() {
         SDL_Log("GPU accelerated renderer initialized successfully");
         // Note: shaders and particle system are already initialized by initialize()
         
+        // Initialize GameContext now that all systems are ready
+        app.initialize_game_context();
+        
         // CRITICAL: Initialize Resources AFTER OpenGL context is ready
         Resources::init();  // Now OpenGL context exists
         

@@ -27,6 +27,13 @@ public:
     void register_bomber(Bomber* bomber);
     void cleanup_destroyed_objects();
     
+    // Setup method for object references
+    void set_object_references(std::list<GameObject*>* objects, 
+                              std::list<Bomber*>* bombers);
+    
+    // Initialize all systems
+    void init_all_systems();
+    
 private:
     GameContext* context;
     
@@ -44,6 +51,9 @@ private:
     // Object lists (move from ClanBomberApplication eventually)
     std::list<GameObject*>* objects_ref;
     std::list<Bomber*>* bombers_ref;
+    
+    // System state
+    bool systems_initialized = false;
 };
 
 #endif

@@ -134,6 +134,9 @@ class ClanBomberApplication
   bool init_server_game();
   bool init_client_game();
   int get_server_status();
+  
+  // GameContext initialization
+  void initialize_game_context();
   static int run_server_with_players();
   /**
    * Check if the this process is a server.

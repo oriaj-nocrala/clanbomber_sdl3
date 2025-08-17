@@ -3,92 +3,66 @@
 #include "BomberCorpse.h"
 #include "Map.h"
 #include "MapTile.h"
+#include "TileEntity.h"
+#include "TileManager.h"
 #include "Resources.h"
 #include "Bomb.h"
 #include "Timer.h"
 #include "ParticleSystem.h"
 #include "GPUAcceleratedRenderer.h"
+#include "GameContext.h"
 #include <SDL3/SDL_timer.h>
 
-Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* app) : GameObject(_x, _y, app) {
+Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* context) : GameObject(_x, _y, context) {
     owner = _owner;
     power = _power;
     detonation_period = 0.5f; // seconds - exactly like original
     texture_name = "explosion";
     
+    // CRITICAL: Set Z-order so explosions render ABOVE tiles and bombs
+    z = Z_EXPLOSION;  // Explosions should be above tiles (2000 > 0) and bombs (2000 < 3000)
+    
     // SPECTACULAR EXPLOSION EFFECTS!
-    if (app->gpu_renderer) {
+    if (get_context()->get_renderer()) {
         // Set up spectacular explosion effect
         float explosion_radius = power * 60.0f; // Radius based on power
-        app->gpu_renderer->set_explosion_effect(_x, _y, explosion_radius, 1.0f);
+        get_context()->get_renderer()->set_explosion_effect(_x, _y, explosion_radius, 1.0f);
         
         // Emit spectacular particles
-        app->gpu_renderer->emit_particles(_x, _y, power * 50, GPUAcceleratedRenderer::FIRE, nullptr, 2.0f);
-        app->gpu_renderer->emit_particles(_x, _y, power * 30, GPUAcceleratedRenderer::SPARK, nullptr, 1.5f);
-        app->gpu_renderer->emit_particles(_x, _y, power * 20, GPUAcceleratedRenderer::SMOKE, nullptr, 3.0f);
+        get_context()->get_renderer()->emit_particles(_x, _y, power * 50, GPUAcceleratedRenderer::FIRE, nullptr, 2.0f);
+        get_context()->get_renderer()->emit_particles(_x, _y, power * 30, GPUAcceleratedRenderer::SPARK, nullptr, 1.5f);
+        get_context()->get_renderer()->emit_particles(_x, _y, power * 20, GPUAcceleratedRenderer::SMOKE, nullptr, 3.0f);
         
         SDL_Log("SPECTACULAR explosion effects activated at (%d,%d) with power %d!", _x, _y, power);
     }
     
-    // Create additional particle effects
+    // Create additional particle effects using GameContext registration
     ParticleSystem* explosion_sparks = new ParticleSystem(_x, _y, EXPLOSION_SPARKS, app);
-    app->objects.push_back(explosion_sparks);
+    get_context()->register_object(explosion_sparks);
     
     ParticleSystem* dust_cloud = new ParticleSystem(_x, _y, DUST_CLOUDS, app);
-    app->objects.push_back(dust_cloud);
+    get_context()->register_object(dust_cloud);
 
     length_up = length_down = length_left = length_right = 0;
 
     // SDL_Log("Explosion constructor: Starting at (%d,%d) with power=%d", get_map_x(), get_map_y(), _power);
 
-    // Calculate explosion lengths
+    // Calculate explosion lengths using NEW ARCHITECTURE
     for (int i = 1; i <= power; ++i) {
-        MapTile* tile = app->map->get_tile(get_map_x(), get_map_y() - i);
-        if (!tile) break;
         length_up = i;
-        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
-                                (tile->get_tile_type() == 2) ? "WALL" : 
-                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
-        // SDL_Log("Explosion constructor: UP ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
-        //         i, get_map_x(), get_map_y() - i, tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
-        if (tile->is_burnable()) break;
-        if (tile->is_blocking()) break;
+        if (is_tile_blocking_at(get_map_x(), get_map_y() - i)) break;
     }
     for (int i = 1; i <= power; ++i) {
-        MapTile* tile = app->map->get_tile(get_map_x(), get_map_y() + i);
-        if (!tile) break;
         length_down = i;
-        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
-                                (tile->get_tile_type() == 2) ? "WALL" : 
-                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
-        // SDL_Log("Explosion constructor: DOWN ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
-        //         i, get_map_x(), get_map_y() + i, tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
-        if (tile->is_burnable()) break;
-        if (tile->is_blocking()) break;
+        if (is_tile_blocking_at(get_map_x(), get_map_y() + i)) break;
     }
     for (int i = 1; i <= power; ++i) {
-        MapTile* tile = app->map->get_tile(get_map_x() - i, get_map_y());
-        if (!tile) break;
         length_left = i;
-        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
-                                (tile->get_tile_type() == 2) ? "WALL" : 
-                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
-        // SDL_Log("Explosion constructor: LEFT ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
-        //         i, get_map_x() - i, get_map_y(), tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
-        if (tile->is_burnable()) break;
-        if (tile->is_blocking()) break;
+        if (is_tile_blocking_at(get_map_x() - i, get_map_y())) break;
     }
     for (int i = 1; i <= power; ++i) {
-        MapTile* tile = app->map->get_tile(get_map_x() + i, get_map_y());
-        if (!tile) break;
         length_right = i;
-        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
-                                (tile->get_tile_type() == 2) ? "WALL" : 
-                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
-        // SDL_Log("Explosion constructor: RIGHT ray distance %d at (%d,%d), type=%d (%s), burnable=%d, blocking=%d", 
-        //         i, get_map_x() + i, get_map_y(), tile->get_tile_type(), type_name, tile->is_burnable(), tile->is_blocking());
-        if (tile->is_burnable()) break;
-        if (tile->is_blocking()) break;
+        if (is_tile_blocking_at(get_map_x() + i, get_map_y())) break;
     }
 
     detonate_other_bombs();
@@ -102,73 +76,33 @@ void Explosion::act(float deltaTime) {
     
     // Update explosion timer
     detonation_period -= deltaTime;
+    
     if (detonation_period < 0) {
         // Clear spectacular explosion effects when explosion ends
-        if (app->gpu_renderer) {
-            app->gpu_renderer->set_explosion_effect(x, y, 0.0f, 0.0f); // Clear explosion effect
-            SDL_Log("Explosion effects cleared at (%.0f,%.0f)", x, y);
+        if (get_context()->get_renderer()) {
+            get_context()->get_renderer()->set_explosion_effect(x, y, 0.0f, 0.0f); // Clear explosion effect
+            SDL_Log("Explosion effects cleared at (%.0f,%.0f) after full duration", x, y);
         }
         delete_me = true;
     }
 }
 
 void Explosion::detonate_other_bombs() {
-    // Center - destroy destructibles and detonate bombs
-    MapTile* tile = app->map->get_tile(get_map_x(), get_map_y());
-    if (tile) {
-        if (tile->bomb) {
-            tile->bomb->explode_delayed();
-        }
-        const char* type_name = (tile->get_tile_type() == 1) ? "GROUND" : 
-                                (tile->get_tile_type() == 2) ? "WALL" : 
-                                (tile->get_tile_type() == 3) ? "BOX" : "UNKNOWN";
-        SDL_Log("Explosion: Checking tile at (%d,%d), type=%d (%s), destructible=%d", 
-                tile->get_map_x(), tile->get_map_y(), tile->get_tile_type(), type_name, tile->is_destructible());
-        if (tile->is_burnable()) {
-            SDL_Log("Explosion: Destroying burnable tile at (%d,%d)", tile->get_map_x(), tile->get_map_y());
-            tile->destroy();
-        } else {
-            SDL_Log("Explosion: Tile at (%d,%d) is not burnable (type=%d, %s)", 
-                    tile->get_map_x(), tile->get_map_y(), tile->get_tile_type(), type_name);
-        }
-    }
+    // Center - destroy destructibles and detonate bombs using NEW ARCHITECTURE
+    destroy_tile_at(get_map_x(), get_map_y());
 
-    // Rays - destroy destructibles and detonate bombs along explosion path
+    // Rays - destroy destructibles and detonate bombs along explosion path using NEW ARCHITECTURE
     for (int i = 1; i <= length_up; ++i) {
-        tile = app->map->get_tile(get_map_x(), get_map_y() - i);
-        if (tile) {
-            if (tile->bomb) tile->bomb->explode_delayed();
-            if (tile->is_burnable()) {
-                tile->destroy();
-            }
-        }
+        destroy_tile_at(get_map_x(), get_map_y() - i);
     }
     for (int i = 1; i <= length_down; ++i) {
-        tile = app->map->get_tile(get_map_x(), get_map_y() + i);
-        if (tile) {
-            if (tile->bomb) tile->bomb->explode_delayed();
-            if (tile->is_burnable()) {
-                tile->destroy();
-            }
-        }
+        destroy_tile_at(get_map_x(), get_map_y() + i);
     }
     for (int i = 1; i <= length_left; ++i) {
-        tile = app->map->get_tile(get_map_x() - i, get_map_y());
-        if (tile) {
-            if (tile->bomb) tile->bomb->explode_delayed();
-            if (tile->is_burnable()) {
-                tile->destroy();
-            }
-        }
+        destroy_tile_at(get_map_x() - i, get_map_y());
     }
     for (int i = 1; i <= length_right; ++i) {
-        tile = app->map->get_tile(get_map_x() + i, get_map_y());
-        if (tile) {
-            if (tile->bomb) tile->bomb->explode_delayed();
-            if (tile->is_burnable()) {
-                tile->destroy();
-            }
-        }
+        destroy_tile_at(get_map_x() + i, get_map_y());
     }
 }
 
@@ -184,7 +118,7 @@ void Explosion::detonate_other_bombs() {
 //     }
 
 //     // Draw explosion using OpenGL batch rendering with procedural shader effects
-//     if (app && app->gpu_renderer) {
+//     if (app && get_context()->get_renderer()) {
 //         // Calculate tile-aligned center position
 //         float tile_size = 40.0f;
 //         int map_x = get_map_x();
@@ -198,7 +132,7 @@ void Explosion::detonate_other_bombs() {
 //                 x, y, map_x, map_y, aligned_x, aligned_y);
         
 //         // Set explosion information for shader
-//         app->gpu_renderer->set_explosion_info(
+//         get_context()->get_renderer()->set_explosion_info(
 //             aligned_x, aligned_y,                    // Tile-aligned center position
 //             explosion_age,                           // Age of explosion
 //             length_up, length_down,                  // Vertical reach
@@ -206,7 +140,7 @@ void Explosion::detonate_other_bombs() {
 //         );
         
 //         // Use explosion shader mode
-//         app->gpu_renderer->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
+//         get_context()->get_renderer()->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
         
 //         // Render each tile of the explosion separately using aligned coordinates
 //         // This ensures proper depth sorting and allows the shader to work per-tile
@@ -234,15 +168,15 @@ void Explosion::detonate_other_bombs() {
 //             draw_explosion_tile(aligned_x + i * tile_size, aligned_y);
 //         }
         
-//         app->gpu_renderer->end_batch();
+//         get_context()->get_renderer()->end_batch();
         
 //         // Clear explosion information after rendering
-//         app->gpu_renderer->clear_explosion_info();
+//         get_context()->get_renderer()->clear_explosion_info();
 //     }
 // }
 
 void Explosion::draw_explosion_tile(float tile_x, float tile_y) {
-    if (!app || !app->gpu_renderer) {
+    if (!app || !get_context()->get_renderer()) {
         return;
     }
     
@@ -257,7 +191,7 @@ void Explosion::draw_explosion_tile(float tile_x, float tile_y) {
     // Add sprite for this tile
     // The shader will detect it's in the explosion area and apply the effect
     // NOTE: add_sprite usa posición central del sprite
-    app->gpu_renderer->add_sprite(
+    get_context()->get_renderer()->add_sprite(
         tile_x, tile_y,               // Position (center) of this tile
         tile_size, tile_size,         // Size of one tile
         dummy_texture,                // Dummy texture (shader ignores this)
@@ -298,7 +232,7 @@ void Explosion::show() {
         return;
     }
 
-    if (app && app->gpu_renderer) {
+    if (app && get_context()->get_renderer()) {
         float tile_size = 40.0f;
         float half_tile = tile_size * 0.5f;
         
@@ -308,13 +242,13 @@ void Explosion::show() {
         float explosion_center_y = y + half_tile;
         
         // Set explosion info con el centro CORRECTO
-        app->gpu_renderer->set_explosion_info(
+        get_context()->get_renderer()->set_explosion_info(
             explosion_center_x, explosion_center_y, explosion_age,
             length_up, length_down,
             length_left, length_right
         );
         
-        app->gpu_renderer->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
+        get_context()->get_renderer()->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
         
         // Calcular el quad que cubre toda el área de explosión
         // Desde el centro, extenderse N tiles en cada dirección
@@ -331,7 +265,7 @@ void Explosion::show() {
         float scale[2] = {1.0f, 1.0f};
         
         // add_sprite espera esquina superior izquierda
-        app->gpu_renderer->add_sprite(
+        get_context()->get_renderer()->add_sprite(
             min_x, min_y,
             width, height,
             dummy_texture,
@@ -341,13 +275,14 @@ void Explosion::show() {
             0
         );
         
-        app->gpu_renderer->end_batch();
-        app->gpu_renderer->clear_explosion_info();
+        get_context()->get_renderer()->end_batch();
+        get_context()->get_renderer()->clear_explosion_info();
     }
 }
 
 void Explosion::kill_bombers() {
     // Check for bombers in explosion area and kill them
+    // TODO: Migrate to GameContext-based object management
     for (auto& bomber : app->bomber_objects) {
         if (bomber && !bomber->delete_me && !bomber->is_dead()) {
             int bomber_map_x = bomber->get_map_x();
@@ -394,6 +329,7 @@ void Explosion::kill_bombers() {
 
 void Explosion::explode_corpses() {
     // Check for corpses in explosion area and make them explode with gore
+    // TODO: Migrate to GameContext-based object management  
     for (auto& obj : app->objects) {
         if (obj && obj->get_type() == BOMBER_CORPSE) {
             BomberCorpse* corpse = static_cast<BomberCorpse*>(obj);
@@ -438,6 +374,39 @@ void Explosion::explode_corpses() {
                 }
             }
         }
+    }
+}
+
+// NEW ARCHITECTURE SUPPORT: Check if tile is blocking in both architectures
+bool Explosion::is_tile_blocking_at(int map_x, int map_y) {
+    // Check legacy MapTile
+    MapTile* legacy_tile = get_context()->get_map()->get_tile(map_x, map_y);
+    if (legacy_tile) {
+        if (legacy_tile->is_blocking() || legacy_tile->is_burnable()) {
+            return true;  // Blocking or destructible tiles stop explosion
+        }
+    }
+    
+    // Check new TileEntity
+    TileEntity* tile_entity = get_context()->get_map()->get_tile_entity(map_x, map_y);
+    if (tile_entity) {
+        if (tile_entity->is_blocking() || tile_entity->is_destructible()) {
+            return true;  // Blocking or destructible tiles stop explosion
+        }
+    }
+    
+    return false;  // Tile is not blocking
+}
+
+// NEW ARCHITECTURE SUPPORT: Delegate to TileManager for intelligent coordination
+void Explosion::destroy_tile_at(int map_x, int map_y) {
+    // ARCHITECTURE PATTERN: Delegate to TileManager for dual architecture coordination
+    // This avoids the corruption issues we were seeing from direct manipulation
+    if (get_context()->get_tile_manager()) {
+        SDL_Log("Explosion: Requesting tile destruction at (%d,%d) via TileManager", map_x, map_y);
+        get_context()->get_tile_manager()->request_tile_destruction(map_x, map_y);
+    } else {
+        SDL_Log("WARNING: No TileManager available for tile destruction at (%d,%d)", map_x, map_y);
     }
 }
 

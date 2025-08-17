@@ -111,7 +111,6 @@ public:
     
     // Texture management
     GLuint create_texture_from_surface(SDL_Surface* surface);
-    GLuint load_texture_from_file(const std::string& path);
     void register_texture_metadata(GLuint texture_id, int width, int height, int sprite_width = 40, int sprite_height = 40);
     
     // Debug and profiling
@@ -167,7 +166,7 @@ private:
     GLint u_turbulence_field;    // Turbulence field texture
     
     // Batching system
-    std::vector<SimpleVertex> batch_vertices;
+    std::vector<AdvancedVertex> batch_vertices;
     std::vector<GLuint> batch_indices;
     int current_quad_count;
     EffectType current_effect;

@@ -6,6 +6,8 @@
 #include "Map.h"
 #include "GameState.h"
 
+class GameSystems;
+
 class GameplayScreen : public Screen {
 public:
     GameplayScreen(ClanBomberApplication* app);
@@ -49,6 +51,9 @@ private:
     int frame_count;
     float frame_time;
     GameState next_state;
+    
+    // Add GameSystems
+    GameSystems* game_systems;
 };
 
 #endif

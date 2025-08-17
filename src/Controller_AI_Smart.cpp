@@ -8,6 +8,7 @@
 #include "TileEntity.h"
 #include "TileManager.h"
 #include "Extra.h"
+#include "GameContext.h"
 #include <algorithm>
 #include <cmath>
 #include <random>
@@ -333,7 +334,7 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
     // Simplified pathfinding - in a real implementation, use A*
     std::vector<CL_Vector> path;
     
-    if (!bomber || !bomber->app || !bomber->app->map) {
+    if (!bomber || !bomber->app || !bomber->get_context()->get_map()) {
         return path;
     }
     
@@ -359,7 +360,7 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
         int grid_x = (int)(next_pos.x / 40);
         int grid_y = (int)(next_pos.y / 40);
         
-        if (!bomber->app->tile_manager->is_tile_blocking_at(grid_x, grid_y)) {
+        if (!bomber->get_context()->get_tile_manager()->is_tile_blocking_at(grid_x, grid_y)) {
             path.push_back(next_pos);
         } else {
             // Simple obstacle avoidance - try perpendicular directions
@@ -372,8 +373,8 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
             int alt1_x = (int)(alt1.x / 40), alt1_y = (int)(alt1.y / 40);
             int alt2_x = (int)(alt2.x / 40), alt2_y = (int)(alt2.y / 40);
             
-            bool tile1_blocking = bomber->app->tile_manager->is_tile_blocking_at(alt1_x, alt1_y);
-            bool tile2_blocking = bomber->app->tile_manager->is_tile_blocking_at(alt2_x, alt2_y);
+            bool tile1_blocking = bomber->get_context()->get_tile_manager()->is_tile_blocking_at(alt1_x, alt1_y);
+            bool tile2_blocking = bomber->get_context()->get_tile_manager()->is_tile_blocking_at(alt2_x, alt2_y);
             
             if (!tile1_blocking) {
                 path.push_back(alt1);
@@ -435,7 +436,7 @@ float Controller_AI_Smart::calculate_danger_level(CL_Vector pos) {
 }
 
 CL_Vector Controller_AI_Smart::find_safe_position() {
-    if (!bomber || !bomber->app || !bomber->app->map) {
+    if (!bomber || !bomber->app || !bomber->get_context()->get_map()) {
         return CL_Vector(bomber->get_x(), bomber->get_y());
     }
     
@@ -455,7 +456,7 @@ CL_Vector Controller_AI_Smart::find_safe_position() {
                 int grid_x = (int)(test_pos.x / 40);
                 int grid_y = (int)(test_pos.y / 40);
                 
-                if (bomber->app->tile_manager->is_tile_blocking_at(grid_x, grid_y)) continue;
+                if (bomber->get_context()->get_tile_manager()->is_tile_blocking_at(grid_x, grid_y)) continue;
                 
                 float danger = calculate_danger_level(test_pos);
                 if (danger < lowest_danger) {

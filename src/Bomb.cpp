@@ -7,8 +7,9 @@
 #include "MapTile.h"
 #include "AudioMixer.h"
 #include "Bomber.h"
+#include "GameContext.h"
 
-Bomb::Bomb(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* app) : GameObject(_x, _y, app) {
+Bomb::Bomb(int _x, int _y, int _power, Bomber* _owner, GameContext* context) : GameObject(_x, _y, context) {
     texture_name = "bombs";
     power = _power;
     owner = _owner;
@@ -16,22 +17,21 @@ Bomb::Bomb(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* ap
     x = ((int)x + 20) / 40 * 40;
     y = ((int)y + 20) / 40 * 40;
 
+    // CRITICAL: Set Z-order so bombs render ABOVE tiles
+    z = Z_BOMB;  // Bombs should be above tiles (3000 > 0)
+
     // Animation and color setup
     anim_timer = 0.0f;
     base_sprite = owner->get_color() * 4; // 4 frames per color
     sprite_nr = base_sprite;
 
-    MapTile* tile = app->map->get_tile(get_map_x(), get_map_y());
-    if (tile) {
-        tile->bomb = this;
-    }
+    // NEW ARCHITECTURE: Synchronize bomb with both architectures
+    set_bomb_on_tile(this);
 }
 
 Bomb::~Bomb() {
-    MapTile* tile = app->map->get_tile(get_map_x(), get_map_y());
-    if (tile && tile->bomb == this) {
-        tile->bomb = nullptr;
-    }
+    // NEW ARCHITECTURE: Remove bomb from both architectures  
+    remove_bomb_from_tile(this);
 }
 
 void Bomb::act(float deltaTime) {
@@ -71,8 +71,9 @@ void Bomb::explode() {
     AudioPosition bomb_pos(x, y, 0.0f);
     AudioMixer::play_sound_3d("explode", bomb_pos, 600.0f);
     
-    // Create explosion
-    app->objects.push_back(new Explosion(x, y, power, owner, app));
+    // Create explosion using GameContext registration
+    Explosion* explosion = new Explosion(x, y, power, owner, get_context());
+    get_context()->register_object(explosion);
 }
 
 void Bomb::explode_delayed() {
@@ -85,10 +86,8 @@ void Bomb::explode_delayed() {
 void Bomb::kick(Direction dir) {
     // Can only kick a stationary bomb
     if (cur_dir == DIR_NONE) {
-        MapTile* tile = get_tile();
-        if (tile && tile->bomb == this) {
-            tile->bomb = nullptr;
-        }
+        // NEW ARCHITECTURE: Remove bomb from both architectures when kicked
+        remove_bomb_from_tile(this);
         cur_dir = dir;
         speed = 240; // Set a speed for the kicked bomb
     }
@@ -97,8 +96,6 @@ void Bomb::kick(Direction dir) {
 void Bomb::stop() {
     cur_dir = DIR_NONE;
     snap(); // Align to grid
-    MapTile* tile = get_tile();
-    if (tile) {
-        tile->bomb = this;
-    }
+    // NEW ARCHITECTURE: Set bomb on both architectures when stopped
+    set_bomb_on_tile(this);
 }

@@ -4,6 +4,7 @@
 #include "GameObject.h"
 
 class Bomber;
+class GameContext;
 
 class Explosion : public GameObject {
 public:
@@ -17,7 +18,7 @@ public:
         EXPLODE_X       = 6, // Center
     };
 
-    Explosion(int _x, int _y, int _power, Bomber* _owner, ClanBomberApplication* app);
+    Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* context);
 
     void act(float deltaTime) override;
     void show() override;
@@ -31,6 +32,10 @@ private:
     void detonate_other_bombs();
     void kill_bombers();
     void explode_corpses();
+    
+    // NEW ARCHITECTURE SUPPORT: Handle both MapTile and TileEntity destruction
+    void destroy_tile_at(int map_x, int map_y);
+    bool is_tile_blocking_at(int map_x, int map_y);  // Check if tile is blocking in both architectures
 
     Bomber* owner;
     int power;
