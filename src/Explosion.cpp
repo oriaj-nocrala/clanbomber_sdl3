@@ -37,10 +37,10 @@ Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* co
     }
     
     // Create additional particle effects using GameContext registration
-    ParticleSystem* explosion_sparks = new ParticleSystem(_x, _y, EXPLOSION_SPARKS, app);
+    ParticleSystem* explosion_sparks = new ParticleSystem(_x, _y, EXPLOSION_SPARKS, get_context());
     get_context()->register_object(explosion_sparks);
     
-    ParticleSystem* dust_cloud = new ParticleSystem(_x, _y, DUST_CLOUDS, app);
+    ParticleSystem* dust_cloud = new ParticleSystem(_x, _y, DUST_CLOUDS, get_context());
     get_context()->register_object(dust_cloud);
 
     length_up = length_down = length_left = length_right = 0;
@@ -176,7 +176,7 @@ void Explosion::detonate_other_bombs() {
 // }
 
 void Explosion::draw_explosion_tile(float tile_x, float tile_y) {
-    if (!app || !get_context()->get_renderer()) {
+    if (!get_context() || !get_context()->get_renderer()) {
         return;
     }
     
@@ -232,42 +232,46 @@ void Explosion::show() {
         return;
     }
 
-    if (app && get_context()->get_renderer()) {
+    // CORRECT APPROACH: Single quad for entire explosion cross - shader draws the shape
+    if (get_context() && get_context()->get_renderer()) {
         float tile_size = 40.0f;
-        float half_tile = tile_size * 0.5f;
+        int map_x = get_map_x();
+        int map_y = get_map_y();
         
-        // CORRECCIÓN PRINCIPAL: x,y vienen como esquina superior izquierda del tile
-        // Necesitamos el CENTRO del tile para la explosión
-        float explosion_center_x = x + half_tile;
-        float explosion_center_y = y + half_tile;
+        // Calculate tile-aligned center position
+        float center_x = map_x * tile_size + tile_size / 2.0f;  // Center of tile
+        float center_y = map_y * tile_size + tile_size / 2.0f;  // Center of tile
         
-        // Set explosion info con el centro CORRECTO
+        SDL_Log("DEBUG: Explosion rendering at age=%.3f, center=(%.1f,%.1f), lengths=(%d,%d,%d,%d)", 
+                explosion_age, center_x, center_y, length_up, length_down, length_left, length_right);
+        
+        // Set explosion information for shader
         get_context()->get_renderer()->set_explosion_info(
-            explosion_center_x, explosion_center_y, explosion_age,
-            length_up, length_down,
-            length_left, length_right
+            center_x, center_y,                      // Explosion center
+            explosion_age,                           // Age of explosion
+            length_up, length_down,                  // Vertical reach
+            length_left, length_right                // Horizontal reach
         );
         
+        // Use explosion shader mode
         get_context()->get_renderer()->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
         
-        // Calcular el quad que cubre toda el área de explosión
-        // Desde el centro, extenderse N tiles en cada dirección
-        float min_x = explosion_center_x - (length_left + 0.5f) * tile_size;
-        float max_x = explosion_center_x + (length_right + 0.5f) * tile_size;
-        float min_y = explosion_center_y - (length_up + 0.5f) * tile_size;
-        float max_y = explosion_center_y + (length_down + 0.5f) * tile_size;
+        // Calculate bounding box that covers the entire explosion cross
+        float max_extent = std::max(std::max(length_up, length_down), std::max(length_left, length_right));
+        float box_size = (max_extent + 1) * tile_size * 2;  // +1 for center, *2 for both directions
         
-        float width = max_x - min_x;
-        float height = max_y - min_y;
+        // Position box so explosion center is at the center of the box
+        float box_x = center_x - box_size / 2.0f;
+        float box_y = center_y - box_size / 2.0f;
         
         GLuint dummy_texture = get_dummy_white_texture();
         float white_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
         float scale[2] = {1.0f, 1.0f};
         
-        // add_sprite espera esquina superior izquierda
+        // Single sprite covering entire explosion area - shader will draw the cross shape
         get_context()->get_renderer()->add_sprite(
-            min_x, min_y,
-            width, height,
+            box_x, box_y,                           // Top-left corner of bounding box
+            box_size, box_size,                     // Size covers entire explosion
             dummy_texture,
             white_color,
             0.0f,
@@ -282,8 +286,24 @@ void Explosion::show() {
 
 void Explosion::kill_bombers() {
     // Check for bombers in explosion area and kill them
-    // TODO: Migrate to GameContext-based object management
-    for (auto& bomber : app->bomber_objects) {
+    // CRITICAL FIX: Use GameContext instead of app->bomber_objects to avoid null pointer crash
+    GameContext* ctx = get_context();
+    if (!ctx) {
+        SDL_Log("ERROR: Explosion::kill_bombers() - No GameContext available");
+        return;
+    }
+    
+    // Get bomber list through GameContext object lists
+    std::list<class GameObject*>* object_lists = ctx->get_object_lists();
+    if (!object_lists) {
+        SDL_Log("ERROR: Explosion::kill_bombers() - No object lists available from GameContext");
+        return;
+    }
+    
+    for (auto& obj : *object_lists) {
+        if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+        
+        Bomber* bomber = static_cast<Bomber*>(obj);
         if (bomber && !bomber->delete_me && !bomber->is_dead()) {
             int bomber_map_x = bomber->get_map_x();
             int bomber_map_y = bomber->get_map_y();
@@ -329,8 +349,21 @@ void Explosion::kill_bombers() {
 
 void Explosion::explode_corpses() {
     // Check for corpses in explosion area and make them explode with gore
-    // TODO: Migrate to GameContext-based object management  
-    for (auto& obj : app->objects) {
+    // CRITICAL FIX: Use GameContext instead of app->objects to avoid null pointer crash
+    GameContext* ctx = get_context();
+    if (!ctx) {
+        SDL_Log("ERROR: Explosion::explode_corpses() - No GameContext available");
+        return;
+    }
+    
+    // Get object list through GameContext
+    std::list<class GameObject*>* object_lists = ctx->get_object_lists();
+    if (!object_lists) {
+        SDL_Log("ERROR: Explosion::explode_corpses() - No object lists available from GameContext");
+        return;
+    }
+    
+    for (auto& obj : *object_lists) {
         if (obj && obj->get_type() == BOMBER_CORPSE) {
             BomberCorpse* corpse = static_cast<BomberCorpse*>(obj);
             if (!corpse->is_exploded()) {

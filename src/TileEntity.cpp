@@ -1,5 +1,5 @@
 #include "TileEntity.h"
-#include "ClanBomber.h"
+#include "GameContext.h"
 #include "Resources.h"
 #include "AudioMixer.h"
 #include "Extra.h"
@@ -17,8 +17,8 @@ const float TileEntity::PARTICLE_EMISSION_COOLDOWN = 0.05f; // 50ms minimum betw
 
 // === BASE TILEENTITY ===
 
-TileEntity::TileEntity(MapTile_Pure* tile_data, ClanBomberApplication* app) 
-    : GameObject(tile_data->get_pixel_x(), tile_data->get_pixel_y(), app), tile_data(tile_data) {
+TileEntity::TileEntity(MapTile_Pure* tile_data, GameContext* context) 
+    : GameObject(tile_data->get_pixel_x(), tile_data->get_pixel_y(), context), tile_data(tile_data) {
     
     texture_name = "maptiles";
     sprite_nr = tile_data->get_sprite_number();
@@ -61,11 +61,12 @@ void TileEntity::act(float deltaTime) {
 void TileEntity::show() {
     if (!tile_data) return;
     
-    // LifecycleManager controls rendering: don't render if truly deleted, but allow DYING state
-    LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(this);
-    if (state == LifecycleManager::ObjectState::DELETED) {
-        return;  // Object is truly dead, don't render
-    }
+    // CRITICAL FIX: Simply render without LifecycleManager check during initialization
+    // The LifecycleManager check can cause issues during initialization when GameContext
+    // isn't fully set up yet. TileEntity rendering is safe without this check.
+    
+    // Just render if not destroyed - LifecycleManager will handle cleanup later
+    // This fixes the black map issue caused by null context during show()
     
     if (!destroyed) {
         // Render normal tile
@@ -92,8 +93,8 @@ void TileEntity::destroy() {
         tile_data->on_destruction_request();
         
         // LIFECYCLE INTEGRATION: Mark for destruction through LifecycleManager
-        if (app && app->lifecycle_manager) {
-            app->lifecycle_manager->mark_tile_entity_for_destruction(this);
+        if (get_context() && get_context()->get_lifecycle_manager()) {
+            get_context()->get_lifecycle_manager()->mark_tile_entity_for_destruction(this);
         }
         
         // Play destruction sound with 3D positioning
@@ -157,7 +158,7 @@ void TileEntity::spawn_extra() {
     }
     
     // Create the extra at this tile's position using GameContext registration
-    Extra* extra = new Extra(get_x(), get_y(), extra_type, app);
+    Extra* extra = new Extra(get_x(), get_y(), extra_type, get_context());
     get_context()->register_object(extra);
 }
 
@@ -185,14 +186,14 @@ void TileEntity::render_destruction_effects() {
         animation_progress = std::min(animation_progress, 1.0f);
         
         // Simple fade effect for base tiles
-        if (app && app->gpu_renderer) {
+        if (get_context() && get_context()->get_renderer()) {
             GLuint gl_texture = Resources::get_gl_texture(texture_name);
             if (gl_texture) {
                 float alpha = 1.0f - animation_progress;
                 float color[4] = {1.0f, 1.0f, 1.0f, alpha};
                 float scale[2] = {1.0f, 1.0f};
                 
-                app->gpu_renderer->add_sprite(
+                get_context()->get_renderer()->add_sprite(
                     (float)get_x(), (float)get_y(), 40.0f, 40.0f,
                     gl_texture, color, 0.0f, scale, sprite_nr
                 );
@@ -203,8 +204,8 @@ void TileEntity::render_destruction_effects() {
 
 // === TILEENTITY_BOX ESPECIALIZADO ===
 
-TileEntity_Box::TileEntity_Box(MapTile_Pure* tile_data, ClanBomberApplication* app) 
-    : TileEntity(tile_data, app) {
+TileEntity_Box::TileEntity_Box(MapTile_Pure* tile_data, GameContext* context) 
+    : TileEntity(tile_data, context) {
     // Box-specific initialization if needed
 }
 
@@ -215,7 +216,7 @@ void TileEntity_Box::act(float deltaTime) {
         // Add smoke particles during destruction animation  
         static float last_smoke_time = 0.0f;
         if (destroy_animation > 0.1f && last_smoke_time <= 0.1f) {
-            ParticleSystem* smoke = new ParticleSystem(get_x(), get_y(), SMOKE_TRAILS, app);
+            ParticleSystem* smoke = new ParticleSystem(get_x(), get_y(), SMOKE_TRAILS, get_context());
             get_context()->register_object(smoke);
             last_smoke_time = destroy_animation;
         }
@@ -240,19 +241,19 @@ void TileEntity_Box::destroy() {
         
         if (can_emit) {
             // SPECTACULAR tile fragmentation effects!
-            if (app->gpu_renderer) {
+            if (get_context()->get_renderer()) {
                 // Emit debris particles
-                app->gpu_renderer->emit_particles(get_x(), get_y(), 25, GPUAcceleratedRenderer::SPARK, nullptr, 1.0f);
-                app->gpu_renderer->emit_particles(get_x(), get_y(), 15, GPUAcceleratedRenderer::SMOKE, nullptr, 2.0f);
+                get_context()->get_renderer()->emit_particles(get_x(), get_y(), 25, GPUAcceleratedRenderer::SPARK, nullptr, 1.0f);
+                get_context()->get_renderer()->emit_particles(get_x(), get_y(), 15, GPUAcceleratedRenderer::SMOKE, nullptr, 2.0f);
                 
                 SDL_Log("SPECTACULAR tile destruction effects at (%d,%d)!", get_x(), get_y());
             }
             
             // Add traditional particle effects for destruction using GameContext registration
-            ParticleSystem* dust = new ParticleSystem(get_x(), get_y(), DUST_CLOUDS, app);
+            ParticleSystem* dust = new ParticleSystem(get_x(), get_y(), DUST_CLOUDS, get_context());
             get_context()->register_object(dust);
             
-            ParticleSystem* sparks = new ParticleSystem(get_x(), get_y(), EXPLOSION_SPARKS, app);
+            ParticleSystem* sparks = new ParticleSystem(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
             get_context()->register_object(sparks);
             
             // Update rate limiting timestamp
@@ -268,11 +269,11 @@ void TileEntity_Box::render_fragmentation_effects() {
     float animation_progress = destroy_animation / 0.5f; // 0.0 to 1.0
     animation_progress = std::min(animation_progress, 1.0f);
     
-    if (app && app->gpu_renderer) {
+    if (app && get_context()->get_renderer()) {
         GLuint gl_texture = Resources::get_gl_texture(texture_name);
         if (gl_texture) {
             try {
-                app->gpu_renderer->begin_batch(GPUAcceleratedRenderer::TILE_FRAGMENTATION);
+                get_context()->get_renderer()->begin_batch(GPUAcceleratedRenderer::TILE_FRAGMENTATION);
                 
                 // Create realistic wood/debris fragments from destroyed box!
                 const int num_fragments = 18;  // More small pieces for realistic debris
@@ -418,7 +419,7 @@ void TileEntity_Box::render_fragmentation_effects() {
                         case SPLINTER:      fragment_size = 8.0f + (i % 3) * 4.0f; break;  // 8-16px
                     }
                     
-                    app->gpu_renderer->add_animated_sprite(
+                    get_context()->get_renderer()->add_animated_sprite(
                         fragment_x - (fragment_size * scale_x * 0.5f),
                         fragment_y - (fragment_size * scale_y * 0.5f),
                         fragment_size, fragment_size,
@@ -428,7 +429,7 @@ void TileEntity_Box::render_fragmentation_effects() {
                     );
                 }
                 
-                app->gpu_renderer->end_batch();
+                get_context()->get_renderer()->end_batch();
                 return; // Spectacular GPU effect rendered successfully!
                 
             } catch (...) {

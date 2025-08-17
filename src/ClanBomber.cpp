@@ -32,7 +32,7 @@ ClanBomberApplication::ClanBomberApplication() {
     client_connecting_to_new_server = false;
     gpu_renderer = nullptr;
     lifecycle_manager = new LifecycleManager();
-    tile_manager = new TileManager(this);
+    tile_manager = new TileManager();
     particle_effects = new ParticleEffectsManager(this);
     game_context = nullptr; // Will be initialized after gpu_renderer is ready
 }
@@ -67,18 +67,28 @@ ClanBomberApplication::~ClanBomberApplication() {
 
 void ClanBomberApplication::initialize_game_context() {
     if (gpu_renderer && text_renderer && lifecycle_manager && 
-        tile_manager && particle_effects && map) {
+        tile_manager && particle_effects) {
         
         game_context = new GameContext(
             lifecycle_manager,
             tile_manager,
             particle_effects,
-            map,
+            nullptr,  // Map will be set later via set_map()
             gpu_renderer,
             text_renderer
         );
         
-        SDL_Log("GameContext initialized successfully with all systems");
+        SDL_Log("GameContext initialized successfully (map will be set later)");
+        
+        // Set GameContext in TileManager
+        if (tile_manager) {
+            tile_manager->set_context(game_context);
+        }
+        
+        // If map is already available, set it now
+        if (map) {
+            game_context->set_map(map);
+        }
     } else {
         SDL_Log("ERROR: Cannot initialize GameContext - missing dependencies:");
         SDL_Log("  gpu_renderer: %p", gpu_renderer);
@@ -86,7 +96,6 @@ void ClanBomberApplication::initialize_game_context() {
         SDL_Log("  lifecycle_manager: %p", lifecycle_manager);
         SDL_Log("  tile_manager: %p", tile_manager);
         SDL_Log("  particle_effects: %p", particle_effects);
-        SDL_Log("  map: %p", map);
     }
 }
 

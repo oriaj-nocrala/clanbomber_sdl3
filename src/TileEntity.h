@@ -14,7 +14,7 @@
  */
 class TileEntity : public GameObject {
 public:
-    TileEntity(MapTile_Pure* tile_data, ClanBomberApplication* app);
+    TileEntity(MapTile_Pure* tile_data, GameContext* context);
     virtual ~TileEntity();
 
     // === IMPLEMENT GAMEOBJECT ===
@@ -87,7 +87,7 @@ protected:
 
 class TileEntity_Box : public TileEntity {
 public:
-    TileEntity_Box(MapTile_Pure* tile_data, ClanBomberApplication* app);
+    TileEntity_Box(MapTile_Pure* tile_data, GameContext* context);
     
     void act(float deltaTime) override;
     void show() override;

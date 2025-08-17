@@ -81,10 +81,10 @@ void BomberCorpse::create_gore_explosion() {
     std::mt19937 gen(rd());
     
     // Add particle effects for gore explosion
-    ParticleSystem* blood_splatter = new ParticleSystem(x, y, FIRE_PARTICLES, app); // Red particles
+    ParticleSystem* blood_splatter = new ParticleSystem(x, y, FIRE_PARTICLES, get_context()); // Red particles
     get_context()->register_object(blood_splatter);
     
-    ParticleSystem* gore_smoke = new ParticleSystem(x, y, SMOKE_TRAILS, app);
+    ParticleSystem* gore_smoke = new ParticleSystem(x, y, SMOKE_TRAILS, get_context());
     get_context()->register_object(gore_smoke);
     
     // Create 8-12 body parts with realistic explosion physics
@@ -117,7 +117,7 @@ void BomberCorpse::create_gore_explosion() {
         float start_y = y + pos_offset(gen);
         
         // Create corpse part with advanced physics
-        CorpsePart* part = new CorpsePart(start_x, start_y, part_type, vel_x, vel_y, explosion_force, app);
+        CorpsePart* part = new CorpsePart(start_x, start_y, part_type, vel_x, vel_y, explosion_force, get_context());
         get_context()->register_object(part);
     }
     
@@ -135,7 +135,7 @@ void BomberCorpse::create_gore_explosion() {
         float start_y = y + blood_offset(gen);
         
         // Use part type 0 for blood droplets (smallest)
-        CorpsePart* blood_drop = new CorpsePart(start_x, start_y, 0, vel_x, vel_y, force, app);
+        CorpsePart* blood_drop = new CorpsePart(start_x, start_y, 0, vel_x, vel_y, force, get_context());
         get_context()->register_object(blood_drop);
     }
 }

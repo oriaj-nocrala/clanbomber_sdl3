@@ -159,7 +159,7 @@ void Controller_AI_Smart::update() {
 }
 
 void Controller_AI_Smart::think() {
-    if (!bomber || !bomber->app) return;
+    if (!bomber || !bomber->get_context()) return;
     
     analyze_enemies();
     
@@ -178,7 +178,7 @@ void Controller_AI_Smart::think() {
 }
 
 void Controller_AI_Smart::update_current_state() {
-    if (!bomber || !bomber->app) return;
+    if (!bomber || !bomber->get_context()) return;
     
     CL_Vector my_pos(bomber->get_x(), bomber->get_y());
     float danger_level = calculate_danger_level(my_pos);
@@ -396,7 +396,7 @@ bool Controller_AI_Smart::is_position_safe(CL_Vector pos, float time_ahead) {
 }
 
 float Controller_AI_Smart::calculate_danger_level(CL_Vector pos) {
-    if (!bomber || !bomber->app) return 0.0f;
+    if (!bomber || !bomber->get_context()) return 0.0f;
     
     float danger = 0.0f;
     
@@ -408,8 +408,12 @@ float Controller_AI_Smart::calculate_danger_level(CL_Vector pos) {
         }
     }
     
-    // Check proximity to bombs
-    for (auto& obj : bomber->app->objects) {
+    // Check proximity to bombs using GameContext
+    if (!bomber->get_context() || !bomber->get_context()->get_object_lists()) {
+        return danger;
+    }
+    
+    for (auto& obj : *bomber->get_context()->get_object_lists()) {
         if (obj && obj->get_type() == GameObject::BOMB) {
             CL_Vector bomb_pos(obj->get_x(), obj->get_y());
             float dist = vector_distance(pos, bomb_pos);
@@ -421,7 +425,10 @@ float Controller_AI_Smart::calculate_danger_level(CL_Vector pos) {
     }
     
     // Check proximity to enemies (less dangerous but still a factor)
-    for (auto& enemy : bomber->app->bomber_objects) {
+    for (auto& obj : *bomber->get_context()->get_object_lists()) {
+        if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+        
+        Bomber* enemy = static_cast<Bomber*>(obj);
         if (enemy && enemy != bomber && !enemy->is_dead()) {
             CL_Vector enemy_pos(enemy->get_x(), enemy->get_y());
             float dist = vector_distance(pos, enemy_pos);
@@ -475,12 +482,16 @@ CL_Vector Controller_AI_Smart::find_safe_position() {
 std::vector<AITarget> Controller_AI_Smart::scan_for_targets() {
     std::vector<AITarget> targets;
     
-    if (!bomber || !bomber->app) return targets;
+    if (!bomber || !bomber->get_context()) return targets;
     
     CL_Vector my_pos(bomber->get_x(), bomber->get_y());
     
-    // Scan for power-ups
-    for (auto& obj : bomber->app->objects) {
+    // Scan for power-ups using GameContext
+    if (!bomber->get_context() || !bomber->get_context()->get_object_lists()) {
+        return targets;
+    }
+    
+    for (auto& obj : *bomber->get_context()->get_object_lists()) {
         if (obj && obj->get_type() == GameObject::EXTRA) {
             CL_Vector target_pos(obj->get_x(), obj->get_y());
             float distance = vector_distance(my_pos, target_pos);
@@ -499,7 +510,10 @@ std::vector<AITarget> Controller_AI_Smart::scan_for_targets() {
     
     // Scan for enemies (if aggressive enough)
     if (should_hunt_enemies()) {
-        for (auto& enemy : bomber->app->bomber_objects) {
+        for (auto& obj : *bomber->get_context()->get_object_lists()) {
+            if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+            
+            Bomber* enemy = static_cast<Bomber*>(obj);
             if (enemy && enemy != bomber && !enemy->is_dead()) {
                 CL_Vector enemy_pos(enemy->get_x(), enemy->get_y());
                 float distance = vector_distance(my_pos, enemy_pos);
@@ -591,7 +605,10 @@ bool Controller_AI_Smart::would_hit_enemy(CL_Vector bomb_pos) {
     
     auto explosion_tiles = predict_explosion_tiles(bomb_pos, bomber->get_power());
     
-    for (auto& enemy : bomber->app->bomber_objects) {
+    for (auto& obj : *bomber->get_context()->get_object_lists()) {
+        if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+        
+        Bomber* enemy = static_cast<Bomber*>(obj);
         if (enemy && enemy != bomber && !enemy->is_dead()) {
             CL_Vector enemy_pos(enemy->get_x(), enemy->get_y());
             
@@ -625,9 +642,9 @@ std::vector<CL_Vector> Controller_AI_Smart::predict_explosion_tiles(CL_Vector bo
 
 void Controller_AI_Smart::analyze_enemies() {
     // Update dangerous positions based on enemy bomb placements
-    if (!bomber || !bomber->app) return;
+    if (!bomber || !bomber->get_context() || !bomber->get_context()->get_object_lists()) return;
     
-    for (auto& obj : bomber->app->objects) {
+    for (auto& obj : *bomber->get_context()->get_object_lists()) {
         if (obj && obj->get_type() == GameObject::BOMB) {
             CL_Vector bomb_pos(obj->get_x(), obj->get_y());
             

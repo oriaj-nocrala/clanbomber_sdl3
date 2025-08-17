@@ -1,12 +1,15 @@
 #ifndef GAMECONTEXT_H
 #define GAMECONTEXT_H
 
+#include <list>
+
 class LifecycleManager;
 class TileManager;
 class ParticleEffectsManager;
 class Map;
 class GPUAcceleratedRenderer;
 class TextRenderer;
+class GameObject;
 
 /**
  * GameContext: Dependency Injection Container
@@ -22,6 +25,12 @@ public:
                 Map* map,
                 GPUAcceleratedRenderer* renderer,
                 TextRenderer* text);
+    
+    // Set rendering object list (called during initialization)
+    void set_object_lists(std::list<GameObject*>* objects);
+    
+    // Get object lists for iteration (needed for systems like Explosion)
+    std::list<GameObject*>* get_object_lists() const { return render_objects; }
     
     // System access
     LifecycleManager* get_lifecycle_manager() const { return lifecycle_manager; }
@@ -41,6 +50,9 @@ public:
     
     // GameObject lifecycle management
     void register_object(class GameObject* obj) const;
+    
+    // Two-phase initialization
+    void set_map(Map* new_map);
 
 private:
     LifecycleManager* lifecycle_manager;
@@ -49,6 +61,9 @@ private:
     Map* map;
     GPUAcceleratedRenderer* gpu_renderer;
     TextRenderer* text_renderer;
+    
+    // Rendering object list (for adding objects to be rendered)
+    std::list<GameObject*>* render_objects;
 };
 
 #endif

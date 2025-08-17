@@ -5,8 +5,8 @@
 #include <cmath>
 #include <algorithm>
 
-ParticleSystem::ParticleSystem(int _x, int _y, ParticleType type, ClanBomberApplication* app) 
-    : GameObject(_x, _y, app), particle_type(type), random_gen(std::random_device{}()), random_dist(-1.0f, 1.0f) {
+ParticleSystem::ParticleSystem(int _x, int _y, ParticleType type, GameContext* context) 
+    : GameObject(_x, _y, context), particle_type(type), random_gen(std::random_device{}()), random_dist(-1.0f, 1.0f) {
     
     emission_timer = 0.0f;
     emission_rate = 60.0f; // 60 particles per second

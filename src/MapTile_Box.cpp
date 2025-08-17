@@ -1,5 +1,5 @@
 #include "MapTile_Box.h"
-#include "ClanBomber.h"
+#include "GameContext.h"
 #include "Resources.h"
 #include "AudioMixer.h"
 #include "Extra.h"
@@ -10,7 +10,7 @@
 #include <random>
 #include <cmath>
 
-MapTile_Box::MapTile_Box(int _x, int _y, ClanBomberApplication* _app) : MapTile(_x, _y, _app) {
+MapTile_Box::MapTile_Box(int _x, int _y, GameContext* _context) : MapTile(_x, _y, _context) {
     texture_name = "maptiles";
     sprite_nr = 10; // Box tile
     destroyed = false;
@@ -32,8 +32,8 @@ void MapTile_Box::act() {
         
         // Add smoke particles during destruction animation  
         if (destroy_animation > 0.1f && prev_animation <= 0.1f) {
-            ParticleSystem* smoke = new ParticleSystem(get_x(), get_y(), SMOKE_TRAILS, app);
-            app->objects.push_back(smoke);
+            ParticleSystem* smoke = new ParticleSystem(get_x(), get_y(), SMOKE_TRAILS, get_context());
+            get_context()->register_object(smoke);
         }
         
         // Set delete_me exactly when animation completes to prevent black gap
@@ -60,11 +60,11 @@ void MapTile_Box::show() {
         animation_progress = std::min(animation_progress, 1.0f);
         
         // SPECTACULAR GPU fragmentation effects enabled
-        if (app && app->gpu_renderer) {
+        if (get_context() && get_context()->get_renderer()) {
                 GLuint gl_texture = Resources::get_gl_texture(texture_name);
                 if (gl_texture) {
                     try {
-                        app->gpu_renderer->begin_batch(GPUAcceleratedRenderer::TILE_FRAGMENTATION);
+                        get_context()->get_renderer()->begin_batch(GPUAcceleratedRenderer::TILE_FRAGMENTATION);
                         
                         // Create realistic wood/debris fragments from destroyed box!
                         const int num_fragments = 18;  // More small pieces for realistic debris
@@ -217,7 +217,7 @@ void MapTile_Box::show() {
                             // Optional: Use slight sprite variations for different fragment types
                             // (This would require additional sprites in the atlas for fragment textures)
                             
-                            app->gpu_renderer->add_animated_sprite(
+                            get_context()->get_renderer()->add_animated_sprite(
                                 fragment_x - (fragment_size * scale_x * 0.5f),
                                 fragment_y - (fragment_size * scale_y * 0.5f),
                                 fragment_size, fragment_size,
@@ -227,7 +227,7 @@ void MapTile_Box::show() {
                             );
                         }
                         
-                        app->gpu_renderer->end_batch();
+                        get_context()->get_renderer()->end_batch();
                         return; // Spectacular GPU effect rendered successfully!
                         
                     } catch (...) {
@@ -255,16 +255,16 @@ void MapTile_Box::destroy() {
         // (We'll spawn it when the destruction animation finishes)
         
         // Request destruction effect through centralized system
-        if (app->particle_effects) {
-            app->particle_effects->create_box_destruction_effect(get_x(), get_y(), 1.0f);
+        if (get_context()->get_particle_effects()) {
+            get_context()->get_particle_effects()->create_box_destruction_effect(get_x(), get_y(), 1.0f);
             SDL_Log("Box destruction effect requested at (%d,%d)", get_x(), get_y());
         }
         
         // Add traditional particle effects for destruction
-        ParticleSystem* dust = new ParticleSystem(get_x(), get_y(), DUST_CLOUDS, app);
-        app->objects.push_back(dust);
+        ParticleSystem* dust = new ParticleSystem(get_x(), get_y(), DUST_CLOUDS, get_context());
+        get_context()->register_object(dust);
         
-        ParticleSystem* sparks = new ParticleSystem(get_x(), get_y(), EXPLOSION_SPARKS, app);
-        app->objects.push_back(sparks);
+        ParticleSystem* sparks = new ParticleSystem(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
+        get_context()->register_object(sparks);
     }
 }

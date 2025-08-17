@@ -3,14 +3,14 @@
 #include "TileEntity.h"
 #include "MapTile_Pure.h"
 #include "MapEntry.h"
-#include "ClanBomber.h"
+#include "GameContext.h"
 #include <algorithm>
 #include <random>
 #include <filesystem>
 #include <SDL3/SDL.h>
 
-Map::Map(ClanBomberApplication* _app) {
-    app = _app;
+Map::Map(GameContext* _context) {
+    context = _context;
     current_map_index = 0;
     current_map = nullptr;
     
@@ -130,20 +130,15 @@ void Map::reload() {
             
             if (tile_type == MapTile_Pure::BOX) {
                 // Use specialized TileEntity_Box for box tiles
-                tile_entities[x][y] = new TileEntity_Box(tile_data, app);
+                tile_entities[x][y] = new TileEntity_Box(tile_data, context);
             } else {
                 // Use base TileEntity for other tiles
-                tile_entities[x][y] = new TileEntity(tile_data, app);
+                tile_entities[x][y] = new TileEntity(tile_data, context);
             }
             
-            // Register with LifecycleManager
-            if (app && app->lifecycle_manager) {
-                app->lifecycle_manager->register_tile_entity(tile_entities[x][y]);
-            }
-            
-            // Add to objects list for rendering and updates
-            if (app) {
-                app->objects.push_back(tile_entities[x][y]);
+            // Register TileEntity with GameContext (LifecycleManager + render list)
+            if (context) {
+                context->register_object(tile_entities[x][y]);
             }
             
             // Legacy compatibility: also create old MapTile
@@ -151,7 +146,7 @@ void Map::reload() {
                 tile_type == MapTile_Pure::GROUND ? MapTile::GROUND :
                 tile_type == MapTile_Pure::WALL ? MapTile::WALL :
                 MapTile::BOX, 
-                x*40, y*40, app);
+                x*40, y*40, context);
         }
     }
     

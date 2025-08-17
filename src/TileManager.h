@@ -10,7 +10,7 @@ class TileEntity;
 class GameObject;
 class Bomb;
 class Bomber;
-class ClanBomberApplication;
+class GameContext;
 class LifecycleManager;
 
 /**
@@ -24,7 +24,7 @@ class LifecycleManager;
  */
 class TileManager {
 public:
-    TileManager(ClanBomberApplication* app);
+    TileManager(GameContext* context = nullptr);
     ~TileManager();
 
     // === COORDINACIÓN PRINCIPAL ===
@@ -65,9 +65,12 @@ public:
     // === UTILITIES ===
     void iterate_all_tiles(std::function<void(MapTile*, int, int)> callback);
     std::vector<MapTile*> get_destructible_tiles_in_radius(int center_x, int center_y, int radius);
+    
+    // === TWO-PHASE INITIALIZATION ===
+    void set_context(GameContext* context);
 
 private:
-    ClanBomberApplication* app;
+    GameContext* context;
     
     // === COORDINACIÓN INTERNA ===
     void update_single_tile(MapTile* tile, int map_x, int map_y);

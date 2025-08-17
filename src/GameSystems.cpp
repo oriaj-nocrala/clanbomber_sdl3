@@ -140,7 +140,7 @@ void GameSystems::cleanup_destroyed_objects() {
     // ARCHITECTURE DECISION: LifecycleManager has exclusive responsibility for object deletion
     // GameSystems only coordinates behavior between objects, not their lifecycle
     
-    SDL_Log("GameSystems: cleanup_destroyed_objects() called - delegating to LifecycleManager");
+    // SDL_Log("GameSystems: cleanup_destroyed_objects() called - delegating to LifecycleManager");
     
     // NO MORE DIRECT DELETION - LifecycleManager handles all object cleanup
     // This eliminates the dual cleanup system that was causing use-after-free bugs

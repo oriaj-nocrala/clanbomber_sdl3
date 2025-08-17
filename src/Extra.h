@@ -17,7 +17,7 @@ public:
         VIAGRA = 8        // Negative effect - makes bombs stick to you
     };
 
-    Extra(int _x, int _y, EXTRA_TYPE _type, ClanBomberApplication* app);
+    Extra(int _x, int _y, EXTRA_TYPE _type, GameContext* context);
     ~Extra();
 
     void act(float deltaTime) override;

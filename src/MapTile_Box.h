@@ -5,7 +5,7 @@
 
 class MapTile_Box : public MapTile {
 public:
-    MapTile_Box(int _x, int _y, ClanBomberApplication* _app);
+    MapTile_Box(int _x, int _y, GameContext* _context);
     ~MapTile_Box();
 
     void act() override;

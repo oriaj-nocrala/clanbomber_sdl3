@@ -5,8 +5,8 @@
 #include <cmath>
 #include <algorithm>
 
-CorpsePart::CorpsePart(int _x, int _y, int part_type, float vel_x, float vel_y, float explosion_force, ClanBomberApplication* app) 
-    : GameObject(_x, _y, app) {
+CorpsePart::CorpsePart(int _x, int _y, int part_type, float vel_x, float vel_y, float explosion_force, GameContext* context) 
+    : GameObject(_x, _y, context) {
     
     // Initialize position and velocity
     position = Vector2D(_x, _y);

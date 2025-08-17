@@ -5,7 +5,7 @@
 
 class MapTile_Ground : public MapTile {
 public:
-    MapTile_Ground(int x, int y, ClanBomberApplication* app);
+    MapTile_Ground(int x, int y, GameContext* context);
     ~MapTile_Ground();
 };
 

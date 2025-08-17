@@ -2,11 +2,11 @@
 #include "MapTile_Ground.h"
 #include "MapTile_Wall.h"
 #include "MapTile_Box.h"
-#include "ClanBomber.h"
+#include "GameContext.h"
 #include "Extra.h"
 #include <random>
 
-MapTile::MapTile(int x, int y, ClanBomberApplication* app) : GameObject(x, y, app) {
+MapTile::MapTile(int x, int y, GameContext* context) : GameObject(x, y, context) {
     blocking = false;
     destructible = false;
     bomb = nullptr;
@@ -16,27 +16,27 @@ MapTile::MapTile(int x, int y, ClanBomberApplication* app) : GameObject(x, y, ap
 MapTile::~MapTile() {
 }
 
-MapTile* MapTile::create(MAPTILE_TYPE type, int x, int y, ClanBomberApplication* app) {
+MapTile* MapTile::create(MAPTILE_TYPE type, int x, int y, GameContext* context) {
     MapTile* tile = nullptr;
     switch (type) {
         case GROUND:
-            tile = new MapTile_Ground(x, y, app);
+            tile = new MapTile_Ground(x, y, context);
             break;
         case WALL:
-            tile = new MapTile_Wall(x, y, app);
+            tile = new MapTile_Wall(x, y, context);
             break;
         case BOX:
-            tile = new MapTile_Box(x, y, app);
+            tile = new MapTile_Box(x, y, context);
             break;
         case NONE:
         default:
-            tile = new MapTile_Ground(x, y, app); // Default to ground
+            tile = new MapTile_Ground(x, y, context); // Default to ground
             break;
     }
     
-    // Register with LifecycleManager
-    if (tile && app && app->lifecycle_manager) {
-        app->lifecycle_manager->register_tile(tile, x/40, y/40);
+    // Register with LifecycleManager through GameContext
+    if (tile && context && context->get_lifecycle_manager()) {
+        context->get_lifecycle_manager()->register_tile(tile, x/40, y/40);
     }
     
     return tile;
@@ -107,6 +107,6 @@ void MapTile::spawn_extra() {
     }
     
     // Create the extra at this tile's position
-    Extra* extra = new Extra(get_x(), get_y(), extra_type, app);
-    app->objects.push_back(extra);
+    Extra* extra = new Extra(get_x(), get_y(), extra_type, get_context());
+    get_context()->register_object(extra);
 }

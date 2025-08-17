@@ -112,10 +112,8 @@ GameObject::GameObject( int _x, int _y, GameContext* context )
 	server_y = (int)y;
 	reset_next_fly_job();
 	
-	// Register with LifecycleManager through GameContext
-	if (context && context->get_lifecycle_manager()) {
-		context->get_lifecycle_manager()->register_object(this);
-	}
+	// NOTE: Object registration is handled explicitly by caller
+	// This prevents double registration issues and gives explicit control
 }
 
 GameContext* GameObject::get_context() const
@@ -1105,10 +1103,19 @@ void GameObject::show()
         return;
     }
     
-    // LifecycleManager controls rendering: don't render if truly deleted, but allow DYING state
-    LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(this);
-    if (state == LifecycleManager::ObjectState::DELETED) {
-        return;  // Object is truly dead, don't render
+    // LifecycleManager controls rendering: Use proper context access to support both architectures
+    GameContext* ctx = get_context();
+    if (ctx && ctx->get_lifecycle_manager()) {
+        LifecycleManager::ObjectState state = ctx->get_lifecycle_manager()->get_object_state(this);
+        if (state == LifecycleManager::ObjectState::DELETED) {
+            return;  // Object is truly dead, don't render
+        }
+    } else if (app && app->lifecycle_manager) {
+        // Legacy fallback for old constructor
+        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(this);
+        if (state == LifecycleManager::ObjectState::DELETED) {
+            return;  // Object is truly dead, don't render
+        }
     }
     // Continue rendering for ACTIVE, DYING, and DEAD states
     
@@ -1120,8 +1127,24 @@ void GameObject::show()
     // NOTE: tex_info->texture is NULL because we only use OpenGL textures now
     // We proceed to GPU rendering regardless
 
-    // GPU rendering path
-    if (app && app->gpu_renderer && app->gpu_renderer->is_ready()) {
+    // GPU rendering path - use context for renderer access first
+    if (ctx && ctx->get_renderer() && ctx->get_renderer()->is_ready()) {
+        GLuint gl_texture = Resources::get_gl_texture(texture_name);
+        
+        if (gl_texture) {
+            float color[4] = {1.0f, 1.0f, 1.0f, opacity_scaled / 255.0f};
+            float scale[2] = {1.0f, 1.0f};
+            
+            ctx->get_renderer()->add_sprite(
+                (float)get_x(), (float)get_y(), 
+                tex_info->sprite_width > 0 ? tex_info->sprite_width : 40.0f,
+                tex_info->sprite_height > 0 ? tex_info->sprite_height : 40.0f,
+                gl_texture, color, 0.0f, scale, sprite_nr
+            );
+            return;
+        }
+    } else if (app && app->gpu_renderer && app->gpu_renderer->is_ready()) {
+        // Legacy fallback
         GLuint gl_texture = Resources::get_gl_texture(texture_name);
         
         if (gl_texture) {

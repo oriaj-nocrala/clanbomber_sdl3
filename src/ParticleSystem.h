@@ -24,7 +24,7 @@ enum ParticleType {
 
 class ParticleSystem : public GameObject {
 public:
-    ParticleSystem(int _x, int _y, ParticleType type, ClanBomberApplication* app);
+    ParticleSystem(int _x, int _y, ParticleType type, GameContext* context);
     ~ParticleSystem();
     
     void act(float deltaTime) override;

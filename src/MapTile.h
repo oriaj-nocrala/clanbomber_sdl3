@@ -5,6 +5,7 @@
 
 class Bomb; // Forward declaration
 class Bomber; // Forward declaration
+class GameContext; // Forward declaration
 
 class MapTile : public GameObject {
 public:
@@ -18,14 +19,14 @@ public:
         TRAP
     };
 
-    MapTile(int x, int y, ClanBomberApplication* app);
+    MapTile(int x, int y, GameContext* context);
     virtual ~MapTile();
 
     // Implement GameObject's get_type
     ObjectType get_type() const override { return MAPTILE; }
 
     // Static factory method
-    static MapTile* create(MAPTILE_TYPE type, int x, int y, ClanBomberApplication* app);
+    static MapTile* create(MAPTILE_TYPE type, int x, int y, GameContext* context);
 
     virtual void act();
     virtual void show() override;

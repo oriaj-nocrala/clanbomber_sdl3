@@ -24,7 +24,7 @@ struct BloodTrail {
 
 class CorpsePart : public GameObject {
 public:
-    CorpsePart(int _x, int _y, int part_type, float velocity_x, float velocity_y, float explosion_force, ClanBomberApplication* app);
+    CorpsePart(int _x, int _y, int part_type, float velocity_x, float velocity_y, float explosion_force, GameContext* context);
     ~CorpsePart();
 
     void act(float deltaTime) override;

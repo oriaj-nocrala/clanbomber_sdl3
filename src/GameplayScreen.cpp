@@ -10,6 +10,7 @@
 #include "TileManager.h"
 #include "GameSystems.h"
 #include "TileEntity.h"
+#include "GameContext.h"
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -61,7 +62,16 @@ void GameplayScreen::init_game() {
     gore_delay_timer = 0.0f;
     checking_victory = false;
 
-    app->map = new Map(app);
+    // Initialize GameContext first (without map)
+    app->initialize_game_context();
+    
+    // CRITICAL FIX: Connect GameContext to rendering lists so TileEntity objects are rendered
+    if (app->game_context) {
+        app->game_context->set_object_lists(&app->objects);
+        SDL_Log("GameplayScreen: Connected GameContext to rendering lists");
+    }
+    
+    app->map = new Map(app->game_context);
     if (!app->map->any_valid_map()) {
         SDL_Log("No valid maps found.");
     }
@@ -77,6 +87,11 @@ void GameplayScreen::init_game() {
 
     if (GameConfig::get_random_positions()) {
         app->map->randomize_bomber_positions();
+    }
+    
+    // Now set the map in GameContext
+    if (app->game_context && app->map) {
+        app->game_context->set_map(app->map);
     }
 
     int j = 0;
@@ -138,12 +153,6 @@ void GameplayScreen::init_game() {
                 bomber->set_team(0);
             }
         }
-    }
-    
-    // Initialize GameContext now that Map exists
-    if (app->map) {
-        app->initialize_game_context();
-        SDL_Log("GameContext initialized after map creation");
     }
     
     // Initialize GameSystems after GameContext is ready
@@ -354,23 +363,24 @@ void GameplayScreen::act_all() {
 }
 
 void GameplayScreen::delete_some() {
-    // LifecycleManager handles all object deletion coordination
+    // ARCHITECTURE FIX: LifecycleManager handles ALL deletion
+    // GameplayScreen only removes references from its lists
     app->objects.remove_if([this](GameObject* obj) {
         LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(obj);
         if (state == LifecycleManager::ObjectState::DELETED) {
-            SDL_Log("GameplayScreen: Deleting object %p (LifecycleManager approved)", obj);
+            SDL_Log("GameplayScreen: Removing object %p from render list (LifecycleManager will delete)", obj);
             
-            // CRITICAL FIX: Clear Map grid pointer for TileEntity before deletion
+            // CRITICAL: Clear Map grid pointer for TileEntity before LifecycleManager deletes it
             if (obj->get_type() == GameObject::MAPTILE && app->map) {
                 TileEntity* tile_entity = static_cast<TileEntity*>(obj);
                 int map_x = tile_entity->get_map_x();
                 int map_y = tile_entity->get_map_y();
-                SDL_Log("GameplayScreen: Clearing Map grid pointer for TileEntity at (%d,%d) before deletion", map_x, map_y);
+                SDL_Log("GameplayScreen: Clearing Map grid pointer for TileEntity at (%d,%d)", map_x, map_y);
                 app->map->clear_tile_entity_at(map_x, map_y);
             }
             
-            delete obj;
-            return true;
+            // DON'T DELETE - LifecycleManager owns the object lifecycle
+            return true;  // Remove from list only
         }
         return false;
     });
@@ -378,9 +388,9 @@ void GameplayScreen::delete_some() {
     app->bomber_objects.remove_if([this](Bomber* bomber) {
         LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(bomber);
         if (state == LifecycleManager::ObjectState::DELETED) {
-            SDL_Log("GameplayScreen: Deleting bomber %p (LifecycleManager approved)", bomber);
-            delete bomber;
-            return true;
+            SDL_Log("GameplayScreen: Removing bomber %p from render list (LifecycleManager will delete)", bomber);
+            // DON'T DELETE - LifecycleManager owns the object lifecycle
+            return true;  // Remove from list only
         }
         return false;
     });

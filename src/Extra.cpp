@@ -5,11 +5,12 @@
 #include "MapTile.h"
 #include "Bomber.h"
 #include "ParticleSystem.h"
+#include "GameContext.h"
 #include <cmath>
 #include <random>
 
-Extra::Extra(int _x, int _y, EXTRA_TYPE _type, ClanBomberApplication* app) 
-    : GameObject(_x, _y, app) {
+Extra::Extra(int _x, int _y, EXTRA_TYPE _type, GameContext* context) 
+    : GameObject(_x, _y, context) {
     extra_type = _type;
     collected = false;
     collect_animation = 0.0f;
@@ -45,8 +46,16 @@ void Extra::act(float deltaTime) {
     bounce_timer += deltaTime * 4.0f; // 4x speed for nice bounce
     bounce_offset = std::sin(bounce_timer) * 3.0f; // 3 pixel bounce
     
-    // Check for collision with bombers directly
-    for (auto& bomber : app->bomber_objects) {
+    // Check for collision with bombers directly using GameContext
+    GameContext* ctx = get_context();
+    if (!ctx || !ctx->get_object_lists()) {
+        return;
+    }
+    
+    for (auto& obj : *ctx->get_object_lists()) {
+        if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+        
+        Bomber* bomber = static_cast<Bomber*>(obj);
         if (bomber && !bomber->delete_me && !bomber->is_dead()) {
             // Check if bomber is close enough to collect (within 20 pixels)
             float dx = bomber->get_x() - x;
@@ -82,8 +91,8 @@ void Extra::collect() {
     collected = true;
     
     // Create pickup particle effect
-    ParticleSystem* pickup_sparkles = new ParticleSystem(x, y, EXPLOSION_SPARKS, app);
-    app->objects.push_back(pickup_sparkles);
+    ParticleSystem* pickup_sparkles = new ParticleSystem(x, y, EXPLOSION_SPARKS, get_context());
+    get_context()->register_object(pickup_sparkles);
     
     // Play collection sound
     AudioPosition extra_pos(x, y, 0.0f);

@@ -5,7 +5,7 @@
 
 class MapTile_Wall : public MapTile {
 public:
-    MapTile_Wall(int x, int y, ClanBomberApplication* app);
+    MapTile_Wall(int x, int y, GameContext* context);
     ~MapTile_Wall();
 
     bool is_blocking() const override { return true; }

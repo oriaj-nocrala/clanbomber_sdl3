@@ -12,12 +12,12 @@ class MapTile;
 class TileEntity;
 class MapTile_Pure;
 class MapEntry;
-class ClanBomberApplication;
+class GameContext;
 class Bomber;
 
 class Map {
 public:
-    Map(ClanBomberApplication* app);
+    Map(GameContext* context);
     ~Map();
 
     void load();
@@ -42,7 +42,7 @@ public:
     std::string get_author();
 
 private:
-    ClanBomberApplication* app;
+    GameContext* context;
     
     // NUEVO: Dual storage para transición
     MapTile* maptiles[MAP_WIDTH][MAP_HEIGHT];  // Legacy storage

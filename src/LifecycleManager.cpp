@@ -192,11 +192,16 @@ void LifecycleManager::update_tile_state(ManagedTile& managed, float deltaTime) 
 }
 
 void LifecycleManager::cleanup_dead_objects() {
-    // Remove deleted objects from tracking (don't delete the objects themselves!)
+    // ARCHITECTURE FIX: LifecycleManager handles deletion AND tracking removal
     auto it = std::remove_if(managed_objects.begin(), managed_objects.end(),
         [](const ManagedObject& managed) {
             if (managed.state == ObjectState::DELETED) {
-                SDL_Log("LifecycleManager: Removing object %p from tracking (deletion handled elsewhere)", managed.object);
+                try {
+                    SDL_Log("LifecycleManager: Deleting object %p during cleanup", managed.object);
+                    delete managed.object;  // LifecycleManager deletes the object
+                } catch (...) {
+                    SDL_Log("ERROR: Exception during object cleanup %p - continuing", managed.object);
+                }
                 return true;
             }
             return false;
@@ -206,7 +211,7 @@ void LifecycleManager::cleanup_dead_objects() {
     managed_objects.erase(it, managed_objects.end());
     
     if (objects_removed > 0) {
-        SDL_Log("LifecycleManager: Removed %zu objects from tracking", objects_removed);
+        SDL_Log("LifecycleManager: Cleaned up %zu objects", objects_removed);
     }
     
     // Remove deleted tiles from tracking (don't delete the tiles themselves!)
@@ -261,13 +266,22 @@ bool LifecycleManager::is_dying_or_dead(TileEntity* tile_entity) const {
 void LifecycleManager::clear_all() {
     SDL_Log("LifecycleManager: Clearing all managed objects and tiles");
     
-    // Clean up all objects
+    // LifecycleManager OWNS the lifecycle - should handle deletion with protection
+    SDL_Log("LifecycleManager: Deleting %zu managed objects", managed_objects.size());
     for (const auto& managed : managed_objects) {
-        delete managed.object;
+        if (managed.object) {
+            try {
+                SDL_Log("LifecycleManager: Deleting object %p", managed.object);
+                delete managed.object;
+            } catch (...) {
+                SDL_Log("ERROR: Exception during object deletion %p - continuing", managed.object);
+            }
+        }
     }
     managed_objects.clear();
     
     // Clear tiles (don't delete - Map owns them)
+    SDL_Log("LifecycleManager: Clearing %zu tile references (tiles owned by Map)", managed_tiles.size());
     managed_tiles.clear();
 }
 

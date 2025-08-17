@@ -1,5 +1,5 @@
 #include "TileManager.h"
-#include "ClanBomber.h"
+#include "GameContext.h"
 #include "Map.h"
 #include "MapTile.h"
 #include "TileEntity.h"
@@ -9,8 +9,13 @@
 #include <SDL3/SDL.h>
 #include <cassert>
 
-TileManager::TileManager(ClanBomberApplication* app) : app(app) {
+TileManager::TileManager(GameContext* context) : context(context) {
     SDL_Log("TileManager: Initialized intelligent tile coordination system");
+}
+
+void TileManager::set_context(GameContext* new_context) {
+    context = new_context;
+    SDL_Log("TileManager: GameContext set to %p", context);
 }
 
 TileManager::~TileManager() {
@@ -20,7 +25,7 @@ TileManager::~TileManager() {
 // === COORDINACIÓN PRINCIPAL ===
 
 void TileManager::update_tiles(float deltaTime) {
-    if (!app || !app->map) return;
+    if (!context || !context->get_map()) return;
     
     // PASO 1: Coordinar con LifecycleManager PRIMERO
     coordinate_with_lifecycle_manager();
@@ -46,21 +51,21 @@ void TileManager::handle_tile_updates() {
 // === COORDINACIÓN CON LIFECYCLE ===
 
 void TileManager::coordinate_with_lifecycle_manager() {
-    if (!app->lifecycle_manager) {
+    if (!context->get_lifecycle_manager()) {
         SDL_Log("TileManager: ERROR - No LifecycleManager available for coordination");
         return;
     }
     
     // TileManager es el ÚNICO autorizado para coordinar con LifecycleManager
     // Esto elimina la coordinación cruzada que nos ha estado jodiendo
-    app->lifecycle_manager->update_states(0.016f); // ~60 FPS delta
+    context->get_lifecycle_manager()->update_states(0.016f); // ~60 FPS delta
 }
 
 void TileManager::process_dying_tiles() {
     iterate_all_tiles([this](MapTile* tile, int x, int y) {
-        if (!tile || !app->lifecycle_manager) return;
+        if (!tile || !context->get_lifecycle_manager()) return;
         
-        LifecycleManager::ObjectState state = app->lifecycle_manager->get_tile_state(tile);
+        LifecycleManager::ObjectState state = context->get_lifecycle_manager()->get_tile_state(tile);
         if (state == LifecycleManager::ObjectState::DYING) {
             SDL_Log("TileManager: Tile at (%d,%d) is dying - monitoring", x, y);
             // Tile está en animación de muerte - solo monitorear
@@ -70,9 +75,9 @@ void TileManager::process_dying_tiles() {
 
 void TileManager::process_dead_tiles() {
     iterate_all_tiles([this](MapTile* tile, int x, int y) {
-        if (!tile || !app->lifecycle_manager) return;
+        if (!tile || !context->get_lifecycle_manager()) return;
         
-        LifecycleManager::ObjectState state = app->lifecycle_manager->get_tile_state(tile);
+        LifecycleManager::ObjectState state = context->get_lifecycle_manager()->get_tile_state(tile);
         if (state == LifecycleManager::ObjectState::DELETED) {
             SDL_Log("TileManager: Tile at (%d,%d) ready for replacement - executing", x, y);
             replace_tile_when_ready(x, y, MapTile::GROUND);
@@ -91,7 +96,7 @@ void TileManager::request_tile_destruction(int map_x, int map_y) {
     Bomb* bomb_to_explode = nullptr;
     
     // DUAL ARCHITECTURE COORDINATION: Handle legacy MapTile first
-    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    MapTile* legacy_tile = context->get_map()->get_tile(map_x, map_y);
     if (legacy_tile && legacy_tile->is_burnable()) {
         SDL_Log("TileManager: Destroying legacy MapTile at (%d,%d)", map_x, map_y);
         legacy_tile->destroy();
@@ -103,7 +108,7 @@ void TileManager::request_tile_destruction(int map_x, int map_y) {
     
     // Handle new TileEntity (only if legacy wasn't destroyed to avoid duplicate effects)
     if (!tile_destroyed) {
-        TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+        TileEntity* tile_entity = context->get_map()->get_tile_entity(map_x, map_y);
         if (tile_entity && !tile_entity->is_destroyed() && tile_entity->is_destructible()) {
             SDL_Log("TileManager: Destroying TileEntity at (%d,%d)", map_x, map_y);
             tile_entity->destroy();
@@ -127,15 +132,15 @@ void TileManager::request_tile_destruction(int map_x, int map_y) {
 }
 
 void TileManager::replace_tile_when_ready(int map_x, int map_y, int new_tile_type) {
-    if (!is_valid_position(map_x, map_y) || !app->map) return;
+    if (!is_valid_position(map_x, map_y) || !context->get_map()) return;
     
     perform_tile_replacement(map_x, map_y, new_tile_type);
 }
 
 bool TileManager::is_tile_ready_for_replacement(MapTile* tile) {
-    if (!tile || !app->lifecycle_manager) return false;
+    if (!tile || !context->get_lifecycle_manager()) return false;
     
-    LifecycleManager::ObjectState state = app->lifecycle_manager->get_tile_state(tile);
+    LifecycleManager::ObjectState state = context->get_lifecycle_manager()->get_tile_state(tile);
     return state == LifecycleManager::ObjectState::DELETED;
 }
 
@@ -156,22 +161,22 @@ bool TileManager::is_position_blocked(int map_x, int map_y) {
 }
 
 MapTile* TileManager::get_tile_at(int map_x, int map_y) {
-    if (!is_valid_position(map_x, map_y) || !app->map) return nullptr;
+    if (!is_valid_position(map_x, map_y) || !context->get_map()) return nullptr;
     
-    return app->map->get_tile(map_x, map_y);
+    return context->get_map()->get_tile(map_x, map_y);
 }
 
 // === DUAL ARCHITECTURE OPTIMIZED QUERIES ===
 
 bool TileManager::is_tile_blocking_at(int map_x, int map_y) {
-    if (!is_valid_position(map_x, map_y) || !app->map) return false;
+    if (!is_valid_position(map_x, map_y) || !context->get_map()) return false;
     
-    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    MapTile* legacy_tile = context->get_map()->get_tile(map_x, map_y);
     if (legacy_tile) {
         return legacy_tile->is_blocking();
     }
     
-    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    TileEntity* tile_entity = context->get_map()->get_tile_entity(map_x, map_y);
     if (tile_entity) {
         return tile_entity->is_blocking();
     }
@@ -180,14 +185,14 @@ bool TileManager::is_tile_blocking_at(int map_x, int map_y) {
 }
 
 bool TileManager::has_bomb_at(int map_x, int map_y) {
-    if (!is_valid_position(map_x, map_y) || !app->map) return false;
+    if (!is_valid_position(map_x, map_y) || !context->get_map()) return false;
     
-    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    MapTile* legacy_tile = context->get_map()->get_tile(map_x, map_y);
     if (legacy_tile) {
         return legacy_tile->bomb != nullptr;
     }
     
-    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    TileEntity* tile_entity = context->get_map()->get_tile_entity(map_x, map_y);
     if (tile_entity) {
         return tile_entity->get_bomb() != nullptr;
     }
@@ -196,14 +201,14 @@ bool TileManager::has_bomb_at(int map_x, int map_y) {
 }
 
 bool TileManager::is_tile_destructible_at(int map_x, int map_y) {
-    if (!is_valid_position(map_x, map_y) || !app->map) return false;
+    if (!is_valid_position(map_x, map_y) || !context->get_map()) return false;
     
-    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    MapTile* legacy_tile = context->get_map()->get_tile(map_x, map_y);
     if (legacy_tile) {
         return legacy_tile->is_destructible();
     }
     
-    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    TileEntity* tile_entity = context->get_map()->get_tile_entity(map_x, map_y);
     if (tile_entity) {
         return tile_entity->is_destructible();
     }
@@ -273,11 +278,11 @@ bool TileManager::has_bomber_at(int map_x, int map_y) {
 // === UTILITIES ===
 
 void TileManager::iterate_all_tiles(std::function<void(MapTile*, int, int)> callback) {
-    if (!app->map || !callback) return;
+    if (!context->get_map() || !callback) return;
     
     for (int x = 0; x < MAP_WIDTH; x++) {
         for (int y = 0; y < MAP_HEIGHT; y++) {
-            MapTile* tile = app->map->get_tile(x, y);
+            MapTile* tile = context->get_map()->get_tile(x, y);
             callback(tile, x, y);
         }
     }
@@ -326,7 +331,7 @@ void TileManager::handle_tile_destruction_request(int map_x, int map_y) {
 }
 
 void TileManager::perform_tile_replacement(int map_x, int map_y, int new_tile_type) {
-    if (!app->map) return;
+    if (!context->get_map()) return;
     
     SDL_Log("TileManager: Replacing tile at (%d,%d) with type %d", map_x, map_y, new_tile_type);
     
@@ -339,11 +344,11 @@ void TileManager::perform_tile_replacement(int map_x, int map_y, int new_tile_ty
     // Crear nuevo tile
     MapTile* new_tile = MapTile::create(
         static_cast<MapTile::MAPTILE_TYPE>(new_tile_type),
-        map_x * 40, map_y * 40, app
+        map_x * 40, map_y * 40, context
     );
     
     // Actualizar grid usando el setter
-    app->map->set_tile(map_x, map_y, new_tile);
+    context->get_map()->set_tile(map_x, map_y, new_tile);
     
     SDL_Log("TileManager: Tile replacement complete at (%d,%d)", map_x, map_y);
 }
