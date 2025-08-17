@@ -749,7 +749,7 @@ bool Controller_AI_Modern::bombing_is_beneficial(int x, int y) const {
     return benefit_score >= min_benefit;
 }
 
-bool Controller_AI_Modern::should_move_to_better_position() const {
+bool Controller_AI_Modern::should_move_to_better_position() {
     int x = bomber->get_map_x();
     int y = bomber->get_map_y();
     
@@ -764,8 +764,8 @@ bool Controller_AI_Modern::should_move_to_better_position() const {
             // Move horizontally toward center
             int target_x = (x < center_x) ? x + 1 : x - 1;
             if (target_x >= 0 && target_x < MAP_WIDTH && !is_death(target_x, y)) {
-                const_cast<Controller_AI_Modern*>(this)->jobs.push_back(
-                    std::make_unique<AIJob_Go>(const_cast<Controller_AI_Modern*>(this), 
+                jobs.push_back(
+                    std::make_unique<AIJob_Go>(this, 
                                              (x < center_x) ? DIR_RIGHT : DIR_LEFT, 1));
                 return true;
             }
@@ -773,8 +773,8 @@ bool Controller_AI_Modern::should_move_to_better_position() const {
             // Move vertically toward center
             int target_y = (y < center_y) ? y + 1 : y - 1;
             if (target_y >= 0 && target_y < MAP_HEIGHT && !is_death(x, target_y)) {
-                const_cast<Controller_AI_Modern*>(this)->jobs.push_back(
-                    std::make_unique<AIJob_Go>(const_cast<Controller_AI_Modern*>(this), 
+                jobs.push_back(
+                    std::make_unique<AIJob_Go>(this, 
                                              (y < center_y) ? DIR_DOWN : DIR_UP, 1));
                 return true;
             }

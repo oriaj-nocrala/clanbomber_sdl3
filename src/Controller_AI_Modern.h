@@ -152,7 +152,7 @@ private:
     bool is_starting_corner_position(int x, int y) const;
     bool can_escape_from_bomb_safely(int x, int y) const;
     bool bombing_is_beneficial(int x, int y) const;
-    bool should_move_to_better_position() const;
+    bool should_move_to_better_position();
     
     // Bomb management and escape logic
     int count_active_bombs() const;
