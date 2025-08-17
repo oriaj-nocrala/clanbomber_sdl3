@@ -47,14 +47,27 @@ class GameObject
 {
 public:
   /**
-   * Constructor.
-   * Used to create a game object
+   * Constructor (Legacy).
+   * Used to create a game object with ClanBomberApplication dependency
    * @param _x Object screen x coordinate.
    * @param _y Object screen y coordinate.
    * @param _app Pointer to parent ClanBomberApplication.
    */
   GameObject( int _x, int _y, ClanBomberApplication *_app );
+  
+  /**
+   * Constructor (Preferred).
+   * Used to create a game object with GameContext dependency injection
+   * @param _x Object screen x coordinate.
+   * @param _y Object screen y coordinate.
+   * @param context Pointer to GameContext for system access.
+   */
+  GameObject( int _x, int _y, class GameContext* context );
+  
   virtual ~GameObject();
+  
+  // Convenience method to get context from either source
+  class GameContext* get_context() const;
 
   /**
    * Returns object id.
@@ -204,6 +217,12 @@ public:
   bool delete_me;
   ClanBomberApplication *app;
   void set_next_fly_job(int flyjobx, int flyjoby, int flyjobspeed);
+  
+  // Texture management for components
+  void set_texture_name(const std::string& name) { texture_name = name; }
+  void set_sprite_nr(int nr) { sprite_nr = nr; }
+  int get_sprite_nr() const { return sprite_nr; }
+  
 protected:
   /**
    * Which texture to draw for this object.
@@ -282,6 +301,7 @@ private:
   bool is_next_fly_job();
   int next_fly_job[3];
   void init(ClanBomberApplication *_app);
+  GameContext* game_context = nullptr;
 };
 
 #endif

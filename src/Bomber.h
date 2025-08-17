@@ -3,9 +3,24 @@
 
 #include "GameObject.h"
 #include "Controller.h"
+#include "BomberComponents.h"
 #include <string>
-#include <algorithm>
+#include <memory>
 
+// Forward declarations
+class BomberMovementComponent;
+class BomberCombatComponent;
+class BomberAnimationComponent;
+class BomberLifecycleComponent;
+
+/**
+ * Bomber: Modern component-based bomber entity
+ * 
+ * ARCHITECTURE: Composition over Inheritance
+ * - Uses specialized components for different responsibilities
+ * - Integrates with GameContext for dependency injection
+ * - Follows modern C++17 patterns
+ */
 class Bomber : public GameObject {
 public:
     typedef enum {
@@ -20,98 +35,88 @@ public:
     } COLOR;
 
     Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app);
+    ~Bomber();
     
     void act(float deltaTime) override;
     void show() override; // Override to handle invincibility flickering
 
     COLOR get_color() const { return color; }
-    void die(); // Kill the bomber
-    bool is_dead() const { return dead; }
     ObjectType get_type() const override { return BOMBER; }
     
-    // Lives system
-    void set_lives(int lives) { remaining_lives = lives; }
-    int get_lives() const { return remaining_lives; }
-    void lose_life() { if (remaining_lives > 0) remaining_lives--; }
-    bool has_lives() const { return remaining_lives > 0; }
+    // === COMPONENT-BASED API ===
     
-    // Respawn system
+    // Death system (delegated to combat component)
+    void die();
+    bool is_dead() const;
+    
+    // Lives system (delegated to lifecycle component)
+    void set_lives(int lives);
+    int get_lives() const;
+    void lose_life();
+    bool has_lives() const;
+    
+    // Respawn system (delegated to lifecycle component)
     void respawn(); 
-    bool is_respawning() const { return respawning; }
-    void set_invincible(bool inv) { invincible = inv; }
-    bool is_invincible() const { return invincible; }
+    bool is_respawning() const;
+    void set_invincible(bool inv);
+    bool is_invincible() const;
 
-    // Team management
-    void set_team(int team) { bomber_team = team; }
-    int get_team() const { return bomber_team; }
+    // Team management (delegated to lifecycle component)
+    void set_team(int team);
+    int get_team() const;
     
-    // Name management
-    void set_name(const std::string& name) { bomber_name = name; }
-    std::string get_name() const { return bomber_name; }
+    // Name management (delegated to lifecycle component)
+    void set_name(const std::string& name);
+    std::string get_name() const;
     
-    // Number management
-    void set_number(int number) { bomber_number = number; }
-    int get_number() const { return bomber_number; }
+    // Number management (delegated to lifecycle component)
+    void set_number(int number);
+    int get_number() const;
 
     // Controller access
     Controller* get_controller() { return controller; }
     
-    // Animation
+    // Animation (delegated to movement component)
     void fly_to(int target_x, int target_y, float duration_ms);
+    bool can_move() const;
+    // bool is_flying() const;  // Use modern system only (don't override since not virtual)
     
-    // Bomb mechanics
+    // Bomb mechanics (delegated to combat component)
     void place_bomb();
     void throw_bomb();
+    bool can_place_bomb() const;
     
-    // Power-up effects
-    void inc_speed(int amount) { speed += amount; }
-    void dec_speed(int amount) { speed = std::max(30, speed - amount); }
-    int get_power() const { return power; }
-    void inc_power(int amount) { power += amount; }
+    // Power-up effects (delegated to movement/combat components)
+    void inc_speed(int amount);
+    void dec_speed(int amount);
+    int get_power() const;
+    void inc_power(int amount);
     
-    // Bomb management
-    int get_max_bombs() const { return max_bombs; }
-    void inc_max_bombs(int amount) { max_bombs += amount; }
-    int get_current_bombs() const { return current_bombs; }
-    void inc_current_bombs() { current_bombs++; }
-    void dec_current_bombs() { if (current_bombs > 0) current_bombs--; }
-    bool can_place_bomb() const { return current_bombs < max_bombs; }
+    // Bomb management (delegated to combat component)
+    int get_max_bombs() const;
+    void inc_max_bombs(int amount);
+    int get_current_bombs() const;
+    void inc_current_bombs();
+    void dec_current_bombs();
     
-public:
-    bool can_kick;
-    bool can_throw;
-    bool dead;
+    // Special abilities (delegated to combat component)
+    bool can_kick() const;
+    bool can_throw() const;
+    void set_can_kick(bool kick);
+    void set_can_throw(bool throw_ability);
     
-    // Lives and respawn
-    int remaining_lives;
-    bool respawning;
-    bool invincible;
-    float respawn_timer;
-    float invincible_timer;
+    // === COMPONENT ACCESS (for inter-component communication) ===
+    std::unique_ptr<BomberAnimationComponent> animation_component;
     
-    // Flight animation
-    bool flying;
-    float flight_timer;
-    float flight_duration;
-    int start_x, start_y;
-    int target_x, target_y;
-
-protected:
-    float anim_count;
+private:
+    // === COMPONENT-BASED ARCHITECTURE ===
+    std::unique_ptr<BomberMovementComponent> movement_component;
+    std::unique_ptr<BomberCombatComponent> combat_component;
+    std::unique_ptr<BomberLifecycleComponent> lifecycle_component;
+    
+    // Core properties
     COLOR color;
     Controller* controller;
-    float bomb_cooldown;
-    int power;
-    int max_bombs;
-    int current_bombs;
-    int bomber_team;
-    int bomber_number;
-    std::string bomber_name;
-    
-    // Bomb throwing mechanics
-    float bomb_hold_timer;
-    bool bomb_button_held;
-    const float THROW_HOLD_TIME = 0.3f; // 300ms hold to throw
 };
 
 #endif

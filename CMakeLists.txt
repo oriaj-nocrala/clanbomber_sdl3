@@ -112,6 +112,7 @@ add_executable(clanbomber-modern
     src/GameObject.cpp
     src/Resources.cpp
     src/Bomber.cpp
+    src/BomberComponents.cpp
     src/Controller_Keyboard.cpp
     src/Controller_AI_Smart.cpp
     src/Controller_AI_Modern.cpp

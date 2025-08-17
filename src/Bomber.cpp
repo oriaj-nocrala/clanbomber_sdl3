@@ -1,292 +1,241 @@
 #include "Bomber.h"
-#include "Timer.h"
+#include "BomberComponents.h"
 #include "Controller.h"
-#include "Bomb.h"
-#include "ThrownBomb.h"
-#include "BomberCorpse.h"
 #include "ClanBomber.h"
-#include "GameConfig.h"
-#include "AudioMixer.h"
-#include "Map.h"
-#include "MapTile.h"
 
-Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app) : GameObject(_x, _y, _app) {
-    color = _color;
-    controller = _controller;
+// ===== CONSTRUCTOR / DESTRUCTOR =====
+
+Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomberApplication *_app) 
+    : GameObject(_x, _y, _app), color(_color), controller(_controller) {
+    
+    // Attach controller
     if (controller) {
         controller->attach(this);
     }
-    anim_count = 0;
+    
+    // Initialize components using modern C++17 patterns
+    movement_component = std::make_unique<BomberMovementComponent>(this, _app);
+    combat_component = std::make_unique<BomberCombatComponent>(this, _app);
+    animation_component = std::make_unique<BomberAnimationComponent>(this, _app);
+    lifecycle_component = std::make_unique<BomberLifecycleComponent>(this, _app);
+    
+    // Set initial properties
     cur_dir = DIR_RIGHT;
-    speed = 90;
-    bomb_cooldown = 0.0f;
-    power = GameConfig::get_start_power();
-    max_bombs = 1; // Start with 1 bomb capacity
-    current_bombs = 0;
-    can_kick = false; // Start without kick ability
-    can_throw = false; // Start without throw ability
-    dead = false;
     
-    // Initialize lives and respawn system
-    remaining_lives = 3; // Default 3 lives
-    respawning = false;
-    invincible = false;
-    respawn_timer = 0.0f;
-    invincible_timer = 0.0f;
+    // Configure animation component with color
+    animation_component->set_texture_from_color(static_cast<int>(color));
     
-    // Initialize flight animation
-    flying = false;
-    flight_timer = 0.0f;
-    flight_duration = 0.0f;
-    start_x = start_y = target_x = target_y = 0;
-    
-    // Initialize new member variables
-    bomber_team = 0;
-    bomber_number = 0;
-    bomber_name = "Bomber";
-    
-    // Initialize bomb throwing mechanics
-    bomb_hold_timer = 0.0f;
-    bomb_button_held = false;
-
-    // Set texture based on color - using proper bomber skins
-    switch (color) {
-        case RED: texture_name = "bomber_dull_red"; break;
-        case BLUE: texture_name = "bomber_dull_blue"; break;
-        case YELLOW: texture_name = "bomber_dull_yellow"; break;
-        case GREEN: texture_name = "bomber_dull_green"; break;
-        case CYAN: texture_name = "bomber_snake"; break;
-        case ORANGE: texture_name = "bomber_tux"; break;
-        case PURPLE: texture_name = "bomber_spider"; break;
-        case BROWN: texture_name = "bomber_bsd"; break;
-        default: texture_name = "bomber_snake"; break;
-    }
+    SDL_Log("Bomber: Created modern component-based bomber at (%d,%d) with color %d", _x, _y, static_cast<int>(color));
 }
+
+Bomber::~Bomber() {
+    // Components are automatically cleaned up via unique_ptr
+    SDL_Log("Bomber: Destroyed bomber with modern component cleanup");
+}
+
+// ===== CORE GAME LOOP =====
 
 void Bomber::act(float deltaTime) {
-    if (dead || !controller) {
-        return;
+    // MODERN ARCHITECTURE: Delegate to specialized components
+    // Each component handles its own responsibility
+    
+    // Update controller first
+    if (controller) {
+        controller->update();
     }
     
-    // Handle respawn timing
-    if (respawning) {
-        respawn_timer -= deltaTime;
-        if (respawn_timer <= 0.0f) {
-            respawning = false;
-            dead = false;
-            invincible = true;
-            invincible_timer = 3.0f; // 3 seconds of invincibility
-        } else {
-            return; // Don't process input while respawning
-        }
+    // Update all components in proper order
+    if (lifecycle_component) {
+        lifecycle_component->update(deltaTime);
     }
     
-    // Handle invincibility timer
-    if (invincible) {
-        invincible_timer -= deltaTime;
-        if (invincible_timer <= 0.0f) {
-            invincible = false;
-        }
+    if (movement_component) {
+        movement_component->update(deltaTime);
+        movement_component->handle_controller_input(controller, deltaTime);
     }
     
-    // Handle flight animation
-    if (flying) {
-        flight_timer += deltaTime;
-        float progress = flight_timer / flight_duration;
-        
-        if (progress >= 1.0f) {
-            // Animation complete
-            flying = false;
-            x = target_x;
-            y = target_y;
-        } else {
-            // Interpolate position with easing
-            float ease_progress = 1.0f - (1.0f - progress) * (1.0f - progress); // Ease out
-            x = start_x + (target_x - start_x) * ease_progress;
-            y = start_y + (target_y - start_y) * ease_progress;
-        }
+    if (combat_component) {
+        combat_component->update(deltaTime);
+        combat_component->handle_controller_input(controller, deltaTime);
     }
     
-    controller->update();
-
-    // Only process input if controller is active and not flying
-    bool moved = false;
-    if (controller->active && !flying) {
-        // Update direction based on controller input
-        if (controller->is_left()) {
-            cur_dir = DIR_LEFT;
-        } else if (controller->is_right()) {
-            cur_dir = DIR_RIGHT;
-        } else if (controller->is_up()) {
-            cur_dir = DIR_UP;
-        } else if (controller->is_down()) {
-            cur_dir = DIR_DOWN;
-        }
-
-        // Move if a direction key is pressed, otherwise the animation frame is reset
-        if (controller->is_left() || controller->is_right() || controller->is_up() || controller->is_down()) {
-            moved = move(deltaTime);
-        }
-    }
-
-    if (bomb_cooldown > 0) {
-        bomb_cooldown -= deltaTime;
-    }
-
-    // Handle bomb button state and throwing mechanics
-    if (controller->active && !flying && bomb_cooldown <= 0) {
-        bool bomb_pressed = controller->is_bomb();
-        
-        if (bomb_pressed && !bomb_button_held) {
-            // Button just pressed - start holding timer
-            bomb_button_held = true;
-            bomb_hold_timer = 0.0f;
-        } else if (bomb_pressed && bomb_button_held) {
-            // Button still held - increment timer
-            bomb_hold_timer += deltaTime;
-        } else if (!bomb_pressed && bomb_button_held) {
-            // Button just released
-            bomb_button_held = false;
-            
-            if (bomb_hold_timer >= THROW_HOLD_TIME && can_throw) {
-                // Held long enough and has glove - throw bomb
-                throw_bomb();
-            } else if (can_place_bomb()) {
-                // Quick press or no glove - place bomb normally
-                place_bomb();
-            }
-            
-            bomb_hold_timer = 0.0f;
-        }
-    } else if (!controller->is_bomb()) {
-        // Reset if button not pressed
-        bomb_button_held = false;
-        bomb_hold_timer = 0.0f;
-    }
-
-    if (moved) {
-        anim_count += deltaTime * 20 * (speed / 90.0f);
-    } else {
-        anim_count = 0;
-    }
-
-    if (anim_count >= 9) {
-        anim_count = 1;
-    }
-
-    sprite_nr = (int)cur_dir * 10 + (int)anim_count;
-}
-
-void Bomber::die() {
-    if (!dead && !invincible) {
-        dead = true;
-        
-        // Create corpse at current position
-        BomberCorpse* corpse = new BomberCorpse(x, y, color, app);
-        app->objects.push_back(corpse);
-        
-        // Check if bomber has lives remaining
-        lose_life();
-        
-        if (has_lives()) {
-            // Start respawn process
-            respawning = true;
-            respawn_timer = 2.0f; // 2 seconds until respawn
-        } else {
-            // No lives left, mark for deletion
-            delete_me = true;
-        }
-    }
-}
-
-void Bomber::respawn() {
-    dead = false;
-    respawning = false;
-    invincible = true;
-    invincible_timer = 3.0f;
-    
-    // Reset position to spawn point
-    if (app && app->map) {
-        CL_Vector spawn_pos = app->map->get_bomber_pos(bomber_number);
-        x = spawn_pos.x * 40;
-        y = spawn_pos.y * 40;
+    if (animation_component) {
+        animation_component->update(deltaTime);
     }
 }
 
 void Bomber::show() {
+    // Delegate rendering to animation component
     // Handle invincibility flickering
-    if (invincible) {
-        // Flicker by showing/hiding based on timer
-        int flicker_rate = 8; // Flickers per second
-        float flicker_time = 1.0f / flicker_rate;
-        int flicker_frame = (int)(invincible_timer / flicker_time);
-        
-        if (flicker_frame % 2 == 0) {
-            return; // Skip rendering this frame
+    if (animation_component && animation_component->is_invincible()) {
+        // Flicker effect during invincibility
+        static float flicker_timer = 0.0f;
+        flicker_timer += 0.1f;
+        if (static_cast<int>(flicker_timer * 10) % 2 == 0) {
+            GameObject::show(); // Only show every other frame
         }
+    } else {
+        GameObject::show(); // Normal rendering
     }
-    
-    // Call parent show() for normal rendering
-    GameObject::show();
 }
 
+// ===== COMPONENT DELEGATION API =====
+
+// Death system (delegated to combat component)
+void Bomber::die() {
+    if (combat_component) combat_component->die();
+}
+
+bool Bomber::is_dead() const {
+    return combat_component ? combat_component->is_dead() : false;
+}
+
+// Lives system (delegated to lifecycle component)
+void Bomber::set_lives(int lives) {
+    if (lifecycle_component) lifecycle_component->set_lives(lives);
+}
+
+int Bomber::get_lives() const {
+    return lifecycle_component ? lifecycle_component->get_lives() : 0;
+}
+
+void Bomber::lose_life() {
+    if (lifecycle_component) lifecycle_component->lose_life();
+}
+
+bool Bomber::has_lives() const {
+    return lifecycle_component ? lifecycle_component->has_lives() : false;
+}
+
+// Respawn system (delegated to lifecycle component)
+void Bomber::respawn() {
+    if (lifecycle_component) lifecycle_component->respawn();
+}
+
+bool Bomber::is_respawning() const {
+    return lifecycle_component ? lifecycle_component->is_respawning() : false;
+}
+
+void Bomber::set_invincible(bool inv) {
+    if (animation_component) animation_component->set_invincible(inv);
+}
+
+bool Bomber::is_invincible() const {
+    return animation_component ? animation_component->is_invincible() : false;
+}
+
+// Team management (delegated to lifecycle component)
+void Bomber::set_team(int team) {
+    if (lifecycle_component) lifecycle_component->set_team(team);
+}
+
+int Bomber::get_team() const {
+    return lifecycle_component ? lifecycle_component->get_team() : 0;
+}
+
+// Name management (delegated to lifecycle component)
+void Bomber::set_name(const std::string& name) {
+    if (lifecycle_component) lifecycle_component->set_name(name);
+}
+
+std::string Bomber::get_name() const {
+    return lifecycle_component ? lifecycle_component->get_name() : "Unknown";
+}
+
+// Number management (delegated to lifecycle component)
+void Bomber::set_number(int number) {
+    if (lifecycle_component) lifecycle_component->set_number(number);
+}
+
+int Bomber::get_number() const {
+    return lifecycle_component ? lifecycle_component->get_number() : 0;
+}
+
+// Animation (delegated to movement component)
 void Bomber::fly_to(int target_x, int target_y, float duration_ms) {
-    flying = true;
-    flight_timer = 0.0f;
-    flight_duration = duration_ms / 1000.0f; // Convert to seconds
-    start_x = x;
-    start_y = y;
-    this->target_x = target_x;
-    this->target_y = target_y;
-}
-
-void Bomber::place_bomb() {
-    // Check if there's already a bomb at this position
-    MapTile* tile = app->map->get_tile(get_map_x(), get_map_y());
-    if (tile && tile->has_bomb()) {
-        SDL_Log("Cannot place bomb - position already occupied!");
-        return;
+    // MODERN ONLY: Use BomberMovementComponent, block GameObject legacy system
+    if (movement_component) {
+        movement_component->fly_to(target_x, target_y, duration_ms);
     }
     
-    SDL_Log("Bomber placing bomb %d/%d at pixel (%f,%f), maps to grid (%d,%d)", 
-            current_bombs + 1, max_bombs, x, y, get_map_x(), get_map_y());
-    
-    app->objects.push_back(new Bomb(x, y, power, this, app));
-    inc_current_bombs();
-    bomb_cooldown = 0.5f;
-    
-    // Play bomb placement sound
-    AudioPosition bomber_pos(x, y, 0.0f);
-    AudioMixer::play_sound_3d("putbomb", bomber_pos, 400.0f);
+    // CRITICAL: Block GameObject::flying state to prevent interference
+    flying = false;  // Ensure GameObject doesn't think it's flying
+}
+
+bool Bomber::can_move() const {
+    return movement_component ? movement_component->can_move() : false;
+}
+
+// Bomb mechanics (delegated to combat component)
+void Bomber::place_bomb() {
+    if (combat_component) combat_component->place_bomb();
 }
 
 void Bomber::throw_bomb() {
-    SDL_Log("Bomber throwing bomb with glove power!");
-    
-    // Calculate throw target based on facing direction
-    float throw_distance = 120.0f; // 3 tiles
-    float target_x = x;
-    float target_y = y;
-    
-    // Determine throw direction based on current direction
-    switch (cur_dir) {
-        case DIR_UP:    target_y -= throw_distance; break;
-        case DIR_DOWN:  target_y += throw_distance; break;
-        case DIR_LEFT:  target_x -= throw_distance; break;
-        case DIR_RIGHT: target_x += throw_distance; break;
+    if (combat_component) combat_component->throw_bomb();
+}
+
+bool Bomber::can_place_bomb() const {
+    return combat_component ? combat_component->can_place_bomb() : false;
+}
+
+// Power-up effects (delegated to movement/combat components)
+void Bomber::inc_speed(int amount) {
+    if (movement_component) {
+        int current_speed = movement_component->get_speed();
+        movement_component->set_speed(current_speed + amount);
     }
-    
-    // Clamp to map bounds
-    target_x = std::max(20.0f, std::min(target_x, 780.0f));
-    target_y = std::max(20.0f, std::min(target_y, 580.0f));
-    
-    SDL_Log("Throwing bomb from (%.1f,%.1f) to (%.1f,%.1f)", x, y, target_x, target_y);
-    
-    app->objects.push_back(new ThrownBomb(x, y, power, this, target_x, target_y, app));
-    inc_current_bombs();
-    bomb_cooldown = 0.8f; // Longer cooldown for thrown bombs
-    
-    // Play throw sound (using different sound)
-    AudioPosition bomber_pos(x, y, 0.0f);
-    AudioMixer::play_sound_3d("whoosh", bomber_pos, 400.0f);
+}
+
+void Bomber::dec_speed(int amount) {
+    if (movement_component) {
+        int current_speed = movement_component->get_speed();
+        movement_component->set_speed(std::max(30, current_speed - amount));
+    }
+}
+
+int Bomber::get_power() const {
+    return combat_component ? combat_component->get_power() : 1;
+}
+
+void Bomber::inc_power(int amount) {
+    if (combat_component) combat_component->inc_power(amount);
+}
+
+// Bomb management (delegated to combat component)
+int Bomber::get_max_bombs() const {
+    return combat_component ? combat_component->get_max_bombs() : 1;
+}
+
+void Bomber::inc_max_bombs(int amount) {
+    if (combat_component) combat_component->inc_max_bombs(amount);
+}
+
+int Bomber::get_current_bombs() const {
+    return combat_component ? combat_component->get_current_bombs() : 0;
+}
+
+void Bomber::inc_current_bombs() {
+    if (combat_component) combat_component->inc_current_bombs();
+}
+
+void Bomber::dec_current_bombs() {
+    if (combat_component) combat_component->dec_current_bombs();
+}
+
+// Special abilities (delegated to combat component)
+bool Bomber::can_kick() const {
+    return combat_component ? combat_component->can_kick : false;
+}
+
+bool Bomber::can_throw() const {
+    return combat_component ? combat_component->can_throw : false;
+}
+
+void Bomber::set_can_kick(bool kick) {
+    if (combat_component) combat_component->can_kick = kick;
+}
+
+void Bomber::set_can_throw(bool throw_ability) {
+    if (combat_component) combat_component->can_throw = throw_ability;
 }
