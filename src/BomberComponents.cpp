@@ -9,11 +9,12 @@
 #include "BomberCorpse.h"
 #include "AudioMixer.h"
 #include "GameConfig.h"
+#include "GameContext.h"
 
 // ===== MOVEMENT COMPONENT IMPLEMENTATION =====
 
-BomberMovementComponent::BomberMovementComponent(GameObject* owner, ClanBomberApplication* app)
-    : owner(owner), app(app) {
+BomberMovementComponent::BomberMovementComponent(GameObject* owner, GameContext* context)
+    : owner(owner), context(context) {
 }
 
 void BomberMovementComponent::update(float deltaTime) {
@@ -111,8 +112,8 @@ void BomberMovementComponent::update_flight_animation(float deltaTime) {
 
 // ===== COMBAT COMPONENT IMPLEMENTATION =====
 
-BomberCombatComponent::BomberCombatComponent(GameObject* owner, ClanBomberApplication* app)
-    : owner(owner), app(app) {
+BomberCombatComponent::BomberCombatComponent(GameObject* owner, GameContext* context)
+    : owner(owner), context(context) {
     power = GameConfig::get_start_power();
 }
 
@@ -159,17 +160,18 @@ void BomberCombatComponent::place_bomb() {
     int map_y = owner->get_map_y();
     
     // Check if there's already a bomb at this position
-    if (app->tile_manager && app->tile_manager->has_bomb_at(map_x, map_y)) {
+    if (context->has_bomb_at(map_x, map_y)) {
         return;
     }
     
-    // Create bomb
+    // Create bomb - LEGACY: Need to refactor Bomb constructor to use GameContext
+    ClanBomberApplication* app = owner->app;
     Bomb* bomb = new Bomb(map_x * 40, map_y * 40, power, static_cast<Bomber*>(owner), app);
-    app->objects.push_back(bomb);
+    app->objects.push_back(bomb); // TODO: Add GameObject registration method to GameContext
     
     // Register bomb with tile manager
-    if (app->tile_manager) {
-        app->tile_manager->register_bomb_at(map_x, map_y, bomb);
+    if (context->get_tile_manager()) {
+        context->get_tile_manager()->register_bomb_at(map_x, map_y, bomb);
     }
     
     // Update bomb tracking
@@ -195,12 +197,14 @@ void BomberCombatComponent::throw_bomb() {
     }
     
     // Create thrown bomb
+    // Create thrown bomb - LEGACY: Need to refactor ThrownBomb constructor to use GameContext
+    ClanBomberApplication* app = owner->app;
     ThrownBomb* thrown_bomb = new ThrownBomb(
         owner->get_x(), owner->get_y(), power, 
         static_cast<Bomber*>(owner), 
         target_x, target_y, app
     );
-    app->objects.push_back(thrown_bomb);
+    app->objects.push_back(thrown_bomb); // TODO: Add GameObject registration method to GameContext
     
     // Update bomb tracking
     inc_current_bombs();
@@ -219,10 +223,11 @@ void BomberCombatComponent::die() {
     
     dead = true;
     
-    // Create corpse with bomber's color
+    // Create corpse with bomber's color - LEGACY: Need to refactor BomberCorpse constructor to use GameContext
     Bomber* bomber = static_cast<Bomber*>(owner);
+    ClanBomberApplication* app = owner->app;
     BomberCorpse* corpse = new BomberCorpse(owner->get_x(), owner->get_y(), bomber->get_color(), app);
-    app->objects.push_back(corpse);
+    app->objects.push_back(corpse); // TODO: Add GameObject registration method to GameContext
     
     // Play death sound
     AudioPosition death_pos(owner->get_x(), owner->get_y(), 0.0f);
@@ -248,8 +253,8 @@ void BomberCombatComponent::update_bomb_throwing(float deltaTime) {
 
 // ===== ANIMATION COMPONENT IMPLEMENTATION =====
 
-BomberAnimationComponent::BomberAnimationComponent(GameObject* owner, ClanBomberApplication* app)
-    : owner(owner), app(app) {
+BomberAnimationComponent::BomberAnimationComponent(GameObject* owner, GameContext* context)
+    : owner(owner), context(context) {
     // Initialize sprite animation with standing sprite (down direction, frame 0)
     owner->set_sprite_nr(0); // DIR_DOWN * 10 + 0 = standing facing down
     
@@ -348,8 +353,8 @@ void BomberAnimationComponent::choose_texture_for_color(int color) {
 
 // ===== LIFECYCLE COMPONENT IMPLEMENTATION =====
 
-BomberLifecycleComponent::BomberLifecycleComponent(GameObject* owner, ClanBomberApplication* app)
-    : owner(owner), app(app) {
+BomberLifecycleComponent::BomberLifecycleComponent(GameObject* owner, GameContext* context)
+    : owner(owner), context(context) {
 }
 
 void BomberLifecycleComponent::update(float deltaTime) {

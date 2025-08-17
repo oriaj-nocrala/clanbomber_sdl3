@@ -2,6 +2,7 @@
 #include "BomberComponents.h"
 #include "Controller.h"
 #include "ClanBomber.h"
+#include "GameContext.h"
 
 // ===== CONSTRUCTOR / DESTRUCTOR =====
 
@@ -13,11 +14,12 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, ClanBomber
         controller->attach(this);
     }
     
-    // Initialize components using modern C++17 patterns
-    movement_component = std::make_unique<BomberMovementComponent>(this, _app);
-    combat_component = std::make_unique<BomberCombatComponent>(this, _app);
-    animation_component = std::make_unique<BomberAnimationComponent>(this, _app);
-    lifecycle_component = std::make_unique<BomberLifecycleComponent>(this, _app);
+    // Initialize components using modern C++17 patterns with GameContext dependency injection
+    GameContext* context = get_context();
+    movement_component = std::make_unique<BomberMovementComponent>(this, context);
+    combat_component = std::make_unique<BomberCombatComponent>(this, context);
+    animation_component = std::make_unique<BomberAnimationComponent>(this, context);
+    lifecycle_component = std::make_unique<BomberLifecycleComponent>(this, context);
     
     // Set initial properties
     cur_dir = DIR_RIGHT;

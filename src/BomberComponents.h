@@ -8,6 +8,7 @@
 class ClanBomberApplication;
 class Controller;
 class GameObject;
+class GameContext;
 
 /**
  * BomberComponents: Modular component system for Bomber entities
@@ -23,7 +24,7 @@ class GameObject;
 
 class BomberMovementComponent {
 public:
-    BomberMovementComponent(GameObject* owner, ClanBomberApplication* app);
+    BomberMovementComponent(GameObject* owner, GameContext* context);
     
     // Core movement logic
     void update(float deltaTime);
@@ -42,7 +43,7 @@ public:
     
 private:
     GameObject* owner;
-    ClanBomberApplication* app;
+    GameContext* context;
     
     // Movement properties
     int speed = 90;
@@ -63,7 +64,7 @@ private:
 
 class BomberCombatComponent {
 public:
-    BomberCombatComponent(GameObject* owner, ClanBomberApplication* app);
+    BomberCombatComponent(GameObject* owner, GameContext* context);
     
     // Core combat logic
     void update(float deltaTime);
@@ -98,7 +99,7 @@ public:
     
 private:
     GameObject* owner;
-    ClanBomberApplication* app;
+    GameContext* context;
     
     // Combat properties
     int power = 1;
@@ -123,7 +124,7 @@ private:
 
 class BomberAnimationComponent {
 public:
-    BomberAnimationComponent(GameObject* owner, ClanBomberApplication* app);
+    BomberAnimationComponent(GameObject* owner, GameContext* context);
     
     // Core animation logic
     void update(float deltaTime);
@@ -140,7 +141,7 @@ public:
     
 private:
     GameObject* owner;
-    ClanBomberApplication* app;
+    GameContext* context;
     
     // Animation state
     float anim_count = 0.0f;
@@ -161,7 +162,7 @@ private:
 
 class BomberLifecycleComponent {
 public:
-    BomberLifecycleComponent(GameObject* owner, ClanBomberApplication* app);
+    BomberLifecycleComponent(GameObject* owner, GameContext* context);
     
     // Core lifecycle logic
     void update(float deltaTime);
@@ -186,7 +187,7 @@ public:
     
 private:
     GameObject* owner;
-    ClanBomberApplication* app;
+    GameContext* context;
     
     // Lives and respawn
     int remaining_lives = 3;

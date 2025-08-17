@@ -22,9 +22,12 @@
 #include "ClanBomber.h"
 #include "GameObject.h"
 #include "Resources.h"
+#include "GameContext.h"
+#include "TileManager.h"
 
 #include "Map.h"
 #include "MapTile.h"
+#include "TileEntity.h"
 #include "Timer.h"
 #include "Bomber.h"
 #include "Bomb.h"
@@ -59,8 +62,17 @@ const char* GameObject::objecttype2string(ObjectType t)
 
 GameObject::GameObject( int _x, int _y, ClanBomberApplication *_app )
 {
-	app = _app;
+	init(_app);
+	x = orig_x = _x;
+	y = orig_y = _y;
+}
 
+GameObject::GameObject( int _x, int _y, GameContext* context )
+{
+	// NEW CONSTRUCTOR: GameContext dependency injection
+	app = nullptr; // Don't use legacy app directly
+	game_context = context;
+	
 	texture_name = "bomber_snake"; // placeholder
 	sprite_nr = 0;
 
@@ -100,10 +112,18 @@ GameObject::GameObject( int _x, int _y, ClanBomberApplication *_app )
 	server_y = (int)y;
 	reset_next_fly_job();
 	
-	// Register with LifecycleManager
-	if (app && app->lifecycle_manager) {
-		app->lifecycle_manager->register_object(this);
+	// Register with LifecycleManager through GameContext
+	if (context && context->get_lifecycle_manager()) {
+		context->get_lifecycle_manager()->register_object(this);
 	}
+}
+
+GameContext* GameObject::get_context() const
+{
+	// Return GameContext from either source
+	if (game_context) return game_context;
+	if (app && app->game_context) return app->game_context;
+	return nullptr;
 }
 
 GameObject::~GameObject()
@@ -188,82 +208,157 @@ void GameObject::set_offset(int _x, int _y)
 
 bool GameObject::move_right()
 {
-	MapTile* right_maptile = app->map->get_tile( (int)(x+40)/40,(int)(y+20)/40);
-
-	if (right_maptile->is_blocking()) {
+	// Check if tile to the right is blocking
+	if (is_tile_blocking_at(x+40, y+20)) {
 		return false;
 	}
 		
-	if ((right_maptile->bomb==NULL) || ((get_type()==BOMB) && (right_maptile->bomb==this)) || (get_x()%40>19)) {
-		x++;
-
-		if (get_y()%40 > 19) {
-			if (app->map->get_tile( (get_x()+40)/40, (get_y()-20)/40 )->is_blocking()) {
-				y++;
-			}
-		}
-		else if (get_y()%40 > 0) {
-			if (app->map->get_tile( (get_x()+40)/40, (get_y()+60)/40 )->is_blocking()) {
-				y--;
-			}
-		}
-
-		if (!can_pass_bomber) {
-			if ( right_maptile->has_bomber() ) {
-				if (right_maptile != get_tile()) {
-					x--;
-					return false;
-				}
-			}
-		}
-	}
-	else {
-		SDL_Log("Attempting to kick right. can_kick value: %d", (int)can_kick);
-		if (can_kick  && (right_maptile->bomb->get_cur_dir() == DIR_NONE)) {
-			right_maptile->bomb->kick(DIR_RIGHT);
+	// Check if there's a bomb (unless this object is the bomb or already partially moved)
+	if (has_bomb_at(x+40, y+20) && !(get_type()==BOMB && has_bomb_at(x+20, y+20)) && !(get_x()%40>19)) {
+		// Try to kick the bomb if possible
+		if (can_kick) {
+			return try_kick_right();
 		}
 		return false;
+	}
+	
+	x++;
+
+	// Collision correction for partial tile alignment
+	if (get_y()%40 > 19) {
+		if (is_tile_blocking_at(get_x()+40, get_y()-20)) {
+			y++;
+		}
+	}
+	else if (get_y()%40 > 0) {
+		if (is_tile_blocking_at(get_x()+40, get_y()+60)) {
+			y--;
+		}
+	}
+
+	// Check for bomber collision (if not allowed to pass bombers)
+	if (!can_pass_bomber) {
+		if (has_bomber_at(x+20, y+20)) {  // Check current position after move
+			if (!has_bomber_at(x-1, y+20)) {  // Only if not already on same tile
+				x--;
+				return false;
+			}
+		}
 	}
 	
 	return true;
 }
 
+// Handle bomb kicking if movement failed due to bomb
+bool GameObject::try_kick_right()
+{
+	// DEFENSIVE: Null pointer protection
+	if (!app || !app->map) {
+		SDL_Log("ERROR: try_kick_right called with null app or map");
+		return false;
+	}
+	
+	// Check if there's a bomb to kick and we can kick
+	if (!can_kick || !has_bomb_at(x+40, y+20)) {
+		return false;
+	}
+	
+	// Get bomb from either architecture
+	Bomb* bomb_to_kick = nullptr;
+	MapTile* legacy_tile = app->map->get_tile(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
+	if (legacy_tile && legacy_tile->bomb) {
+		bomb_to_kick = legacy_tile->bomb;
+	} else {
+		TileEntity* tile_entity = app->map->get_tile_entity(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
+		if (tile_entity) {
+			bomb_to_kick = tile_entity->get_bomb();
+		}
+	}
+	
+	if (bomb_to_kick && bomb_to_kick->get_cur_dir() == DIR_NONE) {
+		SDL_Log("Kicking bomb right");
+		bomb_to_kick->kick(DIR_RIGHT);
+		return true;
+	}
+	
+	return false;
+}
+
+// Handle bomb kicking if movement failed due to bomb
+bool GameObject::try_kick_left()
+{
+	// DEFENSIVE: Null pointer protection
+	if (!app || !app->map) {
+		SDL_Log("ERROR: try_kick_left called with null app or map");
+		return false;
+	}
+	
+	// Check if there's a bomb to kick and we can kick
+	if (!can_kick || !has_bomb_at(x-1, y+20)) {
+		return false;
+	}
+	
+	// Get bomb from either architecture
+	Bomb* bomb_to_kick = nullptr;
+	MapTile* legacy_tile = app->map->get_tile(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
+	if (legacy_tile && legacy_tile->bomb) {
+		bomb_to_kick = legacy_tile->bomb;
+	} else {
+		TileEntity* tile_entity = app->map->get_tile_entity(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
+		if (tile_entity) {
+			bomb_to_kick = tile_entity->get_bomb();
+		}
+	}
+	
+	if (bomb_to_kick && bomb_to_kick->get_cur_dir() == DIR_NONE) {
+		SDL_Log("Kicking bomb left");
+		bomb_to_kick->kick(DIR_LEFT);
+		return true;
+	}
+	
+	return false;
+}
+
 bool GameObject::move_left()
 {
-	MapTile* left_maptile = app->map->get_tile( (int)(x-1)/40, (int)(y+20)/40);
-	if (left_maptile->is_blocking()) {
+	// Check if tile to the left is blocking
+	if (is_tile_blocking_at(x-1, y+20)) {
 		return false;
 	}
 		
-	if ((left_maptile->bomb==NULL) || ((get_type()==BOMB) && (left_maptile->bomb==this)) || (get_x()%40<20)) {
-		x--;
+	// Check if there's a bomb (unless this object is the bomb or already partially moved)
+	if (has_bomb_at(x-1, y+20) && !(get_type()==BOMB && has_bomb_at(x+20, y+20)) && !(get_x()%40<20)) {
+		// Try to kick the bomb if possible
+		if (can_kick) {
+			return try_kick_left();
+		}
+		return false;
+	}
+	
+	x--;
+
+	// Collision correction for partial tile alignment
+	if (get_y()%40 > 19) {
+		if (is_tile_blocking_at(get_x()-1, get_y()-20)) {
+			y++;
+		}
+	}
+	else if (get_y()%40 > 0) {
+		if (is_tile_blocking_at(get_x()-1, get_y()+60)) {
+			y--;
+		}
+	}
 		
-		if (get_y()%40 > 19) {
-			if (app->map->get_tile( (get_x()-1)/40, (get_y()-20)/40 )->is_blocking()) {
-				y++;
-			}
-		}
-		else if (get_y()%40 > 0) {
-			if (app->map->get_tile( (get_x()-1)/40, (get_y()+60)/40 )->is_blocking()) {
-				y--;
-			}
-		}
-			
-		if (!can_pass_bomber) {
-			if ( left_maptile->has_bomber() ) {
-				if (left_maptile != get_tile()) {
-					x++;
-					return false;
-				}
+	// Check for bomber collision (if not allowed to pass bombers)
+	if (!can_pass_bomber) {
+		if (has_bomber_at(x+20, y+20)) {  // Check current position after move
+			if (!has_bomber_at(x+41, y+20)) {  // Only if not already on same tile
+				x++;
+				return false;
 			}
 		}
 	}
-	else {
-		if (can_kick  && (left_maptile->bomb->get_cur_dir() == DIR_NONE)) {
-			left_maptile->bomb->kick(DIR_LEFT);
-		}
-		return false;
-	}	
+	
 	return true;
 }
 
@@ -290,7 +385,13 @@ bool GameObject::move_up()
 			
 		if (!can_pass_bomber) {
 			if ( up_maptile->has_bomber() ) {
-				if (up_maptile != get_tile()) {
+				// Check if moving to a different tile (not current position)
+				int current_map_x = (x + 20) / 40;
+				int current_map_y = (y + 20) / 40;
+				int target_map_x = (x + 20) / 40;
+				int target_map_y = (y - 1 + 20) / 40;
+				
+				if (target_map_x != current_map_x || target_map_y != current_map_y) {
 					y++;
 					return false;
 				}
@@ -332,7 +433,13 @@ bool GameObject::move_down()
 			
 		if (!can_pass_bomber) {
 			if ( down_maptile->has_bomber() ) {
-				if (down_maptile != get_tile()) {
+				// Check if moving to a different tile (not current position)
+				int current_map_x = (x + 20) / 40;
+				int current_map_y = (y + 20) / 40;
+				int target_map_x = (x + 20) / 40;
+				int target_map_y = (y + 1 + 20) / 40;
+				
+				if (target_map_x != current_map_x || target_map_y != current_map_y) {
 					y--;
 					return false;
 				}
@@ -585,7 +692,7 @@ void GameObject::continue_flying(float deltaTime)
 		y += time_step * fly_speed * fly_dist_y;
 		
 		if (get_type() == CORPSE_PART  &&  app->map != NULL) {
-			if (!can_fly_over_walls && get_tile()->get_tile_type() == MapTile::WALL) {
+			if (!can_fly_over_walls && get_tile_type_at(x+20, y+20) == MapTile::WALL) {
 				x -= time_step * fly_speed * fly_dist_x;
 				y -= time_step * fly_speed * fly_dist_y;
 				fly_dest_x = x;
@@ -595,10 +702,10 @@ void GameObject::continue_flying(float deltaTime)
 		}
 		else {
 			if (!can_fly_over_walls  &&  app->map != NULL  &&  (
-				app->map->get_tile( (int)(x)/40,    (int)(y)/40)->get_tile_type() == MapTile::WALL ||
-				app->map->get_tile( (int)(x+39)/40, (int)(y)/40)->get_tile_type() == MapTile::WALL ||
-				app->map->get_tile( (int)(x)/40,    (int)(y+39)/40)->get_tile_type() == MapTile::WALL ||
-				app->map->get_tile( (int)(x+39)/40, (int)(y+39)/40)->get_tile_type() == MapTile::WALL )) 
+				get_tile_type_at(x, y) == MapTile::WALL ||
+				get_tile_type_at(x+39, y) == MapTile::WALL ||
+				get_tile_type_at(x, y+39) == MapTile::WALL ||
+				get_tile_type_at(x+39, y+39) == MapTile::WALL )) 
 			{
 				x -= time_step * fly_speed * fly_dist_x;
 				y -= time_step * fly_speed * fly_dist_y;
@@ -759,27 +866,237 @@ Direction GameObject::get_cur_dir() const
 
 int GameObject::whats_left()
 {
-	return app->map->get_tile( (int)(x-1)/40, (int)(y+20)/40 )->get_tile_type();
+	return get_tile_type_at(x-1, y+20);
 }
 
 int GameObject::whats_right()
 {
-	return app->map->get_tile( (int)(x+40)/40, (int)(y+20)/40 )->get_tile_type();
+	return get_tile_type_at(x+40, y+20);
 }
 
 int GameObject::whats_up()
 {
-	return app->map->get_tile( (int)(x+20)/40, (int)(y-1)/40 )->get_tile_type();
+	return get_tile_type_at(x+20, y-1);
 }
 
 int GameObject::whats_down()
 {
-	return app->map->get_tile( (int)(x+20)/40, (int)(y+40)/40 )->get_tile_type();
+	return get_tile_type_at(x+20, y+40);
 }
 
 MapTile* GameObject::get_tile() const
 {
 	return app->map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
+}
+
+// NEW ARCHITECTURE SUPPORT: Get legacy tile
+MapTile* GameObject::get_legacy_tile() const
+{
+	return app->map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
+}
+
+// NEW ARCHITECTURE SUPPORT: Get new TileEntity
+TileEntity* GameObject::get_tile_entity() const
+{
+	return app->map->get_tile_entity( (int)(x+20)/40, (int)(y+20)/40 );
+}
+
+// NEW ARCHITECTURE SUPPORT: Get tile type at pixel position (works with both architectures)
+int GameObject::get_tile_type_at(int pixel_x, int pixel_y) const
+{
+	// DEFENSIVE: Null pointer protection
+	if (!app || !app->map) {
+		SDL_Log("ERROR: get_tile_type_at called with null app or map");
+		return MapTile::GROUND;
+	}
+	
+	int map_x = pixel_x / 40;
+	int map_y = pixel_y / 40;
+	
+	// Try legacy MapTile first
+	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+	if (legacy_tile) {
+		return legacy_tile->get_tile_type();
+	}
+	
+	// Try new TileEntity
+	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+	if (tile_entity) {
+		return tile_entity->get_tile_type();
+	}
+	
+	// Default to GROUND if no tile found
+	return MapTile::GROUND;
+}
+
+// NEW ARCHITECTURE SUPPORT: Check if tile is blocking at pixel position (works with both architectures)
+bool GameObject::is_tile_blocking_at(int pixel_x, int pixel_y) const
+{
+	// Try GameContext first (preferred)
+	GameContext* ctx = get_context();
+	if (ctx) {
+		int map_x = pixel_x / 40;
+		int map_y = pixel_y / 40;
+		return ctx->is_position_blocked(map_x, map_y);
+	}
+	
+	// Fallback to legacy approach
+	if (!app || !app->map) {
+		SDL_Log("ERROR: is_tile_blocking_at called with null app or map");
+		return false;
+	}
+	
+	int map_x = pixel_x / 40;
+	int map_y = pixel_y / 40;
+	
+	// Try legacy MapTile first
+	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+	if (legacy_tile) {
+		return legacy_tile->is_blocking();
+	}
+	
+	// Try new TileEntity
+	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+	if (tile_entity) {
+		return tile_entity->is_blocking();
+	}
+	
+	// Default to non-blocking if no tile found
+	return false;
+}
+
+// NEW ARCHITECTURE SUPPORT: Check if tile has bomb at pixel position (works with both architectures)
+bool GameObject::has_bomb_at(int pixel_x, int pixel_y) const
+{
+	// Try GameContext first (preferred)
+	GameContext* ctx = get_context();
+	if (ctx) {
+		int map_x = pixel_x / 40;
+		int map_y = pixel_y / 40;
+		return ctx->has_bomb_at(map_x, map_y);
+	}
+	
+	// Fallback to legacy approach
+	if (!app || !app->map) {
+		SDL_Log("ERROR: has_bomb_at called with null app or map");
+		return false;
+	}
+	
+	int map_x = pixel_x / 40;
+	int map_y = pixel_y / 40;
+	
+	// Try legacy MapTile first
+	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+	if (legacy_tile) {
+		return legacy_tile->bomb != nullptr;
+	}
+	
+	// Try new TileEntity
+	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+	if (tile_entity) {
+		return tile_entity->get_bomb() != nullptr;
+	}
+	
+	// Default to no bomb if no tile found
+	return false;
+}
+
+// NEW ARCHITECTURE SUPPORT: Check if tile has bomber at pixel position (works with both architectures)
+bool GameObject::has_bomber_at(int pixel_x, int pixel_y) const
+{
+	// DEFENSIVE: Null pointer protection
+	if (!app || !app->map) {
+		SDL_Log("ERROR: has_bomber_at called with null app or map");
+		return false;
+	}
+	
+	int map_x = pixel_x / 40;
+	int map_y = pixel_y / 40;
+	
+	// Try legacy MapTile first
+	MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+	if (legacy_tile) {
+		return legacy_tile->has_bomber();
+	}
+	
+	// Try new TileEntity
+	TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+	if (tile_entity) {
+		return tile_entity->has_bomber();
+	}
+	
+	// Default to no bomber if no tile found
+	return false;
+}
+
+// NEW ARCHITECTURE SUPPORT: Synchronize bomb with both MapTile and TileEntity
+void GameObject::set_bomb_on_tile(Bomb* bomb) const {
+    int map_x = (int)(x+20)/40;
+    int map_y = (int)(y+20)/40;
+    
+    // Try GameContext first (preferred)
+    GameContext* ctx = get_context();
+    if (ctx && ctx->get_tile_manager()) {
+        ctx->get_tile_manager()->register_bomb_at(map_x, map_y, bomb);
+        SDL_Log("GameObject: Set bomb %p on tile at (%d,%d) through GameContext", bomb, map_x, map_y);
+        return;
+    }
+    
+    // Fallback to direct tile access
+    if (!app || !app->map) {
+        SDL_Log("ERROR: set_bomb_on_tile called with null app or map");
+        return;
+    }
+    
+    // Set on legacy MapTile
+    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    if (legacy_tile) {
+        legacy_tile->bomb = bomb;
+    }
+    
+    // Set on new TileEntity
+    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    if (tile_entity) {
+        tile_entity->set_bomb(bomb);
+    }
+    
+    SDL_Log("GameObject: Set bomb %p on tile at (%d,%d) - Legacy: %s, TileEntity: %s", 
+            bomb, map_x, map_y, 
+            legacy_tile ? "YES" : "NO", 
+            tile_entity ? "YES" : "NO");
+}
+
+void GameObject::remove_bomb_from_tile(Bomb* bomb) const {
+    int map_x = (int)(x+20)/40;
+    int map_y = (int)(y+20)/40;
+    
+    // Try GameContext first (preferred)
+    GameContext* ctx = get_context();
+    if (ctx && ctx->get_tile_manager()) {
+        ctx->get_tile_manager()->unregister_bomb_at(map_x, map_y, bomb);
+        SDL_Log("GameObject: Removed bomb %p from tile at (%d,%d) through GameContext", bomb, map_x, map_y);
+        return;
+    }
+    
+    // Fallback to direct tile access
+    if (!app || !app->map) {
+        SDL_Log("ERROR: remove_bomb_from_tile called with null app or map");
+        return;
+    }
+    
+    // Remove from legacy MapTile
+    MapTile* legacy_tile = app->map->get_tile(map_x, map_y);
+    if (legacy_tile && legacy_tile->bomb == bomb) {
+        legacy_tile->bomb = nullptr;
+    }
+    
+    // Remove from new TileEntity
+    TileEntity* tile_entity = app->map->get_tile_entity(map_x, map_y);
+    if (tile_entity && tile_entity->get_bomb() == bomb) {
+        tile_entity->set_bomb(nullptr);
+    }
+    
+    SDL_Log("GameObject: Removed bomb %p from tile at (%d,%d)", bomb, map_x, map_y);
 }
 
 void GameObject::show()
@@ -872,4 +1189,52 @@ void GameObject::reset_next_fly_job()
 bool GameObject::is_next_fly_job()
 {
     return (next_fly_job[0] != 0 || next_fly_job[1] != 0 || next_fly_job[2] != 0);
+}
+
+void GameObject::init(ClanBomberApplication *_app)
+{
+	app = _app;
+	game_context = app ? app->game_context : nullptr;
+
+	texture_name = "bomber_snake"; // placeholder
+	sprite_nr = 0;
+
+	offset_x = 60;
+	offset_y = 40;
+	delete_me = false;
+	remainder =0;
+	speed = 240;
+	
+	cur_dir = DIR_NONE;
+	can_kick = false;
+	can_pass_bomber = false;
+	can_fly_over_walls = true;
+	flying = false;
+	falling = false;
+	fallen_down = false;
+	stopped = false;
+	fly_progress = 0;	// must be set to 0!
+
+	z = 0;
+
+	opacity = 0xff;
+	opacity_scaled = 0xff;
+
+	if (ClanBomberApplication::is_server()) {
+		object_id = ClanBomberApplication::get_next_object_id();
+	}
+	else {
+		object_id = 0;
+	}
+	server_dir = cur_dir;
+	client_dir = cur_dir;
+	local_dir = cur_dir;
+	server_x = (int)x;
+	server_y = (int)y;
+	reset_next_fly_job();
+	
+	// Register with LifecycleManager
+	if (app && app->lifecycle_manager) {
+		app->lifecycle_manager->register_object(this);
+	}
 }
