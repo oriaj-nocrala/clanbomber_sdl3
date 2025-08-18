@@ -6,20 +6,49 @@
 #include "GPUAcceleratedRenderer.h"
 #include "TextRenderer.h"
 #include "GameObject.h"
+#include "SpatialPartitioning.h"
+#include "RenderingFacade.h"
+#include <SDL3/SDL.h>
 
 GameContext::GameContext(LifecycleManager* lifecycle,
                          TileManager* tiles,
                          ParticleEffectsManager* effects,
                          Map* map,
                          GPUAcceleratedRenderer* renderer,
-                         TextRenderer* text)
+                         TextRenderer* text,
+                         RenderingFacade* facade)
     : lifecycle_manager(lifecycle)
     , tile_manager(tiles)
     , particle_effects(effects)
     , map(map)
-    , gpu_renderer(renderer)
+    , gpu_renderer(nullptr) // REMOVED: Legacy renderer - handled by RenderingFacade
     , text_renderer(text)
+    , spatial_grid(nullptr)
+    , rendering_facade(facade)
     , render_objects(nullptr) {
+    
+    // Initialize spatial grid for collision optimization
+    spatial_grid = new SpatialGrid(40); // 40 pixels = tile size
+    SDL_Log("GameContext: Created SpatialGrid with 40-pixel cells");
+    
+    // Initialize rendering facade if not provided
+    if (!rendering_facade) {
+        rendering_facade = new RenderingFacade();
+        SDL_Log("GameContext: Created default RenderingFacade");
+        
+        // TODO: Initialize RenderingFacade properly - needs SDL_Window reference
+        // For now, we'll initialize it when needed in the render loop
+    }
+}
+
+GameContext::~GameContext() {
+    delete spatial_grid;
+    spatial_grid = nullptr;
+    SDL_Log("GameContext: Cleaned up SpatialGrid");
+    
+    delete rendering_facade;
+    rendering_facade = nullptr;
+    SDL_Log("GameContext: Cleaned up RenderingFacade");
 }
 
 bool GameContext::is_position_blocked(int map_x, int map_y) const {

@@ -180,7 +180,8 @@ public:
     EXTRA,
     OBSERVER,
     CORPSE_PART,
-    MAPTILE
+    MAPTILE,
+    ANY
   } ObjectType;
 
   static const char* objecttype2string(ObjectType t);

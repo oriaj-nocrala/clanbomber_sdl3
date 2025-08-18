@@ -6,8 +6,8 @@
 
 // ===== CONSTRUCTOR / DESTRUCTOR =====
 
-Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, GameContext* context) 
-    : GameObject(_x, _y, context), color(_color), controller(_controller) {
+Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, GameContext& context) 
+    : GameObject(_x, _y, &context), color(_color), controller(_controller) {
     
     // Attach controller
     if (controller) {
@@ -15,10 +15,10 @@ Bomber::Bomber(int _x, int _y, COLOR _color, Controller* _controller, GameContex
     }
     
     // Initialize components using modern C++17 patterns with GameContext dependency injection
-    movement_component = std::make_unique<BomberMovementComponent>(this, context);
-    combat_component = std::make_unique<BomberCombatComponent>(this, context);
-    animation_component = std::make_unique<BomberAnimationComponent>(this, context);
-    lifecycle_component = std::make_unique<BomberLifecycleComponent>(this, context);
+    movement_component = std::make_unique<BomberMovementComponent>(this, &context);
+    combat_component = std::make_unique<BomberCombatComponent>(this, &context);
+    animation_component = std::make_unique<BomberAnimationComponent>(this, &context);
+    lifecycle_component = std::make_unique<BomberLifecycleComponent>(this, &context);
     
     // Set initial properties
     cur_dir = DIR_RIGHT;

@@ -7,7 +7,9 @@
 #include <unordered_map>
 #include <memory>
 
-class GPUAcceleratedRenderer;
+// Forward declarations
+class RenderingFacade;
+class GameContext;
 
 struct TextTexture {
     GLuint gl_texture;
@@ -36,12 +38,12 @@ public:
     // Text rendering
     std::shared_ptr<TextTexture> render_text(const std::string& text, const std::string& font_name, SDL_Color color);
     
-    // Render text directly to screen using GPU renderer
-    void draw_text(GPUAcceleratedRenderer* gpu_renderer, const std::string& text, 
+    // Render text directly to screen using RenderingFacade
+    void draw_text(RenderingFacade* rendering_facade, const std::string& text, 
                    const std::string& font_name, float x, float y, SDL_Color color);
     
-    // Render centered text
-    void draw_text_centered(GPUAcceleratedRenderer* gpu_renderer, const std::string& text, 
+    // Render centered text using RenderingFacade
+    void draw_text_centered(RenderingFacade* rendering_facade, const std::string& text, 
                            const std::string& font_name, float center_x, float y, SDL_Color color);
     
 private:

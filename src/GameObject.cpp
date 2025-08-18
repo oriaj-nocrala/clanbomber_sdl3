@@ -24,6 +24,8 @@
 #include "Resources.h"
 #include "GameContext.h"
 #include "TileManager.h"
+#include "RenderingFacade.h"
+#include "CoordinateSystem.h"
 
 #include "Map.h"
 #include "MapTile.h"
@@ -1085,31 +1087,25 @@ void GameObject::show()
     }
     // Continue rendering for ACTIVE, DYING, and DEAD states
 
-    TextureInfo* tex_info = Resources::get_texture(texture_name);
-    if (!tex_info) {
-        return;
+    // OPTIMIZED: Use RenderingFacade for centralized rendering instead of direct GPU renderer access
+    RenderingFacade* facade = context->get_rendering_facade();
+    if (facade) {
+        PixelCoord position(static_cast<float>(get_x()), static_cast<float>(get_y()));
+        
+        auto result = facade->render_sprite(texture_name, position, sprite_nr, 0.0f, opacity_scaled);
+        if (!result.is_ok()) {
+            SDL_Log("WARNING: GameObject::show() failed to render sprite '%s': %s (Context: %s)", 
+                texture_name.c_str(), result.get_error_message().c_str(), result.get_error_context().c_str());
+            
+            // NO FALLBACK: RenderingFacade is the only rendering system
+            SDL_Log("ERROR: GameObject::show() - RenderingFacade failed to render sprite '%s'", 
+                texture_name.c_str());
+        }
+    } else {
+        // NO FALLBACK: RenderingFacade is the only rendering system
+        SDL_Log("ERROR: GameObject::show() - RenderingFacade not available, cannot render sprite '%s'", 
+            texture_name.c_str());
     }
-
-    // GAMECONTEXT ONLY: GPU rendering through GameContext
-    if (!context->get_renderer() || !context->get_renderer()->is_ready()) {
-        SDL_Log("ERROR: show() called with null or unready renderer");
-        return;
-    }
-    
-    GLuint gl_texture = Resources::get_gl_texture(texture_name);
-    if (!gl_texture) {
-        return;
-    }
-    
-    float color[4] = {1.0f, 1.0f, 1.0f, opacity_scaled / 255.0f};
-    float scale[2] = {1.0f, 1.0f};
-    
-    context->get_renderer()->add_sprite(
-        (float)get_x(), (float)get_y(), 
-        tex_info->sprite_width > 0 ? tex_info->sprite_width : 40.0f,
-        tex_info->sprite_height > 0 ? tex_info->sprite_height : 40.0f,
-        gl_texture, color, 0.0f, scale, sprite_nr
-    );
 }
 
 void GameObject::show(int _x, int _y) const

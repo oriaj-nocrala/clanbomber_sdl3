@@ -9,6 +9,8 @@
 #include "TileManager.h"
 #include "Extra.h"
 #include "GameContext.h"
+#include "SpatialPartitioning.h"
+#include "CoordinateSystem.h"
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -274,32 +276,67 @@ void Controller_AI_Modern::generate_rating_map() {
         }
     }
     
-    // Analyze all objects in the game
-    for (auto& obj : *bomber->get_context()->get_object_lists()) {
-        if (!obj) continue;
+    // OPTIMIZED: Analyze all objects using SpatialGrid for efficient scanning
+    SpatialGrid* spatial_grid = bomber->get_context()->get_spatial_grid();
+    if (spatial_grid) {
+        CollisionHelper collision_helper(spatial_grid);
+        PixelCoord bomber_position(bomber->get_x(), bomber->get_y());
         
-        int x = obj->get_map_x();
-        int y = obj->get_map_y();
+        // Use AI target scanning to get all relevant objects efficiently
+        CollisionHelper::AITargets ai_targets = collision_helper.scan_ai_targets(bomber_position, 25); // Full map scan
         
-        switch (obj->get_type()) {
-            case GameObject::BOMB: {
-                // Simplified: assume standard bomb power and countdown
+        // Process bombs
+        for (GameObject* obj : ai_targets.bombs) {
+            if (obj) {
+                int x = obj->get_map_x();
+                int y = obj->get_map_y();
                 apply_bomb_rating(x, y, 2, 3.0f, DIR_NONE);
-                break;
             }
-            case GameObject::EXPLOSION: {
-                // Mark explosion areas as death
-                rating_map[x][y] += RATING_X;
-                // TODO: Add explosion ray calculation similar to original
-                break;
-            }
-            case GameObject::EXTRA: {
-                // Simplified: all extras are good
+        }
+        
+        // Process extras
+        for (GameObject* obj : ai_targets.extras) {
+            if (obj) {
+                int x = obj->get_map_x();
+                int y = obj->get_map_y();
                 rating_map[x][y] += RATING_EXTRA;
-                break;
             }
-            default:
-                break;
+        }
+        
+        // Process explosions - need to get them separately since AITargets doesn't include explosions
+        PixelCoord center_position(bomber->get_x(), bomber->get_y());
+        std::vector<GameObject*> explosions = spatial_grid->get_objects_of_type_near(center_position, GameObject::EXPLOSION, 25);
+        for (GameObject* obj : explosions) {
+            if (obj) {
+                int x = obj->get_map_x();
+                int y = obj->get_map_y();
+                rating_map[x][y] += RATING_X;
+            }
+        }
+    } else {
+        // FALLBACK: Use legacy O(n²) method if spatial grid not available
+        for (auto& obj : bomber->get_context()->get_object_lists()) {
+            if (!obj) continue;
+            
+            int x = obj->get_map_x();
+            int y = obj->get_map_y();
+            
+            switch (obj->get_type()) {
+                case GameObject::BOMB: {
+                    apply_bomb_rating(x, y, 2, 3.0f, DIR_NONE);
+                    break;
+                }
+                case GameObject::EXPLOSION: {
+                    rating_map[x][y] += RATING_X;
+                    break;
+                }
+                case GameObject::EXTRA: {
+                    rating_map[x][y] += RATING_EXTRA;
+                    break;
+                }
+                default:
+                    break;
+            }
         }
     }
     
@@ -788,13 +825,24 @@ bool Controller_AI_Modern::should_move_to_better_position() {
 
 int Controller_AI_Modern::count_active_bombs() const {
     int count = 0;
-    // Count bombs on the map that belong to this bomber
-    for (auto& obj : *bomber->get_context()->get_object_lists()) {
-        if (obj && obj->get_type() == GameObject::BOMB) {
-            // Simplified: count all bombs (could check ownership if bomber ID available)
-            count++;
+    
+    // OPTIMIZED: Use SpatialGrid for efficient bomb counting
+    SpatialGrid* spatial_grid = bomber->get_context()->get_spatial_grid();
+    if (spatial_grid) {
+        PixelCoord bomber_position(bomber->get_x(), bomber->get_y());
+        
+        // Get all bombs in the entire game area (large radius)
+        std::vector<GameObject*> all_bombs = spatial_grid->get_bombs_near(bomber_position, 25); // 25 tile radius covers whole map
+        count = all_bombs.size();
+    } else {
+        // FALLBACK: Use legacy O(n²) method if spatial grid not available
+        for (auto& obj : bomber->get_context()->get_object_lists()) {
+            if (obj && obj->get_type() == GameObject::BOMB) {
+                count++;
+            }
         }
     }
+    
     return count;
 }
 

@@ -11,29 +11,35 @@
 #include "ParticleSystem.h"
 #include "GPUAcceleratedRenderer.h"
 #include "GameContext.h"
+#include "SpatialPartitioning.h"
+#include "CoordinateSystem.h"
+#include "RenderingFacade.h"
 #include <SDL3/SDL_timer.h>
 
 Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* context) : GameObject(_x, _y, context) {
     owner = _owner;
     power = _power;
-    detonation_period = 0.5f; // seconds - exactly like original
+    detonation_period = 1.2f; // seconds - increased from 0.5f for better deltaTime calibration
     texture_name = "explosion";
     
     // CRITICAL: Set Z-order so explosions render ABOVE tiles and bombs
     z = Z_EXPLOSION;  // Explosions should be above tiles (2000 > 0) and bombs (2000 < 3000)
     
     // SPECTACULAR EXPLOSION EFFECTS!
-    if (get_context()->get_renderer()) {
-        // Set up spectacular explosion effect
-        float explosion_radius = power * 60.0f; // Radius based on power
-        get_context()->get_renderer()->set_explosion_effect(_x, _y, explosion_radius, 1.0f);
-        
-        // Emit spectacular particles
-        get_context()->get_renderer()->emit_particles(_x, _y, power * 50, GPUAcceleratedRenderer::FIRE, nullptr, 2.0f);
-        get_context()->get_renderer()->emit_particles(_x, _y, power * 30, GPUAcceleratedRenderer::SPARK, nullptr, 1.5f);
-        get_context()->get_renderer()->emit_particles(_x, _y, power * 20, GPUAcceleratedRenderer::SMOKE, nullptr, 3.0f);
-        
-        SDL_Log("SPECTACULAR explosion effects activated at (%d,%d) with power %d!", _x, _y, power);
+    if (get_context()->get_rendering_facade()) {
+        GPUAcceleratedRenderer* gpu_renderer = get_context()->get_rendering_facade()->get_gpu_renderer();
+        if (gpu_renderer) {
+            // Set up spectacular explosion effect
+            float explosion_radius = power * 60.0f; // Radius based on power
+            gpu_renderer->set_explosion_effect(_x, _y, explosion_radius, 1.0f);
+            
+            // Emit spectacular particles
+            gpu_renderer->emit_particles(_x, _y, power * 50, GPUAcceleratedRenderer::FIRE, nullptr, 2.0f);
+            gpu_renderer->emit_particles(_x, _y, power * 30, GPUAcceleratedRenderer::SPARK, nullptr, 1.5f);
+            gpu_renderer->emit_particles(_x, _y, power * 20, GPUAcceleratedRenderer::SMOKE, nullptr, 3.0f);
+            
+            SDL_Log("SPECTACULAR explosion effects activated at (%d,%d) with power %d!", _x, _y, power);
+        }
     }
     
     // Create additional particle effects using GameContext registration
@@ -79,9 +85,12 @@ void Explosion::act(float deltaTime) {
     
     if (detonation_period < 0) {
         // Clear spectacular explosion effects when explosion ends
-        if (get_context()->get_renderer()) {
-            get_context()->get_renderer()->set_explosion_effect(x, y, 0.0f, 0.0f); // Clear explosion effect
-            SDL_Log("Explosion effects cleared at (%.0f,%.0f) after full duration", x, y);
+        if (get_context()->get_rendering_facade()) {
+            GPUAcceleratedRenderer* gpu_renderer = get_context()->get_rendering_facade()->get_gpu_renderer();
+            if (gpu_renderer) {
+                gpu_renderer->set_explosion_effect(x, y, 0.0f, 0.0f); // Clear explosion effect
+                SDL_Log("Explosion effects cleared at (%.0f,%.0f) after full duration", x, y);
+            }
         }
         delete_me = true;
     }
@@ -176,7 +185,12 @@ void Explosion::detonate_other_bombs() {
 // }
 
 void Explosion::draw_explosion_tile(float tile_x, float tile_y) {
-    if (!get_context() || !get_context()->get_renderer()) {
+    if (!get_context() || !get_context()->get_rendering_facade()) {
+        return;
+    }
+    
+    GPUAcceleratedRenderer* gpu_renderer = get_context()->get_rendering_facade()->get_gpu_renderer();
+    if (!gpu_renderer) {
         return;
     }
     
@@ -191,7 +205,7 @@ void Explosion::draw_explosion_tile(float tile_x, float tile_y) {
     // Add sprite for this tile
     // The shader will detect it's in the explosion area and apply the effect
     // NOTE: add_sprite usa posición central del sprite
-    get_context()->get_renderer()->add_sprite(
+    gpu_renderer->add_sprite(
         tile_x, tile_y,               // Position (center) of this tile
         tile_size, tile_size,         // Size of one tile
         dummy_texture,                // Dummy texture (shader ignores this)
@@ -233,114 +247,150 @@ void Explosion::show() {
     }
 
     // CORRECT APPROACH: Single quad for entire explosion cross - shader draws the shape
-    if (get_context() && get_context()->get_renderer()) {
-        float tile_size = 40.0f;
-        int map_x = get_map_x();
-        int map_y = get_map_y();
-        
-        // Calculate tile-aligned center position
-        float center_x = map_x * tile_size + tile_size / 2.0f;  // Center of tile
-        float center_y = map_y * tile_size + tile_size / 2.0f;  // Center of tile
-        
-        SDL_Log("DEBUG: Explosion rendering at age=%.3f, center=(%.1f,%.1f), lengths=(%d,%d,%d,%d)", 
-                explosion_age, center_x, center_y, length_up, length_down, length_left, length_right);
-        
-        // Set explosion information for shader
-        get_context()->get_renderer()->set_explosion_info(
-            center_x, center_y,                      // Explosion center
-            explosion_age,                           // Age of explosion
-            length_up, length_down,                  // Vertical reach
-            length_left, length_right                // Horizontal reach
-        );
-        
-        // Use explosion shader mode
-        get_context()->get_renderer()->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
-        
-        // Calculate bounding box that covers the entire explosion cross
-        float max_extent = std::max(std::max(length_up, length_down), std::max(length_left, length_right));
-        float box_size = (max_extent + 1) * tile_size * 2;  // +1 for center, *2 for both directions
-        
-        // Position box so explosion center is at the center of the box
-        float box_x = center_x - box_size / 2.0f;
-        float box_y = center_y - box_size / 2.0f;
-        
-        GLuint dummy_texture = get_dummy_white_texture();
-        float white_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
-        float scale[2] = {1.0f, 1.0f};
-        
-        // Single sprite covering entire explosion area - shader will draw the cross shape
-        get_context()->get_renderer()->add_sprite(
-            box_x, box_y,                           // Top-left corner of bounding box
-            box_size, box_size,                     // Size covers entire explosion
-            dummy_texture,
-            white_color,
-            0.0f,
-            scale,
-            0
-        );
-        
-        get_context()->get_renderer()->end_batch();
-        get_context()->get_renderer()->clear_explosion_info();
+    if (get_context() && get_context()->get_rendering_facade()) {
+        GPUAcceleratedRenderer* gpu_renderer = get_context()->get_rendering_facade()->get_gpu_renderer();
+        if (gpu_renderer) {
+            float tile_size = 40.0f;
+            int map_x = get_map_x();
+            int map_y = get_map_y();
+            
+            // Calculate tile-aligned center position
+            float center_x = map_x * tile_size + tile_size / 2.0f;  // Center of tile
+            float center_y = map_y * tile_size + tile_size / 2.0f;  // Center of tile
+            
+            SDL_Log("DEBUG: Explosion rendering at age=%.3f, center=(%.1f,%.1f), lengths=(%d,%d,%d,%d)", 
+                    explosion_age, center_x, center_y, length_up, length_down, length_left, length_right);
+            
+            // Set explosion information for shader
+            gpu_renderer->set_explosion_info(
+                center_x, center_y,                      // Explosion center
+                explosion_age,                           // Age of explosion
+                length_up, length_down,                  // Vertical reach
+                length_left, length_right                // Horizontal reach
+            );
+            
+            // Use explosion shader mode
+            gpu_renderer->begin_batch(GPUAcceleratedRenderer::EXPLOSION_HEAT);
+            
+            // Calculate bounding box that covers the entire explosion cross
+            float max_extent = std::max(std::max(length_up, length_down), std::max(length_left, length_right));
+            float box_size = (max_extent + 1) * tile_size * 2;  // +1 for center, *2 for both directions
+            
+            // Position box so explosion center is at the center of the box
+            float box_x = center_x - box_size / 2.0f;
+            float box_y = center_y - box_size / 2.0f;
+            
+            GLuint dummy_texture = get_dummy_white_texture();
+            float white_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
+            float scale[2] = {1.0f, 1.0f};
+            
+            // Single sprite covering entire explosion area - shader will draw the cross shape
+            gpu_renderer->add_sprite(
+                box_x, box_y,                           // Top-left corner of bounding box
+                box_size, box_size,                     // Size covers entire explosion
+                dummy_texture,
+                white_color,
+                0.0f,
+                scale,
+                0
+            );
+            
+            gpu_renderer->end_batch();
+            gpu_renderer->clear_explosion_info();
+        }
     }
 }
 
 void Explosion::kill_bombers() {
-    // Check for bombers in explosion area and kill them
-    // CRITICAL FIX: Use GameContext instead of app->bomber_objects to avoid null pointer crash
+    // OPTIMIZED: Check for bombers in explosion area using SpatialGrid O(n) instead of O(n²)
     GameContext* ctx = get_context();
     if (!ctx) {
         SDL_Log("ERROR: Explosion::kill_bombers() - No GameContext available");
         return;
     }
     
-    // Get bomber list through GameContext object lists
-    std::list<class GameObject*>* object_lists = ctx->get_object_lists();
-    if (!object_lists) {
-        SDL_Log("ERROR: Explosion::kill_bombers() - No object lists available from GameContext");
-        return;
-    }
-    
-    for (auto& obj : *object_lists) {
-        if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+    SpatialGrid* spatial_grid = ctx->get_spatial_grid();
+    if (spatial_grid) {
+        // Use spatial partitioning for efficient explosion victim detection
+        CollisionHelper collision_helper(spatial_grid);
         
-        Bomber* bomber = static_cast<Bomber*>(obj);
-        if (bomber && !bomber->delete_me && !bomber->is_dead()) {
-            int bomber_map_x = bomber->get_map_x();
-            int bomber_map_y = bomber->get_map_y();
+        // Generate list of explosion coordinates
+        std::vector<GridCoord> explosion_area;
+        
+        // Center
+        explosion_area.push_back(GridCoord(get_map_x(), get_map_y()));
+        
+        // Rays
+        for (int i = 1; i <= length_up; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x(), get_map_y() - i));
+        }
+        for (int i = 1; i <= length_down; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x(), get_map_y() + i));
+        }
+        for (int i = 1; i <= length_left; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x() - i, get_map_y()));
+        }
+        for (int i = 1; i <= length_right; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x() + i, get_map_y()));
+        }
+        
+        // Find all bombers and corpses in explosion area efficiently
+        std::vector<GameObject*> victims = collision_helper.find_explosion_victims(explosion_area);
+        
+        for (GameObject* victim : victims) {
+            if (victim && victim->get_type() == GameObject::BOMBER) {
+                Bomber* bomber = static_cast<Bomber*>(victim);
+                if (bomber && !bomber->delete_me && !bomber->is_dead()) {
+                    SDL_Log("Explosion killed bomber at (%d,%d) using SpatialGrid O(n)", 
+                        bomber->get_map_x(), bomber->get_map_y());
+                    bomber->die();
+                }
+            }
+        }
+    } else {
+        // FALLBACK: Use legacy O(n²) method if spatial grid not available
+        const std::list<class GameObject*>& object_lists = ctx->get_object_lists();
+        
+        for (auto& obj : object_lists) {
+            if (!obj || obj->get_type() != GameObject::BOMBER) continue;
             
-            // Check if bomber is in explosion center
-            if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y()) {
-                bomber->die();
-                continue;
-            }
-            
-            // Check if bomber is in explosion rays
-            // Up ray
-            for (int i = 1; i <= length_up; ++i) {
-                if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y() - i) {
-                    bomber->die();
-                    break;
+            Bomber* bomber = static_cast<Bomber*>(obj);
+            if (bomber && !bomber->delete_me && !bomber->is_dead()) {
+                int bomber_map_x = bomber->get_map_x();
+                int bomber_map_y = bomber->get_map_y();
+                
+                bool in_explosion = false;
+                
+                // Check center
+                if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y()) {
+                    in_explosion = true;
+                } else {
+                    // Check rays
+                    for (int i = 1; i <= length_up && !in_explosion; ++i) {
+                        if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y() - i) {
+                            in_explosion = true;
+                        }
+                    }
+                    for (int i = 1; i <= length_down && !in_explosion; ++i) {
+                        if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y() + i) {
+                            in_explosion = true;
+                        }
+                    }
+                    for (int i = 1; i <= length_left && !in_explosion; ++i) {
+                        if (bomber_map_x == get_map_x() - i && bomber_map_y == get_map_y()) {
+                            in_explosion = true;
+                        }
+                    }
+                    for (int i = 1; i <= length_right && !in_explosion; ++i) {
+                        if (bomber_map_x == get_map_x() + i && bomber_map_y == get_map_y()) {
+                            in_explosion = true;
+                        }
+                    }
                 }
-            }
-            // Down ray
-            for (int i = 1; i <= length_down; ++i) {
-                if (bomber_map_x == get_map_x() && bomber_map_y == get_map_y() + i) {
+                
+                if (in_explosion) {
+                    SDL_Log("Explosion killed bomber at (%d,%d) using legacy O(n²)", bomber_map_x, bomber_map_y);
                     bomber->die();
-                    break;
-                }
-            }
-            // Left ray
-            for (int i = 1; i <= length_left; ++i) {
-                if (bomber_map_x == get_map_x() - i && bomber_map_y == get_map_y()) {
-                    bomber->die();
-                    break;
-                }
-            }
-            // Right ray
-            for (int i = 1; i <= length_right; ++i) {
-                if (bomber_map_x == get_map_x() + i && bomber_map_y == get_map_y()) {
-                    bomber->die();
-                    break;
                 }
             }
         }
@@ -348,62 +398,95 @@ void Explosion::kill_bombers() {
 }
 
 void Explosion::explode_corpses() {
-    // Check for corpses in explosion area and make them explode with gore
-    // CRITICAL FIX: Use GameContext instead of app->objects to avoid null pointer crash
+    // OPTIMIZED: Check for corpses in explosion area using SpatialGrid O(n) instead of O(n²)
     GameContext* ctx = get_context();
     if (!ctx) {
         SDL_Log("ERROR: Explosion::explode_corpses() - No GameContext available");
         return;
     }
     
-    // Get object list through GameContext
-    std::list<class GameObject*>* object_lists = ctx->get_object_lists();
-    if (!object_lists) {
-        SDL_Log("ERROR: Explosion::explode_corpses() - No object lists available from GameContext");
-        return;
-    }
-    
-    for (auto& obj : *object_lists) {
-        if (obj && obj->get_type() == BOMBER_CORPSE) {
-            BomberCorpse* corpse = static_cast<BomberCorpse*>(obj);
-            if (!corpse->is_exploded()) {
-                int corpse_map_x = corpse->get_map_x();
-                int corpse_map_y = corpse->get_map_y();
-                
-                // Check if corpse is in explosion area (same logic as bombers)
-                bool in_explosion = false;
-                
-                // Center
-                if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y()) {
-                    in_explosion = true;
-                }
-                
-                // Rays
-                if (!in_explosion) {
-                    for (int i = 1; i <= length_up && !in_explosion; ++i) {
-                        if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y() - i) {
-                            in_explosion = true;
-                        }
-                    }
-                    for (int i = 1; i <= length_down && !in_explosion; ++i) {
-                        if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y() + i) {
-                            in_explosion = true;
-                        }
-                    }
-                    for (int i = 1; i <= length_left && !in_explosion; ++i) {
-                        if (corpse_map_x == get_map_x() - i && corpse_map_y == get_map_y()) {
-                            in_explosion = true;
-                        }
-                    }
-                    for (int i = 1; i <= length_right && !in_explosion; ++i) {
-                        if (corpse_map_x == get_map_x() + i && corpse_map_y == get_map_y()) {
-                            in_explosion = true;
-                        }
-                    }
-                }
-                
-                if (in_explosion) {
+    SpatialGrid* spatial_grid = ctx->get_spatial_grid();
+    if (spatial_grid) {
+        // Use spatial partitioning for efficient explosion victim detection
+        CollisionHelper collision_helper(spatial_grid);
+        
+        // Generate list of explosion coordinates (reuse same logic as kill_bombers)
+        std::vector<GridCoord> explosion_area;
+        
+        // Center
+        explosion_area.push_back(GridCoord(get_map_x(), get_map_y()));
+        
+        // Rays
+        for (int i = 1; i <= length_up; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x(), get_map_y() - i));
+        }
+        for (int i = 1; i <= length_down; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x(), get_map_y() + i));
+        }
+        for (int i = 1; i <= length_left; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x() - i, get_map_y()));
+        }
+        for (int i = 1; i <= length_right; ++i) {
+            explosion_area.push_back(GridCoord(get_map_x() + i, get_map_y()));
+        }
+        
+        // Find all victims in explosion area efficiently
+        std::vector<GameObject*> victims = collision_helper.find_explosion_victims(explosion_area);
+        
+        for (GameObject* victim : victims) {
+            if (victim && victim->get_type() == GameObject::BOMBER_CORPSE) {
+                BomberCorpse* corpse = static_cast<BomberCorpse*>(victim);
+                if (corpse && !corpse->is_exploded()) {
+                    SDL_Log("Corpse at (%d,%d) exploded due to explosion using SpatialGrid O(n)", 
+                        corpse->get_map_x(), corpse->get_map_y());
                     corpse->explode(); // This creates the gore explosion!
+                }
+            }
+        }
+    } else {
+        // FALLBACK: Use legacy O(n²) method if spatial grid not available
+        const std::list<class GameObject*>& object_lists = ctx->get_object_lists();
+        
+        for (auto& obj : object_lists) {
+            if (obj && obj->get_type() == BOMBER_CORPSE) {
+                BomberCorpse* corpse = static_cast<BomberCorpse*>(obj);
+                if (!corpse->is_exploded()) {
+                    int corpse_map_x = corpse->get_map_x();
+                    int corpse_map_y = corpse->get_map_y();
+                    
+                    bool in_explosion = false;
+                    
+                    // Check center
+                    if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y()) {
+                        in_explosion = true;
+                    } else {
+                        // Check rays
+                        for (int i = 1; i <= length_up && !in_explosion; ++i) {
+                            if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y() - i) {
+                                in_explosion = true;
+                            }
+                        }
+                        for (int i = 1; i <= length_down && !in_explosion; ++i) {
+                            if (corpse_map_x == get_map_x() && corpse_map_y == get_map_y() + i) {
+                                in_explosion = true;
+                            }
+                        }
+                        for (int i = 1; i <= length_left && !in_explosion; ++i) {
+                            if (corpse_map_x == get_map_x() - i && corpse_map_y == get_map_y()) {
+                                in_explosion = true;
+                            }
+                        }
+                        for (int i = 1; i <= length_right && !in_explosion; ++i) {
+                            if (corpse_map_x == get_map_x() + i && corpse_map_y == get_map_y()) {
+                                in_explosion = true;
+                            }
+                        }
+                    }
+                    
+                    if (in_explosion) {
+                        SDL_Log("Corpse at (%d,%d) exploded due to explosion using legacy O(n²)", corpse_map_x, corpse_map_y);
+                        corpse->explode(); // This creates the gore explosion!
+                    }
                 }
             }
         }

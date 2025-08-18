@@ -35,10 +35,10 @@ Bomb::~Bomb() {
 }
 
 void Bomb::act(float deltaTime) {
-    // Animation logic based on original game
+    // Animation logic calibrated for deltaTime 
     anim_timer += deltaTime;
     const int num_animation_frames = 4;
-    const float animation_speed = 10.0f;
+    const float animation_speed = 3.0f; // Reduced from 10.0f for deltaTime calibration
     int current_frame = static_cast<int>(anim_timer * animation_speed) % num_animation_frames;
     sprite_nr = base_sprite + current_frame;
 
@@ -89,7 +89,7 @@ void Bomb::kick(Direction dir) {
         // NEW ARCHITECTURE: Remove bomb from both architectures when kicked
         remove_bomb_from_tile(this);
         cur_dir = dir;
-        speed = 240; // Set a speed for the kicked bomb
+        speed = 120; // Reduced from 240 for deltaTime calibration - kicked bomb speed
     }
 }
 

@@ -293,9 +293,9 @@ void BomberAnimationComponent::update_animation_frame(float deltaTime, Direction
         anim_count = 1.0f;  // Start walking animation at frame 1
     }
     
-    // Speed factor matches original: 20 * (speed/90) 
-    // For now use fixed speed like original, later get actual bomber speed
-    anim_count += deltaTime * 20.0f; // Original speed factor
+    // CALIBRATED FOR DELTATIME: Reduced animation speed factor for smooth deltaTime-based animation
+    // Original was 20.0f for frame-based system, now calibrated for real deltaTime
+    anim_count += deltaTime * 8.0f; // Reduced from 20.0f for deltaTime calibration
     if (anim_count >= 9.0f) {
         anim_count = 1.0f;  // Reset to 1, not 0 (0 is for standing)
     }

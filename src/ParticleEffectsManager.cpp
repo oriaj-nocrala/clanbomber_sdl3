@@ -47,42 +47,22 @@ void ParticleEffectsManager::create_explosion_effect(float x, float y, float int
 }
 
 void ParticleEffectsManager::process_box_destruction(float x, float y, float intensity) {
-    if (!app || !app->gpu_renderer) return;
+    if (!app) return;
     
+    // TEMPORARILY DISABLED: Particle effects - will be migrated to RenderingFacade
+    SDL_Log("ParticleEffectsManager: Box destruction effect disabled during renderer migration");
+    
+    /*
     GLuint gl_texture = Resources::get_gl_texture("maptile_box");
     if (!gl_texture) return;
     
     try {
-        app->gpu_renderer->begin_batch(GPUAcceleratedRenderer::TILE_FRAGMENTATION);
-        
-        const int num_fragments = static_cast<int>(12 * intensity);
-        const float base_force = 35.0f * intensity;
-        
-        for (int i = 0; i < num_fragments; i++) {
-            float angle = (float)i / num_fragments * 6.28318f;
-            angle += (i * 127 + 31) % 100 / 100.0f - 0.5f;
-            
-            float fragment_scale = 0.2f + (i % 3) * 0.1f;
-            float explosion_force = base_force + (i % 5) * 10.0f;
-            
-            float fragment_x = x + cos(angle) * explosion_force * 0.6f;
-            float fragment_y = y + sin(angle) * explosion_force * 0.6f;
-            
-            float fragment_alpha = 0.8f - (i % 4) * 0.1f;
-            
-            float color[3] = {1.0f, 1.0f, 1.0f};
-            app->gpu_renderer->add_sprite(
-                fragment_x, fragment_y, 
-                fragment_scale * 20, fragment_scale * 20,
-                gl_texture, color
-            );
-        }
-        
-        app->gpu_renderer->end_batch();
+        // Will be migrated to use RenderingFacade instead of direct GPU renderer
         
     } catch (const std::exception& e) {
         SDL_Log("ParticleEffectsManager: Error creating box destruction effect: %s", e.what());
     }
+    */
 }
 
 void ParticleEffectsManager::process_explosion(float x, float y, float intensity) {

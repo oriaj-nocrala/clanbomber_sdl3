@@ -46,7 +46,7 @@ private:
     GameContext* context;
     
     // Movement properties
-    int speed = 90;
+    int speed = 60; // Reduced from 90 - calibrated for deltaTime (was designed for ~60fps frame-based)
     Direction last_direction = DIR_DOWN; // Track last movement direction
     
     // Flight animation

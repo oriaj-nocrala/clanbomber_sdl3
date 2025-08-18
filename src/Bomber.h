@@ -34,7 +34,7 @@ public:
         BROWN = 7,
     } COLOR;
 
-    Bomber(int _x, int _y, COLOR _color, Controller* _controller, class GameContext* context);
+    Bomber(int _x, int _y, COLOR _color, Controller* _controller, GameContext& context);
     ~Bomber();
     
     void act(float deltaTime) override;

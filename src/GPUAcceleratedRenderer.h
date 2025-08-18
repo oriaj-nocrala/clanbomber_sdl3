@@ -8,6 +8,9 @@
 #include <unordered_map>
 #include <string>
 
+// Forward declarations
+template<typename T> class GameResult;
+
 // Modern OpenGL 4.6 renderer with advanced features
 class GPUAcceleratedRenderer {
 public:
@@ -67,7 +70,7 @@ public:
     ~GPUAcceleratedRenderer();
     
     // Core initialization
-    bool initialize(SDL_Window* window, int width = 800, int height = 600);
+    GameResult<void> initialize(SDL_Window* window, int width = 800, int height = 600);
     void shutdown();
     
     // Shader management

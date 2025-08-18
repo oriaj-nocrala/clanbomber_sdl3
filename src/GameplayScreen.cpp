@@ -11,12 +11,13 @@
 #include "GameSystems.h"
 #include "TileEntity.h"
 #include "GameContext.h"
+#include "GameLogic.h"
 #include <algorithm>
 #include <set>
 #include <vector>
 #include <string>
 
-GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app), game_systems(nullptr) {
+GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app), game_systems(nullptr), game_logic(nullptr) {
     SDL_Log("GameplayScreen::GameplayScreen() - Loading game configuration...");
     GameConfig::load(); // Load game configuration before initializing
     
@@ -32,6 +33,10 @@ GameplayScreen::~GameplayScreen() {
     if (game_systems) {
         delete game_systems;
         game_systems = nullptr;
+    }
+    if (game_logic) {
+        delete game_logic;
+        game_logic = nullptr;
     }
     deinit_game();
 }
@@ -62,8 +67,12 @@ void GameplayScreen::init_game() {
     gore_delay_timer = 0.0f;
     checking_victory = false;
 
-    // Initialize GameContext first (without map)
-    app->initialize_game_context();
+    // FIXED: Don't re-initialize GameContext if it already exists with RenderingFacade
+    if (!app->game_context) {
+        app->initialize_game_context();
+    } else {
+        SDL_Log("GameplayScreen: Using existing GameContext with initialized RenderingFacade");
+    }
     
     // CRITICAL FIX: Connect GameContext to rendering lists so TileEntity objects are rendered
     if (app->game_context) {
@@ -113,7 +122,7 @@ void GameplayScreen::init_game() {
             // Create bomber at temporary position (off-screen or center)
             int temp_x = 400 - i * 20;
             int temp_y = 300 - i * 20;
-            Bomber* bomber = new Bomber(temp_x, temp_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, app->game_context);
+            Bomber* bomber = new Bomber(temp_x, temp_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, *app->game_context);
             bomber->set_name(GameConfig::bomber[i].get_name());
             bomber->set_team(GameConfig::bomber[i].get_team());
             bomber->set_number(i);
@@ -166,6 +175,10 @@ void GameplayScreen::init_game() {
         game_systems->set_object_references(&app->objects, &app->bomber_objects);
         game_systems->init_all_systems();
         SDL_Log("GameSystems initialized in GameplayScreen");
+        
+        // OPTIMIZED: Initialize GameLogic facade for centralized game logic
+        game_logic = new GameLogic(app->game_context);
+        SDL_Log("GameLogic facade initialized in GameplayScreen");
     } else {
         SDL_Log("WARNING: GameContext not available, using legacy act_all()");
     }
@@ -209,6 +222,11 @@ void GameplayScreen::handle_events(SDL_Event& event) {
 }
 
 void GameplayScreen::update(float deltaTime) {
+    // OPTIMIZED: Use GameLogic facade for pause handling
+    if (game_logic) {
+        game_logic->set_paused(pause_game);
+    }
+    
     if (pause_game) {
         return;
     }
@@ -245,14 +263,20 @@ void GameplayScreen::update(float deltaTime) {
     
     delete_some();  // Clean up objects marked as DELETED by LifecycleManager
     
-    // Use GameSystems if available, fallback to legacy
-    if (game_systems) {
+    // OPTIMIZED: Use GameLogic facade for centralized game logic management
+    if (game_logic) {
+        game_logic->update_all_objects(deltaTime);
+        // GameLogic handles cleanup internally, but we also run systems
+        if (game_systems) {
+            game_systems->update_all_systems(deltaTime);
+        }
+    } else if (game_systems) {
         game_systems->update_all_systems(deltaTime);
     } else {
         act_all();  // Legacy fallback
     }
     
-    // Final cleanup of dead objects
+    // Final cleanup of dead objects (GameLogic also handles this but ensure it's done)
     if (app->lifecycle_manager) {
         app->lifecycle_manager->cleanup_dead_objects();
     }
@@ -325,7 +349,23 @@ void GameplayScreen::update_audio_listener() {
 }
 
 void GameplayScreen::render(SDL_Renderer* renderer) {
-    show_all();
+    // OPTIMIZED: Use GameLogic facade for centralized rendering if available
+    if (game_logic) {
+        // GameLogic handles object rendering, but we still need map rendering
+        if (app->map) {
+            app->map->refresh_holes();
+            app->map->show(); // Always draw map first as background
+        }
+        
+        game_logic->render_all_objects(); // Renders all game objects in proper order
+        
+        // Show victory/defeat overlay
+        if (game_over) {
+            render_victory_screen();
+        }
+    } else {
+        show_all(); // Legacy fallback
+    }
 
     if (pause_game) {
         // Render pause message

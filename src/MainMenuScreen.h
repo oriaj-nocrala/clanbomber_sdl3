@@ -8,11 +8,11 @@
 #include "GameState.h"
 
 class TextRenderer;
-class GPUAcceleratedRenderer;
+class GameContext;
 
 class MainMenuScreen : public Screen {
 public:
-    MainMenuScreen(TextRenderer* text_renderer, GPUAcceleratedRenderer* gpu_renderer);
+    MainMenuScreen(TextRenderer* text_renderer, GameContext* game_context = nullptr);
     ~MainMenuScreen();
 
     void handle_events(SDL_Event& event) override;
@@ -26,7 +26,7 @@ private:
     int selected_item;
     GameState next_state;
     TextRenderer* text_renderer;
-    GPUAcceleratedRenderer* gpu_renderer;
+    GameContext* game_context;
 };
 
 #endif

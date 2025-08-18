@@ -1,5 +1,6 @@
 #include "GPUAcceleratedRenderer.h"
 #include "Resources.h"
+#include "ErrorHandling.h"
 #include <iostream>
 #include <algorithm>
 #include <random>
@@ -32,7 +33,7 @@ GPUAcceleratedRenderer::~GPUAcceleratedRenderer() {
     shutdown();
 }
 
-bool GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int height) {
+GameResult<void> GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int height) {
     SDL_Log("GPU Renderer: Starting initialization...");
     window = _window;  // Store window reference
     screen_width = width;
@@ -42,7 +43,8 @@ bool GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int heig
     SDL_Log("GPU Renderer: Creating OpenGL context...");
     gl_context = SDL_GL_CreateContext(window);
     if (!gl_context) {
-        SDL_Log("Failed to create OpenGL context: %s", SDL_GetError());
+        // OPTIMIZED: Use GameResult<T> error handling instead of SDL_Log
+        std::string error_msg = "Failed to create OpenGL context: " + std::string(SDL_GetError());
         
         // Try fallback to OpenGL 3.3 core
         SDL_Log("Attempting fallback to OpenGL 3.3...");
@@ -51,8 +53,13 @@ bool GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int heig
         gl_context = SDL_GL_CreateContext(window);
         
         if (!gl_context) {
-            SDL_Log("Failed to create OpenGL 3.3 context: %s", SDL_GetError());
-            return false;
+            std::string fallback_error = "Failed to create OpenGL 3.3 context: " + std::string(SDL_GetError());
+            return GameResult<void>::error(
+                GameErrorType::GRAPHICS_INIT_FAILED,
+                ErrorSeverity::CRITICAL,
+                fallback_error,
+                "GPUAcceleratedRenderer::initialize() - OpenGL context creation"
+            );
         }
     }
     SDL_Log("GPU Renderer: OpenGL context created successfully");
@@ -60,15 +67,26 @@ bool GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int heig
     // Make context current
     SDL_Log("GPU Renderer: Making context current...");
     if (SDL_GL_MakeCurrent(window, gl_context) < 0) {
-        SDL_Log("Failed to make GL context current: %s", SDL_GetError());
-        return false;
+        // OPTIMIZED: Use GameResult<T> error handling instead of SDL_Log
+        std::string error_msg = "Failed to make GL context current: " + std::string(SDL_GetError());
+        return GameResult<void>::error(
+            GameErrorType::GRAPHICS_INIT_FAILED,
+            ErrorSeverity::CRITICAL,
+            error_msg,
+            "GPUAcceleratedRenderer::initialize() - OpenGL context activation"
+        );
     }
     
     // Initialize GLAD
     SDL_Log("GPU Renderer: Loading OpenGL extensions with GLAD...");
     if (!gladLoadGL((GLADloadfunc)SDL_GL_GetProcAddress)) {
-        SDL_Log("Failed to initialize GLAD");
-        return false;
+        // OPTIMIZED: Use GameResult<T> error handling instead of SDL_Log
+        return GameResult<void>::error(
+            GameErrorType::GRAPHICS_INIT_FAILED,
+            ErrorSeverity::CRITICAL,
+            "Failed to initialize GLAD OpenGL extension loader",
+            "GPUAcceleratedRenderer::initialize() - GLAD initialization"
+        );
     }
     SDL_Log("GPU Renderer: GLAD loaded successfully");
     
@@ -86,8 +104,13 @@ bool GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int heig
     
     // Check for minimum OpenGL 3.3 support
     if (!GLAD_GL_VERSION_3_3) {
-        SDL_Log("OpenGL 3.3 not supported! GPU renderer requires at least OpenGL 3.3");
-        return false;
+        // OPTIMIZED: Use GameResult<T> error handling instead of SDL_Log
+        return GameResult<void>::error(
+            GameErrorType::GRAPHICS_INIT_FAILED,
+            ErrorSeverity::CRITICAL,
+            "OpenGL 3.3 not supported! GPU renderer requires at least OpenGL 3.3",
+            "GPUAcceleratedRenderer::initialize() - OpenGL version check"
+        );
     }
     
     if (GLAD_GL_VERSION_4_6) {
@@ -114,8 +137,13 @@ bool GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int heig
     
     // Load all shaders
     if (!load_all_shaders()) {
-        SDL_Log("Failed to load shaders");
-        return false;
+        // OPTIMIZED: Use GameResult<T> error handling instead of SDL_Log
+        return GameResult<void>::error(
+            GameErrorType::SHADER_COMPILATION_FAILED,
+            ErrorSeverity::CRITICAL,
+            "Failed to load and compile GPU renderer shaders",
+            "GPUAcceleratedRenderer::initialize() - Shader loading"
+        );
     }
     
     // Setup rendering systems
@@ -124,20 +152,31 @@ bool GPUAcceleratedRenderer::initialize(SDL_Window* _window, int width, int heig
     
     // Initialize particle system
     if (!init_particle_system(100000)) { // 100K particles!
-        SDL_Log("Failed to initialize GPU particle system");
-        return false;
+        // OPTIMIZED: Use GameResult<T> error handling instead of SDL_Log
+        return GameResult<void>::error(
+            GameErrorType::GRAPHICS_INIT_FAILED,
+            ErrorSeverity::CRITICAL,
+            "Failed to initialize GPU particle system",
+            "GPUAcceleratedRenderer::initialize() - Particle system initialization"
+        );
     }
     
     // Verify initialization completed successfully
     if (!glIsProgram(main_program)) {
-        SDL_Log("ERROR: GPU renderer initialization failed - invalid shader program");
-        return false;
+        // OPTIMIZED: Use GameResult<T> error handling instead of SDL_Log
+        return GameResult<void>::error(
+            GameErrorType::GRAPHICS_INIT_FAILED,
+            ErrorSeverity::CRITICAL,
+            "GPU renderer initialization failed - invalid shader program",
+            "GPUAcceleratedRenderer::initialize() - Shader program validation"
+        );
     }
     
     SDL_Log("GPU Accelerated Renderer initialized successfully!");
     SDL_Log("Max particles: %d", max_gpu_particles);
     
-    return true;
+    // OPTIMIZED: Use GameResult<T> success instead of return true
+    return GameResult<void>::success();
 }
 
 void GPUAcceleratedRenderer::shutdown() {

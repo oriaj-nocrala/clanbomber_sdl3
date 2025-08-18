@@ -30,11 +30,11 @@ ClanBomberApplication::ClanBomberApplication() {
     pause_game = false;
     client_disconnected_from_server = false;
     client_connecting_to_new_server = false;
-    gpu_renderer = nullptr;
+    // REMOVED: gpu_renderer = nullptr; - now handled by RenderingFacade
     lifecycle_manager = new LifecycleManager();
     tile_manager = new TileManager();
     particle_effects = new ParticleEffectsManager(this);
-    game_context = nullptr; // Will be initialized after gpu_renderer is ready
+    game_context = nullptr; // Will be initialized after RenderingFacade is ready
 }
 
 ClanBomberApplication::~ClanBomberApplication() {
@@ -43,10 +43,7 @@ ClanBomberApplication::~ClanBomberApplication() {
         delete map;
         map = nullptr;
     }
-    if (gpu_renderer) {
-        delete gpu_renderer;
-        gpu_renderer = nullptr;
-    }
+    // REMOVED: gpu_renderer deletion - now handled by RenderingFacade
     if (lifecycle_manager) {
         delete lifecycle_manager;
         lifecycle_manager = nullptr;
@@ -66,7 +63,7 @@ ClanBomberApplication::~ClanBomberApplication() {
 }
 
 void ClanBomberApplication::initialize_game_context() {
-    if (gpu_renderer && text_renderer && lifecycle_manager && 
+    if (text_renderer && lifecycle_manager && 
         tile_manager && particle_effects) {
         
         game_context = new GameContext(
@@ -74,7 +71,7 @@ void ClanBomberApplication::initialize_game_context() {
             tile_manager,
             particle_effects,
             nullptr,  // Map will be set later via set_map()
-            gpu_renderer,
+            nullptr,  // RenderingFacade will handle GPU rendering
             text_renderer
         );
         
@@ -91,7 +88,6 @@ void ClanBomberApplication::initialize_game_context() {
         }
     } else {
         SDL_Log("ERROR: Cannot initialize GameContext - missing dependencies:");
-        SDL_Log("  gpu_renderer: %p", gpu_renderer);
         SDL_Log("  text_renderer: %p", text_renderer);
         SDL_Log("  lifecycle_manager: %p", lifecycle_manager);
         SDL_Log("  tile_manager: %p", tile_manager);

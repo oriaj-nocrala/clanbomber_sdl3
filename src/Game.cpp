@@ -6,6 +6,9 @@
 #include "SettingsScreen.h"
 #include "Controller_Keyboard.h"
 #include "TextRenderer.h"
+#include "ErrorHandling.h"
+#include "RenderingFacade.h"
+#include "GameContext.h"
 
 Game::Game() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -47,46 +50,52 @@ Game::Game() {
         SDL_Log("TextRenderer initialized successfully");
     }
 
-    SDL_Log("Attempting to initialize GPU renderer...");
-    app.gpu_renderer = new GPUAcceleratedRenderer();
-    if (!app.gpu_renderer->initialize(window, 800, 600)) {
-        SDL_Log("Failed to initialize GPU renderer, falling back to software rendering");
-        delete app.gpu_renderer;
-        app.gpu_renderer = nullptr;
-        // Podriamos crear un fallback a un SDL_Renderer en el futuro
-        // Para pc menos potentes
-        // Initialize Resources without OpenGL context (won't create GL textures)
-        // Resources::init();
-        SDL_Quit();
-        exit(1);
-    } else {
-        SDL_Log("GPU accelerated renderer initialized successfully");
-        // Note: shaders and particle system are already initialized by initialize()
-        
-        // Initialize GameContext now that all systems are ready
-        app.initialize_game_context();
-        
-        // CRITICAL: Initialize Resources AFTER OpenGL context is ready
-        Resources::init();  // Now OpenGL context exists
-        
-        // Register texture metadata for correct UV coordinate calculation
-        SDL_Log("Registering texture metadata for GPU renderer...");
-        Resources::register_gl_texture_metadata("maptiles", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_snake", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_tux", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_bsd", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_dull_blue", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_dull_green", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_dull_red", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_dull_yellow", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bomber_spider", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("bombs", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("explosion", app.gpu_renderer);
-        Resources::register_gl_texture_metadata("extras", app.gpu_renderer);
-        SDL_Log("Texture metadata registration completed");
-        
-        SDL_Log("GPU renderer fully operational!");
+    // REMOVED: Legacy GPU renderer - now RenderingFacade handles all rendering
+    SDL_Log("Legacy GPU renderer removed - RenderingFacade will handle all rendering");
+    
+    // Initialize GameContext now that systems are ready
+    app.initialize_game_context();
+    
+    // CRITICAL: Initialize RenderingFacade BEFORE Resources
+    if (app.game_context && app.game_context->get_rendering_facade()) {
+        RenderingFacade* facade = app.game_context->get_rendering_facade();
+        auto init_result = facade->initialize(window, 800, 600);
+        if (init_result.is_ok()) {
+            SDL_Log("Game::Game() - RenderingFacade initialized successfully");
+        } else {
+            SDL_Log("Game::Game() - Failed to initialize RenderingFacade: %s (%s)", 
+                init_result.get_error_message().c_str(),
+                init_result.get_error_context().c_str());
+        }
     }
+    
+    // CRITICAL: Initialize Resources AFTER OpenGL context is ready
+    Resources::init();  // Now OpenGL context exists
+    
+    // CRITICAL: Register texture metadata for sprite atlases
+    if (app.game_context && app.game_context->get_rendering_facade()) {
+        RenderingFacade* facade = app.game_context->get_rendering_facade();
+        GPUAcceleratedRenderer* gpu_renderer = facade->get_gpu_renderer();
+        if (gpu_renderer) {
+            Resources::register_gl_texture_metadata("maptiles", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_dull_red", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_dull_blue", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_dull_yellow", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_dull_green", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_snake", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_tux", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_spider", gpu_renderer);
+            Resources::register_gl_texture_metadata("bomber_bsd", gpu_renderer);
+            Resources::register_gl_texture_metadata("bombs", gpu_renderer);
+            Resources::register_gl_texture_metadata("explosion", gpu_renderer);
+            Resources::register_gl_texture_metadata("extras", gpu_renderer);
+            SDL_Log("Texture metadata registered for sprite atlases");
+        } else {
+            SDL_Log("WARNING: No GPU renderer available for texture metadata registration");
+        }
+    }
+    
+    SDL_Log("All rendering systems operational!");
     
     // Load fonts for TextRenderer
     if (app.text_renderer) {
@@ -119,7 +128,7 @@ Game::Game() {
 
     running = true;
     // Start with main menu (restored!)
-    current_screen = new MainMenuScreen(app.text_renderer, app.gpu_renderer);
+    current_screen = new MainMenuScreen(app.text_renderer, app.game_context);
 }
 
 Game::~Game() {
@@ -181,32 +190,27 @@ void Game::update(float deltaTime) {
 }
 
 void Game::render() {
-    // PURE OPENGL RENDERING: No SDL_Renderer at all
+    // UNIFIED RENDERING: All rendering through RenderingFacade
     
-    if (app.gpu_renderer && app.gpu_renderer->is_ready()) {
-        // Make sure we're in the right OpenGL context
-        SDL_GL_MakeCurrent(window, app.gpu_renderer->gl_context);
+    // Initialize and begin RenderingFacade frame
+    if (app.game_context && app.game_context->get_rendering_facade()) {
+        RenderingFacade* facade = app.game_context->get_rendering_facade();
         
-        // Set up OpenGL state 
-        glDisable(GL_DEPTH_TEST);
-        glEnable(GL_BLEND);
-        glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-        
-        // Clear screen
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f); // Black background
-        glClear(GL_COLOR_BUFFER_BIT);
-    }
-
-    if (current_screen) {
-        current_screen->render(nullptr);  // Pass nullptr since no SDL_Renderer
-    }
-
-    if (app.gpu_renderer && app.gpu_renderer->is_ready()) {
-        // Flush any remaining GPU batches 
-        app.gpu_renderer->end_frame();
-        
-        // Present via OpenGL context swap
-        SDL_GL_SwapWindow(window);
+        // RenderingFacade is already initialized during Game construction
+        // Begin frame for RenderingFacade
+            facade->begin_frame();
+            
+            if (current_screen) {
+                current_screen->render(nullptr);  // All rendering goes through RenderingFacade
+            }
+            
+            // End frame and present
+            facade->end_frame();
+            
+            // Present the frame via OpenGL context swap
+            SDL_GL_SwapWindow(window);
+    } else {
+        SDL_Log("WARNING: No RenderingFacade available - cannot render");
     }
 }
 
@@ -216,17 +220,9 @@ void Game::change_screen(GameState next_state) {
         current_screen = nullptr;
     }
 
-    // FIXED: Cuando salimos de gameplay, desactivar contexto OpenGL completamente
-    if (app.gpu_renderer && app.gpu_renderer->is_ready() && next_state != GameState::GAMEPLAY) {
-        // Limpiar y desactivar contexto OpenGL para menús
-        SDL_GL_MakeCurrent(window, app.gpu_renderer->gl_context);
-        glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-        glClear(GL_COLOR_BUFFER_BIT);
-        glFinish();
-        
-        // Desactivar contexto OpenGL para que SDL tome control completo
-        SDL_GL_MakeCurrent(window, nullptr);
-    }
+    // REMOVED: Legacy GPU renderer context management - handled by RenderingFacade
+    // OpenGL context is now managed entirely by RenderingFacade
+    SDL_Log("Game::change_screen() - OpenGL context managed by RenderingFacade");
 
     if (next_state == GameState::GAMEPLAY) {
         current_screen = new GameplayScreen(&app);
@@ -235,7 +231,7 @@ void Game::change_screen(GameState next_state) {
         current_screen = new SettingsScreen(renderer);
     }
     else if (next_state == GameState::MAIN_MENU) {
-        current_screen = new MainMenuScreen(app.text_renderer, app.gpu_renderer);
+        current_screen = new MainMenuScreen(app.text_renderer, app.game_context);
     }
     else if (next_state == GameState::QUIT) {
         running = false;

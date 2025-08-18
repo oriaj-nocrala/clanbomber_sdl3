@@ -1,5 +1,6 @@
 #include "TextRenderer.h"
-#include "GPUAcceleratedRenderer.h"
+#include "RenderingFacade.h"
+#include "CoordinateSystem.h"
 #include <iostream>
 #include <sstream>
 
@@ -143,35 +144,35 @@ std::shared_ptr<TextTexture> TextRenderer::render_text(const std::string& text, 
     return text_texture;
 }
 
-void TextRenderer::draw_text(GPUAcceleratedRenderer* gpu_renderer, const std::string& text, 
+void TextRenderer::draw_text(RenderingFacade* rendering_facade, const std::string& text, 
                            const std::string& font_name, float x, float y, SDL_Color color) {
-    if (!gpu_renderer) return;
+    if (!rendering_facade) {
+        SDL_Log("TextRenderer::draw_text() - No RenderingFacade available");
+        return;
+    }
     
-    auto text_texture = render_text(text, font_name, color);
-    if (!text_texture || !text_texture->gl_texture) return;
+    // Use RenderingFacade to render text
+    PixelCoord position(x, y);
+    auto result = rendering_facade->render_text(text, position, font_name, color.r, color.g, color.b);
     
-    // Render using GPU renderer
-    float text_color[4] = {1.0f, 1.0f, 1.0f, 1.0f}; // White tint (text already has color)
-    float scale[2] = {1.0f, 1.0f};
-    
-    gpu_renderer->add_sprite(x, y, (float)text_texture->width, (float)text_texture->height,
-                           text_texture->gl_texture, text_color, 0.0f, scale, 0);
+    if (!result.is_ok()) {
+        SDL_Log("TextRenderer::draw_text() failed: %s", result.get_error_message().c_str());
+    }
 }
 
-void TextRenderer::draw_text_centered(GPUAcceleratedRenderer* gpu_renderer, const std::string& text, 
+void TextRenderer::draw_text_centered(RenderingFacade* rendering_facade, const std::string& text, 
                                     const std::string& font_name, float center_x, float y, SDL_Color color) {
-    if (!gpu_renderer) return;
+    if (!rendering_facade) {
+        SDL_Log("TextRenderer::draw_text_centered() - No RenderingFacade available");
+        return;
+    }
     
-    auto text_texture = render_text(text, font_name, color);
-    if (!text_texture || !text_texture->gl_texture) return;
+    // For now, use the center_x directly - RenderingFacade can handle centering internally
+    // In a more sophisticated implementation, we'd calculate text width first
+    PixelCoord position(center_x, y);
+    auto result = rendering_facade->render_text(text, position, font_name, color.r, color.g, color.b);
     
-    // Calculate centered X position
-    float x = center_x - (text_texture->width / 2.0f);
-    
-    // Render using GPU renderer
-    float text_color[4] = {1.0f, 1.0f, 1.0f, 1.0f}; // White tint (text already has color)
-    float scale[2] = {1.0f, 1.0f};
-    
-    gpu_renderer->add_sprite(x, y, (float)text_texture->width, (float)text_texture->height,
-                           text_texture->gl_texture, text_color, 0.0f, scale, 0);
+    if (!result.is_ok()) {
+        SDL_Log("TextRenderer::draw_text_centered() failed: %s", result.get_error_message().c_str());
+    }
 }

@@ -6,6 +6,8 @@
 #include "Bomber.h"
 #include "ParticleSystem.h"
 #include "GameContext.h"
+#include "SpatialPartitioning.h"
+#include "CoordinateSystem.h"
 #include <cmath>
 #include <random>
 
@@ -46,27 +48,48 @@ void Extra::act(float deltaTime) {
     bounce_timer += deltaTime * 4.0f; // 4x speed for nice bounce
     bounce_offset = std::sin(bounce_timer) * 3.0f; // 3 pixel bounce
     
-    // Check for collision with bombers directly using GameContext
+    // OPTIMIZED: Check for collision with bombers using SpatialGrid O(n) instead of O(n²)
     GameContext* ctx = get_context();
-    if (!ctx || !ctx->get_object_lists()) {
+    if (!ctx) {
         return;
     }
     
-    for (auto& obj : *ctx->get_object_lists()) {
-        if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+    // Use spatial partitioning for efficient bomber detection
+    SpatialGrid* spatial_grid = ctx->get_spatial_grid();
+    if (spatial_grid) {
+        CollisionHelper collision_helper(spatial_grid);
+        PixelCoord extra_pos(x, y);
         
-        Bomber* bomber = static_cast<Bomber*>(obj);
-        if (bomber && !bomber->delete_me && !bomber->is_dead()) {
-            // Check if bomber is close enough to collect (within 20 pixels)
-            float dx = bomber->get_x() - x;
-            float dy = bomber->get_y() - y;
-            float distance = sqrt(dx*dx + dy*dy);
-            
-            if (distance < 20.0f) {
-                SDL_Log("Extra collected by bomber at distance %.1f", distance);
+        GameObject* nearest_bomber = collision_helper.find_nearest_bomber(extra_pos, 20.0f);
+        if (nearest_bomber) {
+            Bomber* bomber = static_cast<Bomber*>(nearest_bomber);
+            if (bomber && !bomber->delete_me && !bomber->is_dead()) {
+                float dx = bomber->get_x() - x;
+                float dy = bomber->get_y() - y;
+                float distance = sqrt(dx*dx + dy*dy);
+                
+                SDL_Log("Extra collected by bomber at distance %.1f (using SpatialGrid O(n))", distance);
                 apply_effect_to_bomber(bomber);
                 collect();
-                break;
+            }
+        }
+    } else {
+        // FALLBACK: Use legacy O(n²) method if spatial grid not available
+        for (auto& obj : ctx->get_object_lists()) {
+            if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+            
+            Bomber* bomber = static_cast<Bomber*>(obj);
+            if (bomber && !bomber->delete_me && !bomber->is_dead()) {
+                float dx = bomber->get_x() - x;
+                float dy = bomber->get_y() - y;
+                float distance = sqrt(dx*dx + dy*dy);
+                
+                if (distance < 20.0f) {
+                    SDL_Log("Extra collected by bomber at distance %.1f (using legacy O(n²))", distance);
+                    apply_effect_to_bomber(bomber);
+                    collect();
+                    break;
+                }
             }
         }
     }

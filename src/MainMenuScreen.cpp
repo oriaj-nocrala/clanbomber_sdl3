@@ -1,11 +1,12 @@
 #include "MainMenuScreen.h"
 #include "Resources.h"
 #include "TextRenderer.h"
-#include "GPUAcceleratedRenderer.h"
+#include "GameContext.h"
+#include "RenderingFacade.h"
 #include <string.h>
 
-MainMenuScreen::MainMenuScreen(TextRenderer* text_renderer, GPUAcceleratedRenderer* gpu_renderer)
-    : selected_item(0), next_state(GameState::MAIN_MENU), text_renderer(text_renderer), gpu_renderer(gpu_renderer) {
+MainMenuScreen::MainMenuScreen(TextRenderer* text_renderer, GameContext* game_context)
+    : selected_item(0), next_state(GameState::MAIN_MENU), text_renderer(text_renderer), game_context(game_context) {
     menu_items.push_back("Local Game");
     menu_items.push_back("Player Setup");
     menu_items.push_back("Game Options");
@@ -62,8 +63,8 @@ void MainMenuScreen::update(float deltaTime) {
 }
 
 void MainMenuScreen::render(SDL_Renderer* renderer) {
-    if (!text_renderer || !gpu_renderer) {
-        return; // Can't render without text and GPU renderer
+    if (!text_renderer) {
+        return; // Can't render without text renderer
     }
     
     // Colors for text
@@ -72,11 +73,14 @@ void MainMenuScreen::render(SDL_Renderer* renderer) {
     SDL_Color normal_color = {200, 200, 200, 255};     // Light gray
     SDL_Color instructions_color = {150, 150, 150, 255}; // Dark gray
     
+    // Get RenderingFacade from GameContext
+    RenderingFacade* facade = game_context ? game_context->get_rendering_facade() : nullptr;
+    
     // Render title (centered at x=400 for 800px wide screen)
-    text_renderer->draw_text_centered(gpu_renderer, "CLANBOMBER", "big", 400, 100, title_color);
+    text_renderer->draw_text_centered(facade, "CLANBOMBER", "big", 400, 100, title_color);
     
     // Render version (centered)
-    text_renderer->draw_text_centered(gpu_renderer, "SDL3 Modern Edition", "small", 400, 140, normal_color);
+    text_renderer->draw_text_centered(facade, "SDL3 Modern Edition", "small", 400, 140, normal_color);
     
     // Render menu items (centered)
     float y = 220;
@@ -86,13 +90,13 @@ void MainMenuScreen::render(SDL_Renderer* renderer) {
         // Add selection indicator
         std::string item_text = (i == selected_item) ? "> " + menu_items[i] + " <" : "  " + menu_items[i] + "  ";
         
-        text_renderer->draw_text_centered(gpu_renderer, item_text, "big", 400, y, color);
+        text_renderer->draw_text_centered(facade, item_text, "big", 400, y, color);
         
         y += 40;
     }
     
     // Render instructions (centered)
-    text_renderer->draw_text_centered(gpu_renderer, "Use UP/DOWN arrows to navigate, ENTER to select", "small", 400, 550, instructions_color);
+    text_renderer->draw_text_centered(facade, "Use UP/DOWN arrows to navigate, ENTER to select", "small", 400, 550, instructions_color);
 }
 
 GameState MainMenuScreen::get_next_state() const {

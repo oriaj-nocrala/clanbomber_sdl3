@@ -144,6 +144,10 @@ add_executable(clanbomber-modern
     src/ParticleEffectsManager.cpp
     src/GameContext.cpp
     src/GameSystems.cpp
+    src/GameLogic.cpp
+    src/ErrorHandling.cpp
+    src/SpatialPartitioning.cpp
+    src/RenderingFacade.cpp
 )
 
 # --- ENLACE DE BIBLIOTECAS ---

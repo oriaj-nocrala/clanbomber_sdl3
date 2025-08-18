@@ -7,6 +7,7 @@
 #include "GameState.h"
 
 class GameSystems;
+class GameLogic;
 
 class GameplayScreen : public Screen {
 public:
@@ -52,8 +53,9 @@ private:
     float frame_time;
     GameState next_state;
     
-    // Add GameSystems
+    // OPTIMIZED: Modern architectural components
     GameSystems* game_systems;
+    GameLogic* game_logic;
 };
 
 #endif

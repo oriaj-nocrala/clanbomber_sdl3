@@ -23,7 +23,7 @@
 #include <filesystem>
 
 #include "Resources.h"
-#include "GPUAcceleratedRenderer.h"
+// REMOVED: #include "GPUAcceleratedRenderer.h" - now handled by RenderingFacade
 #include "LifecycleManager.h"
 
 class TileManager;
@@ -124,7 +124,7 @@ class ClanBomberApplication
   Map* map;
   std::list<GameObject*> objects;
   std::list<Bomber*> bomber_objects;
-  GPUAcceleratedRenderer* gpu_renderer;
+  // REMOVED: GPUAcceleratedRenderer* gpu_renderer; - now handled by RenderingFacade
   class TextRenderer* text_renderer;
   LifecycleManager* lifecycle_manager;
   TileManager* tile_manager;
