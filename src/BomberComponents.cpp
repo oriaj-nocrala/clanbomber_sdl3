@@ -10,6 +10,7 @@
 #include "AudioMixer.h"
 #include "GameConfig.h"
 #include "GameContext.h"
+#include "Bomber.h"  // Need for cast in can_move()
 
 // ===== MOVEMENT COMPONENT IMPLEMENTATION =====
 
@@ -83,7 +84,16 @@ void BomberMovementComponent::fly_to(int target_x, int target_y, float duration_
 }
 
 bool BomberMovementComponent::can_move() const {
-    return !flying;
+    // Can't move if bomber is flying or dead
+    if (flying) return false;
+    
+    // Check if bomber is dead - cast owner to Bomber to access death state
+    Bomber* bomber = static_cast<Bomber*>(owner);
+    if (bomber && bomber->is_dead()) {
+        return false;
+    }
+    
+    return true;
 }
 
 void BomberMovementComponent::update_flight_animation(float deltaTime) {
@@ -120,6 +130,7 @@ BomberCombatComponent::BomberCombatComponent(GameObject* owner, GameContext* con
 void BomberCombatComponent::update(float deltaTime) {
     update_bomb_cooldown(deltaTime);
     update_bomb_throwing(deltaTime);
+    update_bomb_grace_period(deltaTime);
 }
 
 void BomberCombatComponent::handle_controller_input(Controller* controller, float deltaTime) {
@@ -156,16 +167,32 @@ void BomberCombatComponent::handle_controller_input(Controller* controller, floa
 void BomberCombatComponent::place_bomb() {
     if (!can_place_bomb() || bomb_cooldown > 0.0f) return;
     
+    int bomber_x = owner->get_x();
+    int bomber_y = owner->get_y();
     int map_x = owner->get_map_x();
     int map_y = owner->get_map_y();
+    
+    // DEBUG: Let's verify the tile calculation
+    int expected_map_x = (bomber_x + 20) / 40;  // Standard tile calculation
+    int expected_map_y = (bomber_y + 20) / 40;  // Standard tile calculation
+    
+    SDL_Log("🔍 DEBUG: Bomber at (%d,%d) -> get_map_x()=%d, get_map_y()=%d", bomber_x, bomber_y, map_x, map_y);
+    SDL_Log("🔍 DEBUG: Expected tile calculation: (%d+20)/40=%d, (%d+20)/40=%d", bomber_x, expected_map_x, bomber_y, expected_map_y);
     
     // Check if there's already a bomb at this position
     if (context->has_bomb_at(map_x, map_y)) {
         return;
     }
     
-    // Create bomb using GameContext - MODERN architecture
-    Bomb* bomb = new Bomb(map_x * 40, map_y * 40, power, static_cast<Bomber*>(owner), context);
+    // SNAP TO GRID: Place bomb at center of tile where bomber is located
+    // This ensures explosions always align perfectly with the grid
+    int bomb_x = map_x * 40 + 20;  // Center X of the tile
+    int bomb_y = map_y * 40 + 20;  // Center Y of the tile
+    
+    Bomb* bomb = new Bomb(bomb_x, bomb_y, power, static_cast<Bomber*>(owner), context);
+    
+    SDL_Log("💣 PLACE BOMB: Bomber at (%d,%d) -> tile (%d,%d) -> Bomb created at center (%d,%d)", 
+            bomber_x, bomber_y, map_x, map_y, bomb_x, bomb_y);
     context->register_object(bomb); // MODERN: Use GameContext for object registration
     
     // Register bomb with tile manager
@@ -177,6 +204,12 @@ void BomberCombatComponent::place_bomb() {
     inc_current_bombs();
     bomb_cooldown = 0.2f; // 200ms cooldown
     
+    // BOMB GRACE PERIOD: Allow bomber to move out of just-placed bomb
+    just_placed_bomb = bomb;
+    bomb_grace_timer = BOMB_GRACE_PERIOD;
+    
+    SDL_Log("💨 GRACE PERIOD: Activated %.1fms grace period for bomb at (%d,%d)", 
+            BOMB_GRACE_PERIOD * 1000, map_x, map_y);
     SDL_Log("BomberCombatComponent: Placed bomb at (%d,%d) with power %d", map_x, map_y, power);
 }
 
@@ -246,6 +279,24 @@ void BomberCombatComponent::update_bomb_throwing(float deltaTime) {
     if (bomb_button_held) {
         bomb_hold_timer += deltaTime;
     }
+}
+
+void BomberCombatComponent::update_bomb_grace_period(float deltaTime) {
+    if (bomb_grace_timer > 0.0f) {
+        bomb_grace_timer -= deltaTime;
+        if (bomb_grace_timer <= 0.0f) {
+            bomb_grace_timer = 0.0f;
+            just_placed_bomb = nullptr;
+            SDL_Log("💨 GRACE PERIOD: Expired - bomb collision re-enabled");
+        }
+    }
+}
+
+bool BomberCombatComponent::is_in_bomb_grace_period(Bomb* bomb) const {
+    bool result = (bomb_grace_timer > 0.0f && just_placed_bomb == bomb);
+    SDL_Log("🔍 GRACE CHECK: timer=%.3f, just_placed=%p, checking=%p, result=%d", 
+            bomb_grace_timer, just_placed_bomb, bomb, result);
+    return result;
 }
 
 // ===== ANIMATION COMPONENT IMPLEMENTATION =====

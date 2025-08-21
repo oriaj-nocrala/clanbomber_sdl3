@@ -26,6 +26,7 @@
 #include "TileManager.h"
 #include "RenderingFacade.h"
 #include "CoordinateSystem.h"
+#include "SpatialPartitioning.h"
 
 #include "Map.h"
 #include "MapTile.h"
@@ -71,8 +72,8 @@ GameObject::GameObject( int _x, int _y, GameContext* context )
 	texture_name = "bomber_snake"; // placeholder
 	sprite_nr = 0;
 
-	offset_x = 60;
-	offset_y = 40;
+	offset_x = 0;  // No offset by default - objects set their own if needed
+	offset_y = 0;  // No offset by default - objects set their own if needed
 	delete_me = false;
 	remainder =0;
 	speed = 240;
@@ -87,8 +88,11 @@ GameObject::GameObject( int _x, int _y, GameContext* context )
 	stopped = false;
 	fly_progress = 0;	// must be set to 0!
 
-	x = orig_x = _x;
-	y = orig_y = _y;
+	// CENTER-BASED COORDINATES: GameObject now stores center coordinates
+	// All x,y coordinates represent the CENTER of the object, not top-left corner
+	// This unifies the coordinate system throughout the game
+	x = orig_x = _x;  // Center X coordinate
+	y = orig_y = _y;  // Center Y coordinate
 	z = 0;
 
 	opacity = 0xff;
@@ -197,328 +201,129 @@ void GameObject::set_offset(int _x, int _y)
     offset_y = _y;
 }
 
-bool GameObject::move_right()
-{
-	// Check if tile to the right is blocking
-	if (is_tile_blocking_at(x+40, y+20)) {
-		return false;
-	}
-		
-	// Check if there's a bomb (unless this object is the bomb or already partially moved)
-	if (has_bomb_at(x+40, y+20) && !(get_type()==BOMB && has_bomb_at(x+20, y+20)) && !(get_x()%40>19)) {
-		// Try to kick the bomb if possible
-		if (can_kick) {
-			return try_kick_right();
-		}
-		return false;
-	}
-	
-	x++;
-
-	// Collision correction for partial tile alignment
-	if (get_y()%40 > 19) {
-		if (is_tile_blocking_at(get_x()+40, get_y()-20)) {
-			y++;
-		}
-	}
-	else if (get_y()%40 > 0) {
-		if (is_tile_blocking_at(get_x()+40, get_y()+60)) {
-			y--;
-		}
-	}
-
-	// Check for bomber collision (if not allowed to pass bombers)
-	if (!can_pass_bomber) {
-		if (has_bomber_at(x+20, y+20)) {  // Check current position after move
-			if (!has_bomber_at(x-1, y+20)) {  // Only if not already on same tile
-				x--;
-				return false;
-			}
-		}
-	}
-	
-	return true;
-}
+// LEGACY MOVEMENT FUNCTIONS REMOVED - Game uses move_dist() system instead
 
 // Handle bomb kicking if movement failed due to bomb
-bool GameObject::try_kick_right()
-{
-	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
-	GameContext* context = get_context();
-	if (!context || !context->get_map()) {
-		SDL_Log("ERROR: try_kick_right called with null context or map");
-		return false;
-	}
-	Map* map = context->get_map();
-	
-	// Check if there's a bomb to kick and we can kick
-	if (!can_kick || !has_bomb_at(x+40, y+20)) {
-		return false;
-	}
-	
-	// Get bomb from either architecture
-	Bomb* bomb_to_kick = nullptr;
-	MapTile* legacy_tile = map->get_tile(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
-	if (legacy_tile && legacy_tile->bomb) {
-		bomb_to_kick = legacy_tile->bomb;
-	} else {
-		TileEntity* tile_entity = map->get_tile_entity(pixel_to_map_x(x+40), pixel_to_map_y(y+20));
-		if (tile_entity) {
-			bomb_to_kick = tile_entity->get_bomb();
-		}
-	}
-	
-	if (bomb_to_kick && bomb_to_kick->get_cur_dir() == DIR_NONE) {
-		SDL_Log("Kicking bomb right");
-		bomb_to_kick->kick(DIR_RIGHT);
-		return true;
-	}
-	
-	return false;
-}
-
-// Handle bomb kicking if movement failed due to bomb
-bool GameObject::try_kick_left()
-{
-	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
-	GameContext* context = get_context();
-	if (!context || !context->get_map()) {
-		SDL_Log("ERROR: try_kick_left called with null context or map");
-		return false;
-	}
-	Map* map = context->get_map();
-	
-	// Check if there's a bomb to kick and we can kick
-	if (!can_kick || !has_bomb_at(x-1, y+20)) {
-		return false;
-	}
-	
-	// Get bomb from either architecture
-	Bomb* bomb_to_kick = nullptr;
-	MapTile* legacy_tile = map->get_tile(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
-	if (legacy_tile && legacy_tile->bomb) {
-		bomb_to_kick = legacy_tile->bomb;
-	} else {
-		TileEntity* tile_entity = map->get_tile_entity(pixel_to_map_x(x-1), pixel_to_map_y(y+20));
-		if (tile_entity) {
-			bomb_to_kick = tile_entity->get_bomb();
-		}
-	}
-	
-	if (bomb_to_kick && bomb_to_kick->get_cur_dir() == DIR_NONE) {
-		SDL_Log("Kicking bomb left");
-		bomb_to_kick->kick(DIR_LEFT);
-		return true;
-	}
-	
-	return false;
-}
-
-bool GameObject::move_left()
-{
-	// Check if tile to the left is blocking
-	if (is_tile_blocking_at(x-1, y+20)) {
-		return false;
-	}
-		
-	// Check if there's a bomb (unless this object is the bomb or already partially moved)
-	if (has_bomb_at(x-1, y+20) && !(get_type()==BOMB && has_bomb_at(x+20, y+20)) && !(get_x()%40<20)) {
-		// Try to kick the bomb if possible
-		if (can_kick) {
-			return try_kick_left();
-		}
-		return false;
-	}
-	
-	x--;
-
-	// Collision correction for partial tile alignment
-	if (get_y()%40 > 19) {
-		if (is_tile_blocking_at(get_x()-1, get_y()-20)) {
-			y++;
-		}
-	}
-	else if (get_y()%40 > 0) {
-		if (is_tile_blocking_at(get_x()-1, get_y()+60)) {
-			y--;
-		}
-	}
-		
-	// Check for bomber collision (if not allowed to pass bombers)
-	if (!can_pass_bomber) {
-		if (has_bomber_at(x+20, y+20)) {  // Check current position after move
-			if (!has_bomber_at(x+41, y+20)) {  // Only if not already on same tile
-				x++;
-				return false;
-			}
-		}
-	}
-	
-	return true;
-}
-
-bool GameObject::move_up()
-{
-	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
-	GameContext* context = get_context();
-	if (!context || !context->get_map()) {
-		SDL_Log("ERROR: move_up called with null context or map");
-		return false;
-	}
-	Map* map = context->get_map();
-	
-	MapTile* up_maptile = map->get_tile((int)(x+20)/40, (int)(y-1)/40);
-	if (up_maptile->is_blocking()) {
-		return false;
-	}
-		
-	if ((up_maptile->bomb==NULL) || ((get_type()==BOMB) && (up_maptile->bomb==this)) || (get_y()%40<20)) {
-		y--;
-			
-		if (get_x()%40 > 19) {
-			if (map->get_tile((get_x()-20)/40,(get_y()-1)/40)->is_blocking()) {
-				x++;
-			}
-		}
-		else if (get_x()%40 > 0) {
-			if (map->get_tile((get_x()+60)/40,(get_y()-1)/40)->is_blocking()) {
-				x--;
-			}
-		}
-			
-		if (!can_pass_bomber) {
-			if ( up_maptile->has_bomber() ) {
-				// Check if moving to a different tile (not current position)
-				int current_map_x = (x + 20) / 40;
-				int current_map_y = (y + 20) / 40;
-				int target_map_x = (x + 20) / 40;
-				int target_map_y = (y - 1 + 20) / 40;
-				
-				if (target_map_x != current_map_x || target_map_y != current_map_y) {
-					y++;
-					return false;
-				}
-			}
-		}
-	}
-	else {
-		SDL_Log("Attempting to kick up. can_kick value: %d", (int)can_kick);
-		if (can_kick  && (up_maptile->bomb->get_cur_dir() == DIR_NONE)) {
-			up_maptile->bomb->kick(DIR_UP);
-		}
-		return false;
-	}
-	
-	return true;
-}
-
-bool GameObject::move_down()
-{
-	// GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
-	GameContext* context = get_context();
-	if (!context || !context->get_map()) {
-		SDL_Log("ERROR: move_down called with null context or map");
-		return false;
-	}
-	Map* map = context->get_map();
-	
-	MapTile* down_maptile = map->get_tile((int)(x+20)/40,(int)(y+40)/40);
-	
-	if (down_maptile->is_blocking()) {
-		return false;
-	}
-	
-	if ((down_maptile->bomb==NULL) || ((get_type()==BOMB) && (down_maptile->bomb==this)) || (get_y()%40>19)) {
-		y++;
-			
-		if (get_x()%40 > 19) {
-			if (map->get_tile((get_x()-20)/40,(get_y()+40)/40)->is_blocking()) {
-				x++;
-			}
-		}
-		else if (get_x()%40 > 0) {
-			if (map->get_tile((get_x()+60)/40,(get_y()+40)/40)->is_blocking()) {
-				x--;
-			}
-		}
-			
-		if (!can_pass_bomber) {
-			if ( down_maptile->has_bomber() ) {
-				// Check if moving to a different tile (not current position)
-				int current_map_x = (x + 20) / 40;
-				int current_map_y = (y + 20) / 40;
-				int target_map_x = (x + 20) / 40;
-				int target_map_y = (y + 1 + 20) / 40;
-				
-				if (target_map_x != current_map_x || target_map_y != current_map_y) {
-					y--;
-					return false;
-				}
-			}
-		}
-	}
-	else {
-		SDL_Log("Attempting to kick down. can_kick value: %d", (int)can_kick);
-		if (can_kick  && (down_maptile->bomb->get_cur_dir() == DIR_NONE)) {
-			down_maptile->bomb->kick(DIR_DOWN);
-		}
-		return false;
-	}
-	
-	return true;
-}
-
 
 bool GameObject::is_blocked(float check_x, float check_y) {
-    // GAMECONTEXT MIGRATION: Use GameContext instead of direct app access
+    // MODERN COLLISION: Use SpatialGrid only - no more legacy tile->bomb system
     GameContext* context = get_context();
-    if (!context || !context->get_map()) {
-        return false; // If no context/map, consider not blocked (defensive)
+    if (!context) {
+        return false; // If no context, consider not blocked (defensive)
     }
-    Map* map = context->get_map();
     
-    float bbox_left = check_x + 10;
-    float bbox_right = check_x + 29;
-    float bbox_top = check_y + 10;
-    float bbox_bottom = check_y + 29;
+    // ADAPTIVE HITBOX: Use 75% of tile size for consistent movement while allowing precision
+    const float ADAPTIVE_HITBOX = 30.0f; // 75% of 40px = 30px, works for all sprite sizes
+    float bbox_left = check_x - ADAPTIVE_HITBOX/2;
+    float bbox_right = check_x + ADAPTIVE_HITBOX/2 - 1;
+    float bbox_top = check_y - ADAPTIVE_HITBOX/2;  
+    float bbox_bottom = check_y + ADAPTIVE_HITBOX/2 - 1;
 
     int map_x1 = (int)bbox_left / 40;
     int map_y1 = (int)bbox_top / 40;
     int map_x2 = (int)bbox_right / 40;
     int map_y2 = (int)bbox_bottom / 40;
 
-    std::set<MapTile*> current_tiles;
-    int cx1 = (int)x / 40, cy1 = (int)y / 40;
-    int cx2 = (int)(x+39) / 40, cy2 = (int)(y+39) / 40;
-    for (int my = cy1; my <= cy2; ++my) {
-        for (int mx = cx1; mx <= cx2; ++mx) {
-            current_tiles.insert(map->get_tile(mx, my));
-        }
-    }
-
-    for (int my = map_y1; my <= map_y2; ++my) {
-        for (int mx = map_x1; mx <= map_x2; ++mx) {
-            MapTile* tile = map->get_tile(mx, my);
-            if (tile->is_blocking()) {
-                return true; // Wall collision
-            }
-            if (tile->bomb != NULL && get_type() != BOMB) {
-                if (current_tiles.find(tile) == current_tiles.end()) {
-                    return true; // Bomb collision
+    SDL_Log("   Checking tiles from (%d,%d) to (%d,%d)", map_x1, map_y1, map_x2, map_y2);
+    
+    // Check static tiles (walls/boxes) 
+    Map* map = context->get_map();
+    if (map) {
+        for (int my = map_y1; my <= map_y2; ++my) {
+            for (int mx = map_x1; mx <= map_x2; ++mx) {
+                MapTile* tile = map->get_tile(mx, my);
+                if (!tile) {
+                    SDL_Log("   Tile(%d,%d): NULL - BLOCKED", mx, my);
+                    return true;
+                }
+                
+                if (tile->is_blocking()) {
+                    SDL_Log("   Tile(%d,%d): WALL - BLOCKED", mx, my);
+                    return true; // Wall collision
                 }
             }
-            if (!can_pass_bomber && tile->has_bomber() && current_tiles.find(tile) == current_tiles.end()) {
-                return true; // Bomber collision
+        }
+    }
+    
+    // MODERN COLLISION: Check dynamic objects (bombs, bombers) using SpatialGrid
+    // Get current position tiles using SAME adaptive hitbox for consistency
+    std::set<int> current_tiles;
+    float current_left = x - ADAPTIVE_HITBOX/2;
+    float current_right = x + ADAPTIVE_HITBOX/2 - 1;
+    float current_top = y - ADAPTIVE_HITBOX/2;  
+    float current_bottom = y + ADAPTIVE_HITBOX/2 - 1;
+    
+    int cx1 = (int)current_left / 40, cy1 = (int)current_top / 40;
+    int cx2 = (int)current_right / 40, cy2 = (int)current_bottom / 40;
+    for (int my = cy1; my <= cy2; ++my) {
+        for (int mx = cx1; mx <= cx2; ++mx) {
+            current_tiles.insert(my * 1000 + mx); // Simple hash for tile coordinates
+        }
+    }
+    
+    // Check for bomb collisions using SpatialGrid
+    PixelCoord position(check_x, check_y);
+    auto bombs = context->get_spatial_grid()->get_objects_of_type_near(position, GameObject::BOMB, 1);
+    for (GameObject* bomb_obj : bombs) {
+        if (get_type() != BOMB && bomb_obj != this) {
+            // BOMB GRACE PERIOD: Check if this bomber can ignore this specific bomb
+            bool should_ignore_bomb = false;
+            if (get_type() == BOMBER) {
+                Bomber* bomber = static_cast<Bomber*>(this);
+                Bomb* bomb = static_cast<Bomb*>(bomb_obj);
+                if (bomber->is_in_bomb_grace_period(bomb)) {
+                    should_ignore_bomb = true;
+                    SDL_Log("💨 GRACE PERIOD: Ignoring collision with just-placed bomb");
+                }
+            }
+            
+            if (!should_ignore_bomb) {
+                int bomb_tile_x = (int)bomb_obj->get_x() / 40;
+                int bomb_tile_y = (int)bomb_obj->get_y() / 40;
+                int bomb_tile_hash = bomb_tile_y * 1000 + bomb_tile_x;
+                
+                if (current_tiles.find(bomb_tile_hash) == current_tiles.end()) {
+                    SDL_Log("   Tile(%d,%d): BOMB - BLOCKED (SpatialGrid)", bomb_tile_x, bomb_tile_y);
+                    return true;
+                }
             }
         }
     }
+    
+    // Check for bomber collisions using SpatialGrid
+    if (!can_pass_bomber) {
+        auto bombers = context->get_spatial_grid()->get_objects_of_type_near(position, GameObject::BOMBER, 1);
+        for (GameObject* bomber_obj : bombers) {
+            if (bomber_obj != this) {
+                int bomber_tile_x = (int)bomber_obj->get_x() / 40;
+                int bomber_tile_y = (int)bomber_obj->get_y() / 40;
+                int bomber_tile_hash = bomber_tile_y * 1000 + bomber_tile_x;
+                
+                if (current_tiles.find(bomber_tile_hash) == current_tiles.end()) {
+                    SDL_Log("   Tile(%d,%d): OTHER BOMBER - BLOCKED (SpatialGrid)", bomber_tile_x, bomber_tile_y);
+                    return true;
+                }
+            }
+        }
+    }
+    
+    SDL_Log("✅ COLLISION: Position (%.1f,%.1f) is FREE", check_x, check_y);
     return false;
 }
 
 bool GameObject::move_dist(float distance, Direction dir) {
+    SDL_Log("🚶 MOVE: Trying to move distance=%.2f direction=%d from (%.1f,%.1f)", 
+            distance, (int)dir, x, y);
+    
     if (flying || falling) {
+        SDL_Log("🚫 MOVE: Blocked - flying=%d falling=%d", flying, falling);
         return false;
     }
+
+    // SPATIAL FIX: Store old position for SpatialGrid update
+    float old_x = x;
+    float old_y = y;
+    bool moved = false;
 
     float move_x = 0;
     float move_y = 0;
@@ -528,17 +333,24 @@ bool GameObject::move_dist(float distance, Direction dir) {
            case DIR_RIGHT: move_x =  distance; break;
            case DIR_UP:    move_y = -distance; break;
            case DIR_DOWN:  move_y =  distance; break;
-           default: return false;
+           default: 
+               SDL_Log("🚫 MOVE: Invalid direction %d", (int)dir);
+               return false;
        }
    
        float next_x = x + move_x;
        float next_y = y + move_y;
+       
+       SDL_Log("🎯 MOVE: Target position (%.1f,%.1f)", next_x, next_y);
    
        if (!is_blocked(next_x, next_y)) {
            // Direct path is clear
+           SDL_Log("✅ MOVE: Direct path clear - moving to (%.1f,%.1f)", next_x, next_y);
            x = next_x;
            y = next_y;
-           return true;
+           moved = true;
+       } else {
+           SDL_Log("🚫 MOVE: Direct path blocked - trying partial movement");
        }
    
        // Path is blocked, try partial movement first (for wiggling)
@@ -551,37 +363,51 @@ bool GameObject::move_dist(float distance, Direction dir) {
            if (!is_blocked(p_x, p_y)) {
                x = p_x;
                y = p_y;
-               return true;
+               moved = true;
+               break;
            }
            if (d == 0) break;
        }
    
        // No partial move possible, now try to slide for cornering
-       const float slide_amount = 1.0;
-       if (dir == DIR_LEFT || dir == DIR_RIGHT) {
-           // Try sliding vertically
-           if (!is_blocked(next_x, y + slide_amount)) {
-               y += slide_amount;
-               x = next_x;
-               return true;
+       if (!moved) {
+           const float slide_amount = 1.0;
+           if (dir == DIR_LEFT || dir == DIR_RIGHT) {
+               // Try sliding vertically
+               if (!is_blocked(next_x, y + slide_amount)) {
+                   y += slide_amount;
+                   x = next_x;
+                   moved = true;
+               }
+               else if (!is_blocked(next_x, y - slide_amount)) {
+                   y -= slide_amount;
+                   x = next_x;
+                   moved = true;
+               }
+           } else { // Moving vertically
+               // Try sliding horizontally
+               if (!is_blocked(x + slide_amount, next_y)) {
+                   x += slide_amount;
+                   y = next_y;
+                   moved = true;
+               }
+               else if (!is_blocked(x - slide_amount, next_y)) {
+                   x -= slide_amount;
+                   y = next_y;
+                   moved = true;
+               }
            }
-           if (!is_blocked(next_x, y - slide_amount)) {
-               y -= slide_amount;
-               x = next_x;
-               return true;
+       }
+       
+       // SPATIAL FIX: Update SpatialGrid if we moved
+       if (moved) {
+           GameContext* context = get_context();
+           if (context) {
+               SDL_Log("SPATIAL DEBUG: Updating object type=%d position from (%.1f,%.1f) to (%.1f,%.1f)", 
+                       get_type(), old_x, old_y, x, y);
+               context->update_object_position_in_spatial_grid(this, old_x, old_y);
            }
-       } else { // Moving vertically
-           // Try sliding horizontally
-           if (!is_blocked(x + slide_amount, next_y)) {
-               x += slide_amount;
-               y = next_y;
-               return true;
-           }
-           if (!is_blocked(x - slide_amount, next_y)) {
-               x -= slide_amount;
-               y = next_y;
-               return true;
-           }
+           return true;
        }
    
        return false; // Completely blocked
@@ -590,41 +416,15 @@ bool GameObject::move_dist(float distance, Direction dir) {
 
 bool GameObject::move(float deltaTime)
 {
-	if (!flying) {
-		int span = (int)(deltaTime*speed);
-		remainder += deltaTime*speed - (int)(deltaTime*speed);
-		span += (int)(remainder);
-		remainder -= (int)(remainder);
-
-		for (int i=0; i<span; i++) {
-			switch (cur_dir) {
-				case DIR_LEFT:
-					if (!move_left()) {
-						stop();
-						return false;
-					}
-					break;
-				case DIR_RIGHT:
-					if (!move_right()) {
-						stop();
-						return false;
-					}
-					break;
-				case DIR_UP:
-					if (!move_up()) {
-						stop();
-						return false;
-					}
-					break;
-				case DIR_DOWN:
-					if (!move_down()) {
-						stop();
-						return false;
-					}
-					break;
-				default:
-					break;
-			}
+	// MODERN MOVEMENT: Use move_dist() instead of legacy pixel-by-pixel movement
+	if (!flying && cur_dir != DIR_NONE) {
+		// Calculate movement distance based on speed and deltaTime
+		float distance = speed * deltaTime;
+		
+		// Use modern move_dist() system
+		if (!move_dist(distance, cur_dir)) {
+			stop();
+			return false;
 		}
 	}
 	return true;
@@ -808,8 +608,18 @@ void GameObject::set_orig( int _x, int _y )
 
 void GameObject::move_pos( int _x, int _y )
 {
+	// SPATIAL FIX: Store old position before updating
+	float old_x = x;
+	float old_y = y;
+	
 	x += _x;
 	y += _y;
+	
+	// SPATIAL FIX: Update SpatialGrid with new position
+	GameContext* context = get_context();
+	if (context) {
+		context->update_object_position_in_spatial_grid(this, old_x, old_y);
+	}
 }
 
 int GameObject::get_x() const
@@ -834,7 +644,9 @@ int GameObject::get_speed() const
 
 int GameObject::get_map_x() const
 {
-    int tmp = (get_x()+20)/40;
+    // FIXED: Use center coordinates directly to determine tile
+    // Previous (get_x()+20)/40 caused objects near edges to be detected in wrong tile
+    int tmp = get_x()/40;
 	if (tmp < 0) {
 		tmp = 0;
 	}
@@ -846,7 +658,9 @@ int GameObject::get_map_x() const
 
 int GameObject::get_map_y() const
 {
-	int tmp = (get_y()+20)/40;
+	// FIXED: Use center coordinates directly to determine tile
+	// Previous (get_y()+20)/40 caused objects near edges to be detected in wrong tile
+	int tmp = get_y()/40;
 	if (tmp < 0) {
         tmp = 0; 
     }
@@ -1038,34 +852,18 @@ bool GameObject::has_bomber_at(int pixel_x, int pixel_y) const
 }
 
 // NEW ARCHITECTURE SUPPORT: Synchronize bomb with TileManager
+// LEGACY FUNCTIONS REMOVED - SpatialGrid handles all collision detection
+// These functions maintained the legacy tile->bomb system which caused phantom collisions
+// Modern architecture uses only SpatialGrid for dynamic object collisions
+
 void GameObject::set_bomb_on_tile(Bomb* bomb) const {
-    int map_x = (int)(x+20)/40;
-    int map_y = (int)(y+20)/40;
-    
-    // GAMECONTEXT ONLY: No fallback needed - all objects use GameContext
-    GameContext* context = get_context();
-    if (!context || !context->get_tile_manager()) {
-        SDL_Log("ERROR: set_bomb_on_tile called with null context or tile_manager");
-        return;
-    }
-    
-    context->get_tile_manager()->register_bomb_at(map_x, map_y, bomb);
-    SDL_Log("GameObject: Set bomb %p on tile at (%d,%d) through GameContext", bomb, map_x, map_y);
+    // NO-OP: Legacy function removed - SpatialGrid automatically handles bomb positioning
+    SDL_Log("GameObject: set_bomb_on_tile() called but legacy system removed - SpatialGrid handles collision");
 }
 
 void GameObject::remove_bomb_from_tile(Bomb* bomb) const {
-    int map_x = (int)(x+20)/40;
-    int map_y = (int)(y+20)/40;
-    
-    // GAMECONTEXT ONLY: No fallback needed - all objects use GameContext
-    GameContext* context = get_context();
-    if (!context || !context->get_tile_manager()) {
-        SDL_Log("ERROR: remove_bomb_from_tile called with null context or tile_manager");
-        return;
-    }
-    
-    context->get_tile_manager()->unregister_bomb_at(map_x, map_y, bomb);
-    SDL_Log("GameObject: Removed bomb %p from tile at (%d,%d) through GameContext", bomb, map_x, map_y);
+    // NO-OP: Legacy function removed - SpatialGrid automatically handles bomb cleanup via delete_me flag
+    SDL_Log("GameObject: remove_bomb_from_tile() called but legacy system removed - SpatialGrid handles cleanup");
 }
 
 void GameObject::show()
@@ -1090,7 +888,22 @@ void GameObject::show()
     // OPTIMIZED: Use RenderingFacade for centralized rendering instead of direct GPU renderer access
     RenderingFacade* facade = context->get_rendering_facade();
     if (facade) {
-        PixelCoord position(static_cast<float>(get_x()), static_cast<float>(get_y()));
+        // SMART COORDINATE SYSTEM: Apply center→corner conversion only for dynamic objects
+        float render_x, render_y;
+        
+        if (get_type() == MAPTILE) {
+            // TileEntity: Already uses top-left coordinates, render as-is
+            render_x = static_cast<float>(get_x());
+            render_y = static_cast<float>(get_y());
+        } else {
+            // Dynamic objects (BOMBER, BOMB, etc.): Convert center→top-left for rendering
+            const int SPRITE_WIDTH = 40;
+            const int SPRITE_HEIGHT = 40;
+            render_x = static_cast<float>(get_x()) - (SPRITE_WIDTH / 2);   // Center → top-left
+            render_y = static_cast<float>(get_y()) - (SPRITE_HEIGHT / 2);  // Center → top-left
+        }
+        
+        PixelCoord position(render_x, render_y);
         
         auto result = facade->render_sprite(texture_name, position, sprite_nr, 0.0f, opacity_scaled);
         if (!result.is_ok()) {

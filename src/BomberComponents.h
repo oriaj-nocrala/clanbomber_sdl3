@@ -9,6 +9,7 @@ class ClanBomberApplication;
 class Controller;
 class GameObject;
 class GameContext;
+class Bomb;
 
 /**
  * BomberComponents: Modular component system for Bomber entities
@@ -97,6 +98,9 @@ public:
     void die();
     bool is_dead() const { return dead; }
     
+    // Bomb grace period system
+    bool is_in_bomb_grace_period(Bomb* bomb) const;
+    
 private:
     GameObject* owner;
     GameContext* context;
@@ -115,9 +119,15 @@ private:
     // Death state
     bool dead = false;
     
+    // BOMB GRACE PERIOD: Allow bomber to move out of just-placed bomb
+    Bomb* just_placed_bomb = nullptr;     // Reference to bomb just placed
+    float bomb_grace_timer = 0.0f;        // Timer for grace period
+    static constexpr float BOMB_GRACE_PERIOD = 1.5f; // 1500ms grace period - enough time to escape
+    
     // Internal combat logic
     void update_bomb_cooldown(float deltaTime);
     void update_bomb_throwing(float deltaTime);
+    void update_bomb_grace_period(float deltaTime);
 };
 
 // ===== ANIMATION COMPONENT =====

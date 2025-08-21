@@ -14,8 +14,10 @@ Bomb::Bomb(int _x, int _y, int _power, Bomber* _owner, GameContext* context) : G
     power = _power;
     owner = _owner;
     countdown = GameConfig::get_bomb_countdown() / 1000.0f;
-    x = ((int)x + 20) / 40 * 40;
-    y = ((int)y + 20) / 40 * 40;
+    
+    // GLOBAL CENTERING FIX: Don't override GameObject's centering system!
+    // GameObject constructor already centers at tile center - no need to override
+    SDL_Log("💣 BOMB: Using GameObject global centering at (%.1f,%.1f)", x, y);
 
     // CRITICAL: Set Z-order so bombs render ABOVE tiles
     z = Z_BOMB;  // Bombs should be above tiles (3000 > 0)

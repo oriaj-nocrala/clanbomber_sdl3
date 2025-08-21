@@ -108,6 +108,9 @@ public:
     // === COMPONENT ACCESS (for inter-component communication) ===
     std::unique_ptr<BomberAnimationComponent> animation_component;
     
+    // Bomb grace period access (for collision detection)
+    bool is_in_bomb_grace_period(Bomb* bomb) const;
+    
 private:
     // === COMPONENT-BASED ARCHITECTURE ===
     std::unique_ptr<BomberMovementComponent> movement_component;

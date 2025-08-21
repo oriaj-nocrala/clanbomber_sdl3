@@ -3,6 +3,7 @@
 #include "Controller.h"
 #include "ClanBomber.h"
 #include "GameContext.h"
+#include "Bomb.h"
 
 // ===== CONSTRUCTOR / DESTRUCTOR =====
 
@@ -231,6 +232,10 @@ bool Bomber::can_kick() const {
 
 bool Bomber::can_throw() const {
     return combat_component ? combat_component->can_throw : false;
+}
+
+bool Bomber::is_in_bomb_grace_period(Bomb* bomb) const {
+    return combat_component ? combat_component->is_in_bomb_grace_period(bomb) : false;
 }
 
 void Bomber::set_can_kick(bool kick) {
