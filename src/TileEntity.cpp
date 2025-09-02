@@ -7,6 +7,7 @@
 #include "ParticleSystem.h"
 #include "GPUAcceleratedRenderer.h"
 #include "GameContext.h"
+#include "CoordinateSystem.h"
 #include <random>
 #include <cmath>
 #include <SDL3/SDL.h>
@@ -157,8 +158,10 @@ void TileEntity::spawn_extra() {
             return;
     }
     
-    // Create the extra at this tile's position using GameContext registration
-    Extra* extra = new Extra(get_x(), get_y(), extra_type, get_context());
+    // Create extra at tile CENTER using unified CoordinateSystem
+    GridCoord grid(tile_data->get_grid_x(), tile_data->get_grid_y());
+    PixelCoord center = CoordinateSystem::grid_to_pixel(grid);
+    Extra* extra = new Extra(static_cast<int>(center.pixel_x), static_cast<int>(center.pixel_y), extra_type, get_context());
     get_context()->register_object(extra);
 }
 

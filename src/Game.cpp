@@ -9,6 +9,7 @@
 #include "ErrorHandling.h"
 #include "RenderingFacade.h"
 #include "GameContext.h"
+#include "Controller_Joystick.h"
 
 Game::Game() {
     if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_AUDIO) < 0) {
@@ -39,6 +40,9 @@ Game::Game() {
     // Explosions will be converted to use OpenGL rendering
     renderer = nullptr;
     Timer::init();
+    
+    // Initialize joystick system
+    Controller_Joystick::initialize_joystick_system();
     
     // Initialize TextRenderer for hybrid SDL3_ttf + OpenGL text rendering
     app.text_renderer = new TextRenderer();
@@ -141,6 +145,7 @@ Game::~Game() {
     }
     
     Resources::shutdown();
+    Controller_Joystick::shutdown_joystick_system();
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();

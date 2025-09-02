@@ -98,8 +98,8 @@ public:
     void die();
     bool is_dead() const { return dead; }
     
-    // Bomb grace period system
-    bool is_in_bomb_grace_period(Bomb* bomb) const;
+    // Bomb escape system  
+    bool can_ignore_bomb_collision(Bomb* bomb) const;
     
 private:
     GameObject* owner;
@@ -119,15 +119,14 @@ private:
     // Death state
     bool dead = false;
     
-    // BOMB GRACE PERIOD: Allow bomber to move out of just-placed bomb
-    Bomb* just_placed_bomb = nullptr;     // Reference to bomb just placed
-    float bomb_grace_timer = 0.0f;        // Timer for grace period
-    static constexpr float BOMB_GRACE_PERIOD = 1.5f; // 1500ms grace period - enough time to escape
+    // BOMB ESCAPE SYSTEM: Allow bomber to move while on top of placed bomb
+    Bomb* bomb_standing_on = nullptr;     // Reference to bomb bomber is currently on top of
+    bool has_left_bomb_tile = false;      // Track if bomber has left the bomb tile
     
     // Internal combat logic
     void update_bomb_cooldown(float deltaTime);
     void update_bomb_throwing(float deltaTime);
-    void update_bomb_grace_period(float deltaTime);
+    void update_bomb_escape_status(); // Track bomber position relative to bomb
 };
 
 // ===== ANIMATION COMPONENT =====

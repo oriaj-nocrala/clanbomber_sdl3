@@ -141,11 +141,7 @@ public:
   bool has_bomb_at(int pixel_x, int pixel_y) const;       // Check if tile has bomb at pixel position
   bool has_bomber_at(int pixel_x, int pixel_y) const;     // Check if tile has bomber at pixel position
   
-  // NEW ARCHITECTURE SUPPORT: Bomb kicking helpers
-  bool try_kick_right();   // Try to kick bomb to the right
-  bool try_kick_left();    // Try to kick bomb to the left  
-  bool try_kick_up();      // Try to kick bomb up
-  bool try_kick_down();    // Try to kick bomb down
+  // LEGACY BOMB KICKING REMOVED - Game uses modern collision detection
   
   // COORDINATE CALCULATION HELPERS (reduces code duplication)
   int pixel_to_map_x(int pixel_x) const { return pixel_x / 40; }
@@ -249,12 +245,8 @@ protected:
   Direction cur_dir;
   int speed;
 	
-  // Internal movement functions - used by main move() and move_dist()
+  // Internal movement functions - now using move_dist() system
   bool move(float deltaTime);
-  bool move_left();
-  bool move_right();
-  bool move_up();
-  bool move_down();
 
   int whats_left();
   int whats_right();

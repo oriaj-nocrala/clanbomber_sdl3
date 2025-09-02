@@ -23,9 +23,9 @@ Extra::Extra(int _x, int _y, EXTRA_TYPE _type, GameContext* context)
     sprite_nr = 0;
     z = Z_EXTRA;
     
-    // Snap to grid center
-    x = ((int)x + 20) / 40 * 40;
-    y = ((int)y + 20) / 40 * 40;
+    // GLOBAL CENTERING FIX: Don't override GameObject's centering system!
+    // GameObject constructor already centers at tile center - no need to override
+    SDL_Log("🎁 EXTRA: Using GameObject global centering at (%.1f,%.1f)", x, y);
     
     const char* type_names[] = {"FLAME", "BOMB", "SPEED", "KICK", "GLOVE", "SKATE", "DISEASE", "VIAGRA", "KOKS"};
     SDL_Log("Extra created: type=%s at pixel (%d,%d), grid (%d,%d), texture=%s", 
@@ -58,37 +58,44 @@ void Extra::act(float deltaTime) {
     SpatialGrid* spatial_grid = ctx->get_spatial_grid();
     if (spatial_grid) {
         CollisionHelper collision_helper(spatial_grid);
-        PixelCoord extra_pos(x, y);
+        PixelCoord extra_pos(static_cast<float>(x), static_cast<float>(y));
         
-        GameObject* nearest_bomber = collision_helper.find_nearest_bomber(extra_pos, 20.0f);
+        // Look for nearby bombers using spatial grid
+        
+        // Increased detection radius from 20 to 30 pixels for easier pickup
+        GameObject* nearest_bomber = collision_helper.find_nearest_bomber(extra_pos, 30.0f);
         if (nearest_bomber) {
             Bomber* bomber = static_cast<Bomber*>(nearest_bomber);
             if (bomber && !bomber->delete_me && !bomber->is_dead()) {
-                float dx = bomber->get_x() - x;
-                float dy = bomber->get_y() - y;
+                float dx = static_cast<float>(bomber->get_x()) - static_cast<float>(x);
+                float dy = static_cast<float>(bomber->get_y()) - static_cast<float>(y);
                 float distance = sqrt(dx*dx + dy*dy);
                 
-                SDL_Log("Extra collected by bomber at distance %.1f (using SpatialGrid O(n))", distance);
+                SDL_Log("EXTRA: Collected at distance %.1f by bomber at (%d,%d), extra at (%d,%d) using SpatialGrid", 
+                        distance, bomber->get_x(), bomber->get_y(), x, y);
                 apply_effect_to_bomber(bomber);
                 collect();
+                return;
             }
         }
     } else {
         // FALLBACK: Use legacy O(n²) method if spatial grid not available
+        SDL_Log("EXTRA: SpatialGrid not available, using fallback collision detection");
         for (auto& obj : ctx->get_object_lists()) {
             if (!obj || obj->get_type() != GameObject::BOMBER) continue;
             
             Bomber* bomber = static_cast<Bomber*>(obj);
             if (bomber && !bomber->delete_me && !bomber->is_dead()) {
-                float dx = bomber->get_x() - x;
-                float dy = bomber->get_y() - y;
+                float dx = static_cast<float>(bomber->get_x()) - static_cast<float>(x);
+                float dy = static_cast<float>(bomber->get_y()) - static_cast<float>(y);
                 float distance = sqrt(dx*dx + dy*dy);
                 
-                if (distance < 20.0f) {
-                    SDL_Log("Extra collected by bomber at distance %.1f (using legacy O(n²))", distance);
+                if (distance < 30.0f) {
+                    SDL_Log("EXTRA: Collected at distance %.1f by bomber at (%d,%d), extra at (%d,%d) using fallback", 
+                            distance, bomber->get_x(), bomber->get_y(), x, y);
                     apply_effect_to_bomber(bomber);
                     collect();
-                    break;
+                    return;
                 }
             }
         }
@@ -97,8 +104,12 @@ void Extra::act(float deltaTime) {
 
 void Extra::show() {
     if (collected) {
-        // Fade out during collection
+        // Fade out during collection - still show but fading
         float alpha = 1.0f - (collect_animation / 0.3f);
+        if (alpha > 0.0f) {
+            // TODO: Apply alpha blending
+            GameObject::show(); // For now, just show normally until fully faded
+        }
     } else {
         // Save current position
         float original_y = y;

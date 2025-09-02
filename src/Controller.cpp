@@ -21,6 +21,7 @@
 #include "Controller_AI_Smart.h"
 #include "Controller_AI_Modern.h"
 #include "Controller_Keyboard.h"
+#include "Controller_Joystick.h"
 
 #include "Bomber.h"
 
@@ -81,22 +82,22 @@ Controller* Controller::create( CONTROLLER_TYPE _type )
 			return new Controller_Keyboard(2);
 		// case RCMOUSE:
 		// 	return new Controller_RCMouse();
-		// case JOYSTICK_1:
-		// 	return new Controller_Joystick(0);
-		// case JOYSTICK_2:
-		// 	return new Controller_Joystick(1);
-		// case JOYSTICK_3:
-		// 	return new Controller_Joystick(2);
-		// case JOYSTICK_4:
-		// 	return new Controller_Joystick(3);
-		// case JOYSTICK_5:
-		// 	return new Controller_Joystick(4);
-		// case JOYSTICK_6:
-		// 	return new Controller_Joystick(5);
-		// case JOYSTICK_7:
-		// 	return new Controller_Joystick(6);
-		// case JOYSTICK_8:
-		// 	return new Controller_Joystick(7);
+		case JOYSTICK_1:
+			return new Controller_Joystick(0);
+		case JOYSTICK_2:
+			return new Controller_Joystick(1);
+		case JOYSTICK_3:
+			return new Controller_Joystick(2);
+		case JOYSTICK_4:
+			return new Controller_Joystick(3);
+		case JOYSTICK_5:
+			return new Controller_Joystick(4);
+		case JOYSTICK_6:
+			return new Controller_Joystick(5);
+		case JOYSTICK_7:
+			return new Controller_Joystick(6);
+		case JOYSTICK_8:
+			return new Controller_Joystick(7);
 		default:
 			SDL_Log("Unknown controller type: %d, using KEYMAP_1 instead", _type);
 			return new Controller_Keyboard(0);

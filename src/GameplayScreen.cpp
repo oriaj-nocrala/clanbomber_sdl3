@@ -12,6 +12,7 @@
 #include "TileEntity.h"
 #include "GameContext.h"
 #include "GameLogic.h"
+#include "CoordinateSystem.h"
 #include <algorithm>
 #include <set>
 #include <vector>
@@ -116,13 +117,15 @@ void GameplayScreen::init_game() {
                 continue;
             }
             
-            SDL_Log("Creating bomber %d: controller=%d, pos=(%f,%f) -> (%d,%d)", 
-                   i, GameConfig::bomber[i].get_controller(), pos.x, pos.y, (int)(pos.x * 40), (int)(pos.y * 40));
+            // CENTERED SPAWN: Use unified CoordinateSystem for bomber spawn
+            GridCoord grid(static_cast<int>(pos.x), static_cast<int>(pos.y));
+            PixelCoord center = CoordinateSystem::grid_to_pixel(grid);
+            int final_x = static_cast<int>(center.pixel_x);
+            int final_y = static_cast<int>(center.pixel_y);
+            SDL_Log("Creating bomber %d: controller=%d, pos=(%f,%f) -> direct spawn at (%d,%d)", 
+                   i, GameConfig::bomber[i].get_controller(), pos.x, pos.y, final_x, final_y);
             
-            // Create bomber at temporary position (off-screen or center)
-            int temp_x = 400 - i * 20;
-            int temp_y = 300 - i * 20;
-            Bomber* bomber = new Bomber(temp_x, temp_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, *app->game_context);
+            Bomber* bomber = new Bomber(final_x, final_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, *app->game_context);
             bomber->set_name(GameConfig::bomber[i].get_name());
             bomber->set_team(GameConfig::bomber[i].get_team());
             bomber->set_number(i);
@@ -134,8 +137,7 @@ void GameplayScreen::init_game() {
                 app->game_context->register_object(bomber);
             }
             
-            // Start fly-to animation to final position
-            bomber->fly_to((int)(pos.x*40), (int)(pos.y*40), 1000 + i * 200); // 1 second + stagger
+            // No fly-to animation needed - spawn directly at correct position
             
             // Delay controller activation to prevent menu input bleeding
             if (bomber->get_controller()) {

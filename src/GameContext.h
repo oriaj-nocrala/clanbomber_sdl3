@@ -65,6 +65,12 @@ public:
     // GameObject lifecycle management
     void register_object(class GameObject* obj) const;
     
+    // Internal cleanup (called by LifecycleManager, avoids circular calls)
+    void remove_from_spatial_systems(class GameObject* obj) const;
+    
+    // SpatialGrid maintenance
+    void update_object_position_in_spatial_grid(GameObject* obj, float old_x, float old_y) const;
+    
     // Two-phase initialization
     void set_map(Map* new_map);
 

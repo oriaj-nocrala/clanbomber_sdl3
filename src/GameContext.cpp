@@ -31,6 +31,12 @@ GameContext::GameContext(LifecycleManager* lifecycle,
     spatial_grid = new SpatialGrid(40); // 40 pixels = tile size
     SDL_Log("GameContext: Created SpatialGrid with 40-pixel cells");
     
+    // ARCHITECTURE FIX: Set up LifecycleManager coordination
+    if (lifecycle_manager) {
+        lifecycle_manager->set_game_context(this);
+        SDL_Log("GameContext: Coordinated with LifecycleManager for proper cleanup");
+    }
+    
     // Initialize rendering facade if not provided
     if (!rendering_facade) {
         rendering_facade = new RenderingFacade();
@@ -73,6 +79,17 @@ void GameContext::mark_for_destruction(GameObject* obj) const {
     if (lifecycle_manager && obj) {
         lifecycle_manager->mark_for_destruction(obj);
     }
+    
+    // Remove from spatial systems immediately
+    remove_from_spatial_systems(obj);
+}
+
+void GameContext::remove_from_spatial_systems(GameObject* obj) const {
+    // COLLISION FIX: Remove from SpatialGrid when destroying objects
+    if (spatial_grid && obj) {
+        spatial_grid->remove_object(obj);
+        SDL_Log("GameContext: Removed object %p (type=%d) from SpatialGrid", obj, obj->get_type());
+    }
 }
 
 void GameContext::register_object(GameObject* obj) const {
@@ -87,6 +104,13 @@ void GameContext::register_object(GameObject* obj) const {
     } else if (!render_objects) {
         SDL_Log("GameContext: WARNING - No render_objects list set, object %p won't be rendered", obj);
     }
+    
+    // COLLISION FIX: Also add to SpatialGrid for optimized collision detection
+    if (spatial_grid && obj) {
+        spatial_grid->add_object(obj);
+        SDL_Log("GameContext: Added object %p (type=%d) to SpatialGrid at (%d,%d)", 
+                obj, obj->get_type(), obj->get_x(), obj->get_y());
+    }
 }
 
 void GameContext::set_object_lists(std::list<GameObject*>* objects) {
@@ -97,4 +121,11 @@ void GameContext::set_object_lists(std::list<GameObject*>* objects) {
 void GameContext::set_map(Map* new_map) {
     map = new_map;
     SDL_Log("GameContext: Map set to %p", map);
+}
+
+void GameContext::update_object_position_in_spatial_grid(GameObject* obj, float old_x, float old_y) const {
+    if (spatial_grid && obj) {
+        PixelCoord old_position(old_x, old_y);
+        spatial_grid->update_object_position(obj, old_position);
+    }
 }

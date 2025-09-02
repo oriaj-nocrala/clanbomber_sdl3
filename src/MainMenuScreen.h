@@ -9,6 +9,7 @@
 
 class TextRenderer;
 class GameContext;
+class Controller_Joystick;
 
 class MainMenuScreen : public Screen {
 public:
@@ -27,6 +28,7 @@ private:
     GameState next_state;
     TextRenderer* text_renderer;
     GameContext* game_context;
+    Controller_Joystick* menu_joystick;
 };
 
 #endif

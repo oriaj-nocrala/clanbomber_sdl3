@@ -3,6 +3,7 @@
 #include "Resources.h"
 #include "MapTile.h"
 #include "Map.h"
+#include "CoordinateSystem.h"
 #include <cmath>
 
 ThrownBomb::ThrownBomb(int _x, int _y, int _power, Bomber* _owner, 
@@ -45,9 +46,11 @@ void ThrownBomb::act(float deltaTime) {
             x = target_x;
             y = target_y;
             
-            // Snap to grid
-            x = ((int)x + 20) / 40 * 40;
-            y = ((int)y + 20) / 40 * 40;
+            // Snap to grid using CoordinateSystem - snap to tile corner first, then center
+            GridCoord grid = CoordinateSystem::pixel_to_grid(PixelCoord(x, y));
+            PixelCoord center = CoordinateSystem::grid_to_pixel(grid);
+            x = static_cast<int>(center.pixel_x);
+            y = static_cast<int>(center.pixel_y);
             
             // Update map tile reference using new architecture
             remove_bomb_from_tile(this);  // Remove from old position

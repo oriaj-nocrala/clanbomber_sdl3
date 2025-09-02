@@ -583,7 +583,7 @@ bool GameConfig::save(bool init)
 		bomber[0].set_controller(2); // KEYMAP_1 (value 2 in enum)
 		
 		bomber[1].enable();
-		bomber[1].set_controller(3); // KEYMAP_2 (value 3 in enum)
+		bomber[1].set_controller(6); // JOYSTICK_1 (value 6 in enum)
 		
 		// Rest stay disabled by default
 		for (int i = 2; i < 8; i++) {

@@ -14,6 +14,7 @@
 #include "SpatialPartitioning.h"
 #include "CoordinateSystem.h"
 #include "RenderingFacade.h"
+#include "Controller_Joystick.h"
 #include <SDL3/SDL_timer.h>
 
 Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* context) : GameObject(_x, _y, context) {
@@ -72,6 +73,9 @@ Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* co
     }
 
     detonate_other_bombs();
+    
+    // Trigger haptic feedback for all joystick controllers
+    notify_explosion_haptics();
 }
 
 void Explosion::act(float deltaTime) {
@@ -319,20 +323,31 @@ void Explosion::kill_bombers() {
         
         // Center
         explosion_area.push_back(GridCoord(get_map_x(), get_map_y()));
+        SDL_Log("EXPLOSION AREA: Center at (%d,%d)", get_map_x(), get_map_y());
         
         // Rays
         for (int i = 1; i <= length_up; ++i) {
-            explosion_area.push_back(GridCoord(get_map_x(), get_map_y() - i));
+            GridCoord coord(get_map_x(), get_map_y() - i);
+            explosion_area.push_back(coord);
+            SDL_Log("EXPLOSION AREA: Up ray %d at (%d,%d)", i, coord.grid_x, coord.grid_y);
         }
         for (int i = 1; i <= length_down; ++i) {
-            explosion_area.push_back(GridCoord(get_map_x(), get_map_y() + i));
+            GridCoord coord(get_map_x(), get_map_y() + i);
+            explosion_area.push_back(coord);
+            SDL_Log("EXPLOSION AREA: Down ray %d at (%d,%d)", i, coord.grid_x, coord.grid_y);
         }
         for (int i = 1; i <= length_left; ++i) {
-            explosion_area.push_back(GridCoord(get_map_x() - i, get_map_y()));
+            GridCoord coord(get_map_x() - i, get_map_y());
+            explosion_area.push_back(coord);
+            SDL_Log("EXPLOSION AREA: Left ray %d at (%d,%d)", i, coord.grid_x, coord.grid_y);
         }
         for (int i = 1; i <= length_right; ++i) {
-            explosion_area.push_back(GridCoord(get_map_x() + i, get_map_y()));
+            GridCoord coord(get_map_x() + i, get_map_y());
+            explosion_area.push_back(coord);
+            SDL_Log("EXPLOSION AREA: Right ray %d at (%d,%d)", i, coord.grid_x, coord.grid_y);
         }
+        
+        SDL_Log("EXPLOSION AREA: Total %zu coordinates in explosion area", explosion_area.size());
         
         // Find all bombers and corpses in explosion area efficiently
         std::vector<GameObject*> victims = collision_helper.find_explosion_victims(explosion_area);
@@ -340,9 +355,21 @@ void Explosion::kill_bombers() {
         for (GameObject* victim : victims) {
             if (victim && victim->get_type() == GameObject::BOMBER) {
                 Bomber* bomber = static_cast<Bomber*>(victim);
+                        
                 if (bomber && !bomber->delete_me && !bomber->is_dead()) {
                     SDL_Log("Explosion killed bomber at (%d,%d) using SpatialGrid O(n)", 
                         bomber->get_map_x(), bomber->get_map_y());
+                    
+                    // Trigger death haptic feedback for this specific bomber
+                    Controller* controller = bomber->get_controller();
+                    if (controller && controller->get_type() >= Controller::JOYSTICK_1 && controller->get_type() <= Controller::JOYSTICK_8) {
+                        Controller_Joystick* joystick_controller = static_cast<Controller_Joystick*>(controller);
+                        joystick_controller->trigger_explosion_vibration(
+                            x, y, power, bomber->get_x(), bomber->get_y(), true  // true = bomber died
+                        );
+                        SDL_Log("HAPTIC: Death vibration triggered for bomber at (%d,%d)", bomber->get_x(), bomber->get_y());
+                    }
+                    
                     bomber->die();
                 }
             }
@@ -390,6 +417,17 @@ void Explosion::kill_bombers() {
                 
                 if (in_explosion) {
                     SDL_Log("Explosion killed bomber at (%d,%d) using legacy O(n²)", bomber_map_x, bomber_map_y);
+                    
+                    // Trigger death haptic feedback for this specific bomber
+                    Controller* controller = bomber->get_controller();
+                    if (controller && controller->get_type() >= Controller::JOYSTICK_1 && controller->get_type() <= Controller::JOYSTICK_8) {
+                        Controller_Joystick* joystick_controller = static_cast<Controller_Joystick*>(controller);
+                        joystick_controller->trigger_explosion_vibration(
+                            x, y, power, bomber->get_x(), bomber->get_y(), true  // true = bomber died
+                        );
+                        SDL_Log("HAPTIC: Death vibration triggered for bomber at (%d,%d)", bomber->get_x(), bomber->get_y());
+                    }
+                    
                     bomber->die();
                 }
             }
@@ -523,6 +561,46 @@ void Explosion::destroy_tile_at(int map_x, int map_y) {
         get_context()->get_tile_manager()->request_tile_destruction(map_x, map_y);
     } else {
         SDL_Log("WARNING: No TileManager available for tile destruction at (%d,%d)", map_x, map_y);
+    }
+}
+
+void Explosion::notify_explosion_haptics() {
+    GameContext* ctx = get_context();
+    if (!ctx) {
+        return;
+    }
+    
+    // Get all bombers to check which ones use joystick controllers
+    const std::list<class GameObject*>& object_lists = ctx->get_object_lists();
+    
+    for (auto& obj : object_lists) {
+        if (!obj || obj->get_type() != GameObject::BOMBER) continue;
+        
+        Bomber* bomber = static_cast<Bomber*>(obj);
+        if (!bomber || bomber->delete_me) continue;
+        
+        Controller* controller = bomber->get_controller();
+        if (!controller) continue;
+        
+        // Check if this is a joystick controller
+        Controller::CONTROLLER_TYPE controller_type = controller->get_type();
+        if (controller_type >= Controller::JOYSTICK_1 && controller_type <= Controller::JOYSTICK_8) {
+            Controller_Joystick* joystick_controller = static_cast<Controller_Joystick*>(controller);
+            
+            // Check if this bomber was killed by this explosion
+            bool bomber_died = bomber->is_dead();
+            
+            // Trigger haptic feedback with physics-based calculation
+            joystick_controller->trigger_explosion_vibration(
+                x, y,                           // Explosion position (world coordinates)
+                power,                          // Explosion power
+                bomber->get_x(), bomber->get_y(),  // Bomber position (world coordinates)
+                bomber_died                     // Did the bomber die?
+            );
+            
+            SDL_Log("HAPTIC: Notified joystick controller for bomber at (%d,%d) about explosion at (%.1f,%.1f) power=%d died=%s", 
+                    bomber->get_x(), bomber->get_y(), x, y, power, bomber_died ? "true" : "false");
+        }
     }
 }
 

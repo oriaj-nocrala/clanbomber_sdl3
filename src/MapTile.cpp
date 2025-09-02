@@ -4,6 +4,7 @@
 #include "MapTile_Box.h"
 #include "GameContext.h"
 #include "Extra.h"
+#include "CoordinateSystem.h"
 #include <random>
 
 MapTile::MapTile(int x, int y, GameContext* context) : GameObject(x, y, context) {
@@ -106,7 +107,9 @@ void MapTile::spawn_extra() {
             return;
     }
     
-    // Create the extra at this tile's position
-    Extra* extra = new Extra(get_x(), get_y(), extra_type, get_context());
+    // Create extra at tile CENTER using unified CoordinateSystem
+    GridCoord grid(get_map_x(), get_map_y());
+    PixelCoord center = CoordinateSystem::grid_to_pixel(grid);
+    Extra* extra = new Extra(static_cast<int>(center.pixel_x), static_cast<int>(center.pixel_y), extra_type, get_context());
     get_context()->register_object(extra);
 }

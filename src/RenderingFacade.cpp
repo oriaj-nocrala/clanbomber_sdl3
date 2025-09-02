@@ -159,7 +159,7 @@ GameResult<void> RenderingFacade::render_sprite(const std::string& texture_name,
     }
     
     try {
-        // Convert to integer coordinates for compatibility
+        // Convert to integer coordinates for compatibility - no conversion yet
         int x = static_cast<int>(position.pixel_x);
         int y = static_cast<int>(position.pixel_y);
         

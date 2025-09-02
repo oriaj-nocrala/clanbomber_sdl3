@@ -219,12 +219,15 @@ bool GameObject::is_blocked(float check_x, float check_y) {
     float bbox_top = check_y - ADAPTIVE_HITBOX/2;  
     float bbox_bottom = check_y + ADAPTIVE_HITBOX/2 - 1;
 
-    int map_x1 = (int)bbox_left / 40;
-    int map_y1 = (int)bbox_top / 40;
-    int map_x2 = (int)bbox_right / 40;
-    int map_y2 = (int)bbox_bottom / 40;
+    // Use CoordinateSystem for tile calculations
+    GridCoord grid_top_left = CoordinateSystem::pixel_to_grid(PixelCoord(bbox_left, bbox_top));
+    GridCoord grid_bottom_right = CoordinateSystem::pixel_to_grid(PixelCoord(bbox_right, bbox_bottom));
+    int map_x1 = grid_top_left.grid_x;
+    int map_y1 = grid_top_left.grid_y;
+    int map_x2 = grid_bottom_right.grid_x;
+    int map_y2 = grid_bottom_right.grid_y;
 
-    SDL_Log("   Checking tiles from (%d,%d) to (%d,%d)", map_x1, map_y1, map_x2, map_y2);
+    // SDL_Log("   Checking tiles from (%d,%d) to (%d,%d)", map_x1, map_y1, map_x2, map_y2);
     
     // Check static tiles (walls/boxes) 
     Map* map = context->get_map();
@@ -233,12 +236,12 @@ bool GameObject::is_blocked(float check_x, float check_y) {
             for (int mx = map_x1; mx <= map_x2; ++mx) {
                 MapTile* tile = map->get_tile(mx, my);
                 if (!tile) {
-                    SDL_Log("   Tile(%d,%d): NULL - BLOCKED", mx, my);
+                    // SDL_Log("   Tile(%d,%d): NULL - BLOCKED", mx, my);
                     return true;
                 }
                 
                 if (tile->is_blocking()) {
-                    SDL_Log("   Tile(%d,%d): WALL - BLOCKED", mx, my);
+                    // SDL_Log("   Tile(%d,%d): WALL - BLOCKED", mx, my);
                     return true; // Wall collision
                 }
             }
@@ -253,8 +256,11 @@ bool GameObject::is_blocked(float check_x, float check_y) {
     float current_top = y - ADAPTIVE_HITBOX/2;  
     float current_bottom = y + ADAPTIVE_HITBOX/2 - 1;
     
-    int cx1 = (int)current_left / 40, cy1 = (int)current_top / 40;
-    int cx2 = (int)current_right / 40, cy2 = (int)current_bottom / 40;
+    // Use CoordinateSystem for current position tile calculations
+    GridCoord current_top_left = CoordinateSystem::pixel_to_grid(PixelCoord(current_left, current_top));
+    GridCoord current_bottom_right = CoordinateSystem::pixel_to_grid(PixelCoord(current_right, current_bottom));
+    int cx1 = current_top_left.grid_x, cy1 = current_top_left.grid_y;
+    int cx2 = current_bottom_right.grid_x, cy2 = current_bottom_right.grid_y;
     for (int my = cy1; my <= cy2; ++my) {
         for (int mx = cx1; mx <= cx2; ++mx) {
             current_tiles.insert(my * 1000 + mx); // Simple hash for tile coordinates
@@ -266,25 +272,32 @@ bool GameObject::is_blocked(float check_x, float check_y) {
     auto bombs = context->get_spatial_grid()->get_objects_of_type_near(position, GameObject::BOMB, 1);
     for (GameObject* bomb_obj : bombs) {
         if (get_type() != BOMB && bomb_obj != this) {
-            // BOMB GRACE PERIOD: Check if this bomber can ignore this specific bomb
+            // BOMB ESCAPE SYSTEM: Check if bomber can ignore collision with this bomb
             bool should_ignore_bomb = false;
             if (get_type() == BOMBER) {
                 Bomber* bomber = static_cast<Bomber*>(this);
                 Bomb* bomb = static_cast<Bomb*>(bomb_obj);
-                if (bomber->is_in_bomb_grace_period(bomb)) {
+                if (bomber->can_ignore_bomb_collision(bomb)) {
                     should_ignore_bomb = true;
-                    SDL_Log("💨 GRACE PERIOD: Ignoring collision with just-placed bomb");
+                    SDL_Log("🎯 BOMB ESCAPE: Ignoring collision - bomber on top of placed bomb at (%d,%d)", bomb_obj->get_x(), bomb_obj->get_y());
+                } else {
+                    SDL_Log("⚠️  BOMB COLLISION ENABLED: Bomber at (%d,%d), bomb at (%d,%d)", (int)check_x, (int)check_y, bomb_obj->get_x(), bomb_obj->get_y());
                 }
             }
             
             if (!should_ignore_bomb) {
-                int bomb_tile_x = (int)bomb_obj->get_x() / 40;
-                int bomb_tile_y = (int)bomb_obj->get_y() / 40;
-                int bomb_tile_hash = bomb_tile_y * 1000 + bomb_tile_x;
+                // TILE-PERFECT BOMB COLLISION: Use CoordinateSystem for perfect tile comparison
+                GridCoord bomber_grid = CoordinateSystem::pixel_to_grid(PixelCoord(check_x, check_y));
+                GridCoord bomb_grid = CoordinateSystem::pixel_to_grid(PixelCoord(bomb_obj->get_x(), bomb_obj->get_y()));
+                int bomber_tile_x = bomber_grid.grid_x;
+                int bomber_tile_y = bomber_grid.grid_y;
+                int bomb_tile_x = bomb_grid.grid_x;
+                int bomb_tile_y = bomb_grid.grid_y;
                 
-                if (current_tiles.find(bomb_tile_hash) == current_tiles.end()) {
-                    SDL_Log("   Tile(%d,%d): BOMB - BLOCKED (SpatialGrid)", bomb_tile_x, bomb_tile_y);
-                    return true;
+                if (bomber_tile_x == bomb_tile_x && bomber_tile_y == bomb_tile_y) {
+                    SDL_Log("🚫 BOMB COLLISION: Bomber at tile (%d,%d) blocked by bomb at tile (%d,%d)", 
+                            bomber_tile_x, bomber_tile_y, bomb_tile_x, bomb_tile_y);
+                    return true; // Only block if bomber is in exact same tile as bomb
                 }
             }
         }
@@ -295,28 +308,29 @@ bool GameObject::is_blocked(float check_x, float check_y) {
         auto bombers = context->get_spatial_grid()->get_objects_of_type_near(position, GameObject::BOMBER, 1);
         for (GameObject* bomber_obj : bombers) {
             if (bomber_obj != this) {
-                int bomber_tile_x = (int)bomber_obj->get_x() / 40;
-                int bomber_tile_y = (int)bomber_obj->get_y() / 40;
+                GridCoord bomber_grid = CoordinateSystem::pixel_to_grid(PixelCoord(bomber_obj->get_x(), bomber_obj->get_y()));
+                int bomber_tile_x = bomber_grid.grid_x;
+                int bomber_tile_y = bomber_grid.grid_y;
                 int bomber_tile_hash = bomber_tile_y * 1000 + bomber_tile_x;
                 
                 if (current_tiles.find(bomber_tile_hash) == current_tiles.end()) {
-                    SDL_Log("   Tile(%d,%d): OTHER BOMBER - BLOCKED (SpatialGrid)", bomber_tile_x, bomber_tile_y);
+                    // SDL_Log("   Tile(%d,%d): OTHER BOMBER - BLOCKED (SpatialGrid)", bomber_tile_x, bomber_tile_y);
                     return true;
                 }
             }
         }
     }
     
-    SDL_Log("✅ COLLISION: Position (%.1f,%.1f) is FREE", check_x, check_y);
+    // SDL_Log("✅ COLLISION: Position (%.1f,%.1f) is FREE", check_x, check_y);
     return false;
 }
 
 bool GameObject::move_dist(float distance, Direction dir) {
-    SDL_Log("🚶 MOVE: Trying to move distance=%.2f direction=%d from (%.1f,%.1f)", 
-            distance, (int)dir, x, y);
+    // SDL_Log("🚶 MOVE: Trying to move distance=%.2f direction=%d from (%.1f,%.1f)", 
+    //         distance, (int)dir, x, y);
     
     if (flying || falling) {
-        SDL_Log("🚫 MOVE: Blocked - flying=%d falling=%d", flying, falling);
+        // SDL_Log("🚫 MOVE: Blocked - flying=%d falling=%d", flying, falling);
         return false;
     }
 

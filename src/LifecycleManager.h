@@ -9,6 +9,7 @@
 class GameObject;
 class MapTile;
 class TileEntity;
+class GameContext;
 
 /**
  * Unified lifecycle management for all game objects and tiles
@@ -49,6 +50,9 @@ public:
     LifecycleManager();
     ~LifecycleManager();
     
+    // GameContext coordination for proper cleanup
+    void set_game_context(GameContext* context) { game_context = context; }
+    
     // Registration
     void register_object(GameObject* obj);
     void register_tile(MapTile* tile, int map_x, int map_y);
@@ -79,6 +83,7 @@ public:
 private:
     std::vector<ManagedObject> managed_objects;
     std::vector<ManagedTile> managed_tiles;
+    GameContext* game_context;
     
     // Internal helpers
     ManagedObject* find_managed_object(GameObject* obj);

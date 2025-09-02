@@ -3,10 +3,11 @@
 #include "MapTile.h"
 #include "MapTile_Box.h"
 #include "TileEntity.h"
+#include "GameContext.h"
 #include <algorithm>
 #include <SDL3/SDL.h>
 
-LifecycleManager::LifecycleManager() {
+LifecycleManager::LifecycleManager() : game_context(nullptr) {
     SDL_Log("LifecycleManager: Initialized unified object lifecycle system");
 }
 
@@ -192,12 +193,18 @@ void LifecycleManager::update_tile_state(ManagedTile& managed, float deltaTime) 
 }
 
 void LifecycleManager::cleanup_dead_objects() {
-    // ARCHITECTURE FIX: LifecycleManager handles deletion AND tracking removal
+    // ARCHITECTURE FIX: Coordinate with GameContext for proper SpatialGrid cleanup
     auto it = std::remove_if(managed_objects.begin(), managed_objects.end(),
-        [](const ManagedObject& managed) {
+        [this](const ManagedObject& managed) {
             if (managed.state == ObjectState::DELETED) {
                 try {
                     SDL_Log("LifecycleManager: Deleting object %p during cleanup", managed.object);
+                    
+                    // CRITICAL FIX: Remove from GameContext systems BEFORE deleting
+                    if (game_context) {
+                        game_context->remove_from_spatial_systems(managed.object);
+                    }
+                    
                     delete managed.object;  // LifecycleManager deletes the object
                 } catch (...) {
                     SDL_Log("ERROR: Exception during object cleanup %p - continuing", managed.object);
@@ -271,7 +278,7 @@ void LifecycleManager::clear_all() {
     for (const auto& managed : managed_objects) {
         if (managed.object) {
             try {
-                SDL_Log("LifecycleManager: Deleting object %p", managed.object);
+                // SDL_Log("LifecycleManager: Deleting object %p", managed.object);
                 delete managed.object;
             } catch (...) {
                 SDL_Log("ERROR: Exception during object deletion %p - continuing", managed.object);

@@ -32,6 +32,7 @@ private:
     void detonate_other_bombs();
     void kill_bombers();
     void explode_corpses();
+    void notify_explosion_haptics();
     
     // NEW ARCHITECTURE SUPPORT: Handle both MapTile and TileEntity destruction
     void destroy_tile_at(int map_x, int map_y);

@@ -8,6 +8,7 @@
 #include "ThrownBomb.h"
 #include "BomberCorpse.h"
 #include "AudioMixer.h"
+#include "CoordinateSystem.h"
 #include "GameConfig.h"
 #include "GameContext.h"
 #include "Bomber.h"  // Need for cast in can_move()
@@ -130,7 +131,7 @@ BomberCombatComponent::BomberCombatComponent(GameObject* owner, GameContext* con
 void BomberCombatComponent::update(float deltaTime) {
     update_bomb_cooldown(deltaTime);
     update_bomb_throwing(deltaTime);
-    update_bomb_grace_period(deltaTime);
+    update_bomb_escape_status(); // New position-based system
 }
 
 void BomberCombatComponent::handle_controller_input(Controller* controller, float deltaTime) {
@@ -172,9 +173,10 @@ void BomberCombatComponent::place_bomb() {
     int map_x = owner->get_map_x();
     int map_y = owner->get_map_y();
     
-    // DEBUG: Let's verify the tile calculation
-    int expected_map_x = (bomber_x + 20) / 40;  // Standard tile calculation
-    int expected_map_y = (bomber_y + 20) / 40;  // Standard tile calculation
+    // DEBUG: Use CoordinateSystem for tile calculation
+    GridCoord expected_grid = CoordinateSystem::pixel_to_grid(PixelCoord(bomber_x, bomber_y));
+    int expected_map_x = expected_grid.grid_x;
+    int expected_map_y = expected_grid.grid_y;
     
     SDL_Log("🔍 DEBUG: Bomber at (%d,%d) -> get_map_x()=%d, get_map_y()=%d", bomber_x, bomber_y, map_x, map_y);
     SDL_Log("🔍 DEBUG: Expected tile calculation: (%d+20)/40=%d, (%d+20)/40=%d", bomber_x, expected_map_x, bomber_y, expected_map_y);
@@ -184,10 +186,11 @@ void BomberCombatComponent::place_bomb() {
         return;
     }
     
-    // SNAP TO GRID: Place bomb at center of tile where bomber is located
-    // This ensures explosions always align perfectly with the grid
-    int bomb_x = map_x * 40 + 20;  // Center X of the tile
-    int bomb_y = map_y * 40 + 20;  // Center Y of the tile
+    // SNAP TO GRID: Place bomb at center of tile using unified CoordinateSystem
+    GridCoord grid(map_x, map_y);
+    PixelCoord center = CoordinateSystem::grid_to_pixel(grid);
+    int bomb_x = static_cast<int>(center.pixel_x);
+    int bomb_y = static_cast<int>(center.pixel_y);
     
     Bomb* bomb = new Bomb(bomb_x, bomb_y, power, static_cast<Bomber*>(owner), context);
     
@@ -204,12 +207,12 @@ void BomberCombatComponent::place_bomb() {
     inc_current_bombs();
     bomb_cooldown = 0.2f; // 200ms cooldown
     
-    // BOMB GRACE PERIOD: Allow bomber to move out of just-placed bomb
-    just_placed_bomb = bomb;
-    bomb_grace_timer = BOMB_GRACE_PERIOD;
+    // BOMB ESCAPE SYSTEM: Track that bomber is standing on this bomb
+    bomb_standing_on = bomb;
+    has_left_bomb_tile = false;
     
-    SDL_Log("💨 GRACE PERIOD: Activated %.1fms grace period for bomb at (%d,%d)", 
-            BOMB_GRACE_PERIOD * 1000, map_x, map_y);
+    SDL_Log("🎯 BOMB ESCAPE: Bomber can move freely while on bomb at tile (%d,%d)", 
+            map_x, map_y);
     SDL_Log("BomberCombatComponent: Placed bomb at (%d,%d) with power %d", map_x, map_y, power);
 }
 
@@ -281,22 +284,33 @@ void BomberCombatComponent::update_bomb_throwing(float deltaTime) {
     }
 }
 
-void BomberCombatComponent::update_bomb_grace_period(float deltaTime) {
-    if (bomb_grace_timer > 0.0f) {
-        bomb_grace_timer -= deltaTime;
-        if (bomb_grace_timer <= 0.0f) {
-            bomb_grace_timer = 0.0f;
-            just_placed_bomb = nullptr;
-            SDL_Log("💨 GRACE PERIOD: Expired - bomb collision re-enabled");
-        }
-    }
+
+bool BomberCombatComponent::can_ignore_bomb_collision(Bomb* bomb) const {
+    // Only ignore collision if bomber is standing on this specific bomb and hasn't left its tile
+    bool result = (bomb_standing_on == bomb && !has_left_bomb_tile);
+    SDL_Log("🔍 BOMB ESCAPE CHECK: standing_on=%p, checking=%p, has_left=%d, result=%d", 
+            bomb_standing_on, bomb, has_left_bomb_tile, result);
+    return result;
 }
 
-bool BomberCombatComponent::is_in_bomb_grace_period(Bomb* bomb) const {
-    bool result = (bomb_grace_timer > 0.0f && just_placed_bomb == bomb);
-    SDL_Log("🔍 GRACE CHECK: timer=%.3f, just_placed=%p, checking=%p, result=%d", 
-            bomb_grace_timer, just_placed_bomb, bomb, result);
-    return result;
+void BomberCombatComponent::update_bomb_escape_status() {
+    if (!bomb_standing_on) return; // No bomb to track
+    
+    // Check if bomber is still in the same tile as the bomb using CoordinateSystem
+    GridCoord bomber_grid = CoordinateSystem::pixel_to_grid(PixelCoord(owner->get_x(), owner->get_y()));
+    GridCoord bomb_grid = CoordinateSystem::pixel_to_grid(PixelCoord(bomb_standing_on->get_x(), bomb_standing_on->get_y()));
+    int bomber_tile_x = bomber_grid.grid_x;
+    int bomber_tile_y = bomber_grid.grid_y;
+    int bomb_tile_x = bomb_grid.grid_x;
+    int bomb_tile_y = bomb_grid.grid_y;
+    
+    if (bomber_tile_x != bomb_tile_x || bomber_tile_y != bomb_tile_y) {
+        // Bomber has left the bomb tile - enable collisions
+        if (!has_left_bomb_tile) {
+            has_left_bomb_tile = true;
+            SDL_Log("🏃 BOMB ESCAPE: Bomber left bomb tile - collision enabled");
+        }
+    }
 }
 
 // ===== ANIMATION COMPONENT IMPLEMENTATION =====

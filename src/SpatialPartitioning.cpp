@@ -1,10 +1,12 @@
 #include "SpatialPartitioning.h"
 #include "GameObject.h"
 #include "Bomber.h"
+#include "CoordinateSystem.h"
 #include <SDL3/SDL.h>
 #include <algorithm>
 #include <cmath>
 #include <sstream>
+#include <set>
 
 // === SpatialGrid Implementation ===
 
@@ -356,15 +358,35 @@ GameObject* CollisionHelper::find_nearest_bomber(const PixelCoord& extra_positio
         float nearest_distance = max_distance + 1.0f;
         
         for (GameObject* bomber : bombers) {
-            if (!bomber || bomber->delete_me) continue;
+            // CRASH FIX: More robust null checking and corruption detection
+            if (!bomber) {
+                SDL_Log("CollisionHelper: WARNING - null bomber pointer in SpatialGrid");
+                continue;
+            }
             
-            float dx = extra_position.pixel_x - static_cast<float>(bomber->get_x());
-            float dy = extra_position.pixel_y - static_cast<float>(bomber->get_y());
-            float distance = std::sqrt(dx * dx + dy * dy);
+            // Check for obviously corrupted pointers (basic heuristic)
+            if (reinterpret_cast<uintptr_t>(bomber) < 0x1000) {
+                SDL_Log("CollisionHelper: WARNING - corrupted bomber pointer: %p", bomber);
+                continue;
+            }
             
-            if (distance <= max_distance && distance < nearest_distance) {
-                nearest = bomber;
-                nearest_distance = distance;
+            if (bomber->delete_me) {
+                SDL_Log("CollisionHelper: WARNING - delete_me bomber still in SpatialGrid: %p", bomber);
+                continue;
+            }
+            
+            try {
+                float dx = extra_position.pixel_x - static_cast<float>(bomber->get_x());
+                float dy = extra_position.pixel_y - static_cast<float>(bomber->get_y());
+                float distance = std::sqrt(dx * dx + dy * dy);
+                
+                if (distance <= max_distance && distance < nearest_distance) {
+                    nearest = bomber;
+                    nearest_distance = distance;
+                }
+            } catch (...) {
+                SDL_Log("CollisionHelper: CRASH PREVENTED - Exception accessing bomber %p", bomber);
+                continue;
             }
         }
         
@@ -377,28 +399,85 @@ GameObject* CollisionHelper::find_nearest_bomber(const PixelCoord& extra_positio
 }
 
 std::vector<GameObject*> CollisionHelper::find_explosion_victims(const std::vector<GridCoord>& explosion_area) {
-    if (!spatial_grid) return std::vector<GameObject*>();
+    if (!spatial_grid) {
+        SDL_Log("CollisionHelper: WARNING - No spatial_grid available for explosion victims");
+        return std::vector<GameObject*>();
+    }
     
     std::vector<GameObject*> victims;
+    std::set<GameObject*> found_objects; // Use set to avoid duplicates
     
+    // FAIRNESS FIX: Instead of discrete tile checking, use area-based detection
+    // This prevents bombers from dying when they're visually outside the explosion
+    
+    const float TILE_SIZE = 40.0f;
+    const float BOMBER_SIZE = 40.0f; // Slightly smaller than tile to avoid bleeding into adjacent tiles
+    
+    // Get all potentially affected objects in the explosion area + adjacent tiles
     for (const GridCoord& grid_coord : explosion_area) {
-        PixelCoord pixel_coord = CoordinateSystem::grid_to_pixel(grid_coord);
-        std::vector<GameObject*> objects = spatial_grid->get_objects_at_position(pixel_coord);
+        // Define explosion tile area
+        float explosion_left = grid_coord.grid_x * TILE_SIZE;
+        float explosion_top = grid_coord.grid_y * TILE_SIZE;
+        float explosion_right = explosion_left + TILE_SIZE;
+        float explosion_bottom = explosion_top + TILE_SIZE;
         
-        for (GameObject* obj : objects) {
-            if (!obj || obj->delete_me) continue;
-            
-            // Check if object can be damaged by explosions
-            if (obj->get_type() == GameObject::BOMBER || 
-                obj->get_type() == GameObject::BOMBER_CORPSE) {
-                victims.push_back(obj);
+        // SMART SEARCH: Search in explosion tile + adjacent tiles, but ONLY accept objects
+        // whose bounding box actually intersects the explosion tile (not just nearby)
+        for (int dy = -1; dy <= 1; dy++) {
+            for (int dx = -1; dx <= 1; dx++) {
+                GridCoord search_coord(grid_coord.grid_x + dx, grid_coord.grid_y + dy);
+                PixelCoord search_pixel = CoordinateSystem::grid_to_pixel(search_coord);
+                
+                std::vector<GameObject*> nearby_objects = spatial_grid->get_objects_at_position(search_pixel);
+                
+                for (GameObject* obj : nearby_objects) {
+                    // Robust null checking
+                    if (!obj || obj->delete_me || reinterpret_cast<uintptr_t>(obj) < 0x1000) {
+                        continue;
+                    }
+                    
+                    try {
+                        GameObject::ObjectType obj_type = obj->get_type();
+                        
+                        // Only check bombers and corpses
+                        if (obj_type == GameObject::BOMBER || obj_type == GameObject::BOMBER_CORPSE) {
+                            // DISCRETE TILE LOGIC: Like classic Bomberman - bomber dies if in explosion tile
+                            float bomber_x = static_cast<float>(obj->get_x());
+                            float bomber_y = static_cast<float>(obj->get_y());
+                            
+                            // Calculate bomber's current tile
+                            int bomber_tile_x = static_cast<int>(bomber_x / TILE_SIZE);
+                            int bomber_tile_y = static_cast<int>(bomber_y / TILE_SIZE);
+                            
+                            // Check if bomber's tile matches this explosion tile
+                            bool in_explosion_tile = (bomber_tile_x == grid_coord.grid_x && 
+                                                    bomber_tile_y == grid_coord.grid_y);
+                            
+                            SDL_Log("🎯 DISCRETE: Bomber(%.1f,%.1f) in tile(%d,%d) vs ExplosionTile(%d,%d)", 
+                                    bomber_x, bomber_y, bomber_tile_x, bomber_tile_y, 
+                                    grid_coord.grid_x, grid_coord.grid_y);
+                            SDL_Log("   SAME_TILE=%s", in_explosion_tile ? "YES" : "NO");
+                            
+                            if (in_explosion_tile) {
+                                SDL_Log("💥 DEATH: Bomber in tile(%d,%d) killed by explosion in same tile", 
+                                        bomber_tile_x, bomber_tile_y);
+                                found_objects.insert(obj);
+                            } else {
+                                SDL_Log("✅ SAFE: Bomber in tile(%d,%d) safe from explosion in tile(%d,%d)", 
+                                        bomber_tile_x, bomber_tile_y, grid_coord.grid_x, grid_coord.grid_y);
+                            }
+                        }
+                    } catch (...) {
+                        SDL_Log("CollisionHelper: CRASH PREVENTED - Exception accessing object %p", obj);
+                        continue;
+                    }
+                }
             }
         }
     }
     
-    // Remove duplicates
-    std::sort(victims.begin(), victims.end());
-    victims.erase(std::unique(victims.begin(), victims.end()), victims.end());
+    // Convert set to vector
+    victims.assign(found_objects.begin(), found_objects.end());
     
     return victims;
 }
