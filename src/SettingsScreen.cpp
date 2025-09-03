@@ -1,6 +1,7 @@
 #include "SettingsScreen.h"
 #include "Resources.h"
 #include "GameConfig.h"
+#include "GameConstants.h"
 #include "Controller.h"
 #include <string.h>
 
@@ -51,35 +52,13 @@ void SettingsScreen::update(float deltaTime) {
 
 void SettingsScreen::render(SDL_Renderer* renderer) {
     // Render title
-    SDL_Color title_color = {255, 255, 255, 255};
-        // SDL_Surface* title_surface = TTF_RenderText_Solid(font, "SETTINGS", strlen("SETTINGS"), title_color);
-    // SDL_Texture* title_texture = SDL_CreateTextureFromSurface(renderer, title_surface);
-    
-    // float title_width, title_height;
-    // SDL_GetTextureSize(title_texture, &title_width, &title_height);
-    // SDL_FRect title_rect = {400 - title_width / 2.0f, 50, title_width, title_height};
-    // SDL_RenderTexture(renderer, title_texture, NULL, &title_rect);
-    
-    // SDL_DestroySurface(title_surface);
-    // SDL_DestroyTexture(title_texture);
+    SDL_Color title_color = {GameConstants::COLOR_MAX, GameConstants::COLOR_MAX, GameConstants::COLOR_MAX, GameConstants::ALPHA_MAX};
     
     // Render main menu
     int y = 120;
     for (int i = 0; i < menu_items.size(); ++i) {
-        SDL_Color color = (i == selected_item) ? SDL_Color{255, 255, 0, 255} : SDL_Color{255, 255, 255, 255};
+        SDL_Color color = (i == selected_item) ? SDL_Color{GameConstants::COLOR_MAX, GameConstants::COLOR_MAX, 0, GameConstants::ALPHA_MAX} : SDL_Color{GameConstants::COLOR_MAX, GameConstants::COLOR_MAX, GameConstants::COLOR_MAX, GameConstants::ALPHA_MAX};
         std::string item_text = (i == selected_item) ? "> " + menu_items[i] + " <" : "  " + menu_items[i] + "  ";
-        
-                // SDL_Surface* surface = TTF_RenderText_Solid(font, item_text.c_str(), strlen(item_text.c_str()), color);
-        // SDL_Texture* texture = SDL_CreateTextureFromSurface(renderer, surface);
-        
-        // float width, height;
-        // SDL_GetTextureSize(texture, &width, &height);
-        // SDL_FRect dst_rect = {400 - width / 2.0f, (float)y, width, height};
-        
-        // SDL_RenderTexture(renderer, texture, NULL, &dst_rect);
-        
-        // SDL_DestroySurface(surface);
-        // SDL_DestroyTexture(texture);
         
         y += 35;
     }
