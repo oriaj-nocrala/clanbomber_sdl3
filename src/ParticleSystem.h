@@ -30,6 +30,7 @@ public:
     void act(float deltaTime) override;
     void show() override;
     ObjectType get_type() const override { return EXPLOSION; } // Reuse explosion type
+    void reset_for_pool() override;
     
     void emit_explosion_sparks(int count = 30);
     void emit_dust_cloud(int count = 20);

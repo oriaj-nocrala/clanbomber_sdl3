@@ -7,6 +7,11 @@
 #include <functional>
 #include <string>
 
+// Forward declarations
+class ParticleSystem;
+class GameContext;
+enum ParticleType;
+
 /**
  * @brief Estrategia consistente de memory management para ClanBomber
  * 
@@ -98,8 +103,10 @@ public:
      */
     void release(UniquePtr<T> obj) {
         if (obj && pool.size() < max_size) {
-            // Reset object state before returning to pool
-            obj->reset();
+            // Reset object state before returning to pool if reset method exists
+            if constexpr (std::is_base_of_v<GameObject, T>) {
+                obj->reset_for_pool();
+            }
             pool.push_back(std::move(obj));
         }
     }
@@ -138,58 +145,31 @@ public:
     }
     
     /**
-     * @brief Crea objeto desde pool si disponible
+     * @brief Specialized factory for ParticleSystem with auto-registration
+     * Uses RAII and clean resource management instead of complex ObjectPool
      */
-    template<typename T, typename... Args>
-    UniquePtr<T> create_from_pool(Args&&... args) {
-        auto& pool = get_pool<T>();
-        auto obj = pool.acquire();
-        
-        // Reinitialize object with new parameters
-        if (obj) {
-            *obj = T(std::forward<Args>(args)...);
-        } else {
-            obj = std::make_unique<T>(std::forward<Args>(args)...);
-        }
-        
-        return obj;
-    }
-    
-    /**
-     * @brief Regresa objeto al pool
-     */
-    template<typename T>
-    void return_to_pool(UniquePtr<T> obj) {
-        auto& pool = get_pool<T>();
-        pool.release(std::move(obj));
+    template<typename... Args>
+    class ParticleSystem* create_particle_system(int x, int y, ParticleType type, GameContext* context, Args&&... args) {
+        auto particle_system = std::make_unique<ParticleSystem>(x, y, type, context, std::forward<Args>(args)...);
+        auto* raw_ptr = particle_system.release(); // Transfer ownership to GameContext
+        context->register_object(raw_ptr);
+        return raw_ptr;
     }
     
     /**
      * @brief Obtiene estadísticas de memory usage
      */
     struct MemoryStats {
-        size_t total_pools = 0;
-        size_t total_pooled_objects = 0;
+        size_t objects_created = 0;
+        size_t particle_systems_created = 0;
         std::unordered_map<std::string, size_t> objects_per_type;
     };
     
     MemoryStats get_memory_statistics() const;
 
 private:
-    // Pool storage por tipo
-    std::unordered_map<std::type_index, std::unique_ptr<void>> pools;
-    
-    template<typename T>
-    ObjectPool<T>& get_pool() {
-        auto type_idx = std::type_index(typeid(T));
-        auto it = pools.find(type_idx);
-        
-        if (it == pools.end()) {
-            pools[type_idx] = std::make_unique<ObjectPool<T>>();
-        }
-        
-        return *static_cast<ObjectPool<T>*>(pools[type_idx].get());
-    }
+    // Statistics tracking
+    mutable size_t particle_systems_created_ = 0;
 };
 
 /**

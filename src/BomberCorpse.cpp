@@ -5,6 +5,7 @@
 #include "Timer.h"
 #include "ParticleSystem.h"
 #include "GameContext.h"
+#include "MemoryManagement.h"
 #include <random>
 #include <cmath>
 
@@ -80,12 +81,10 @@ void BomberCorpse::create_gore_explosion() {
     std::random_device rd;
     std::mt19937 gen(rd());
     
-    // Add particle effects for gore explosion
-    ParticleSystem* blood_splatter = new ParticleSystem(x, y, FIRE_PARTICLES, get_context()); // Red particles
-    get_context()->register_object(blood_splatter);
+    // Add particle effects for gore explosion using ObjectPool pattern
+    ParticleSystem* blood_splatter = GameObjectFactory::getInstance().create_particle_system(x, y, FIRE_PARTICLES, get_context()); // Red particles
     
-    ParticleSystem* gore_smoke = new ParticleSystem(x, y, SMOKE_TRAILS, get_context());
-    get_context()->register_object(gore_smoke);
+    ParticleSystem* gore_smoke = GameObjectFactory::getInstance().create_particle_system(x, y, SMOKE_TRAILS, get_context());
     
     // Create 8-12 body parts with realistic explosion physics
     std::uniform_int_distribution<> part_count_dist(8, 12);

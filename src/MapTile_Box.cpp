@@ -7,6 +7,7 @@
 #include "ParticleSystem.h"
 #include "GPUAcceleratedRenderer.h"
 #include "ParticleEffectsManager.h"
+#include "MemoryManagement.h"
 #include <random>
 #include <cmath>
 
@@ -32,8 +33,7 @@ void MapTile_Box::act() {
         
         // Add smoke particles during destruction animation  
         if (destroy_animation > 0.1f && prev_animation <= 0.1f) {
-            ParticleSystem* smoke = new ParticleSystem(get_x(), get_y(), SMOKE_TRAILS, get_context());
-            get_context()->register_object(smoke);
+            ParticleSystem* smoke = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), SMOKE_TRAILS, get_context());
         }
         
         // Set delete_me exactly when animation completes to prevent black gap
@@ -260,11 +260,9 @@ void MapTile_Box::destroy() {
             SDL_Log("Box destruction effect requested at (%d,%d)", get_x(), get_y());
         }
         
-        // Add traditional particle effects for destruction
-        ParticleSystem* dust = new ParticleSystem(get_x(), get_y(), DUST_CLOUDS, get_context());
-        get_context()->register_object(dust);
+        // Add traditional particle effects for destruction using ObjectPool pattern
+        ParticleSystem* dust = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), DUST_CLOUDS, get_context());
         
-        ParticleSystem* sparks = new ParticleSystem(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
-        get_context()->register_object(sparks);
+        ParticleSystem* sparks = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
     }
 }

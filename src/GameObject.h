@@ -199,6 +199,12 @@ public:
   virtual void		stop(bool by_arrow = false);
   virtual void		show();
   virtual void		act(float deltaTime);
+  
+  /**
+   * @brief Reset object state for ObjectPool reuse
+   * Override in derived classes that need pool compatibility
+   */
+  virtual void		reset_for_pool() {}
   void show(int _x, int _y) const;
   void show(int _x, int _y, float _scale) const;
   void fly_to(int _x, int _y, int _speed=0);

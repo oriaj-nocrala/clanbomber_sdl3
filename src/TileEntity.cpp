@@ -8,6 +8,7 @@
 #include "GPUAcceleratedRenderer.h"
 #include "GameContext.h"
 #include "CoordinateSystem.h"
+#include "MemoryManagement.h"
 #include <random>
 #include <cmath>
 #include <SDL3/SDL.h>
@@ -222,8 +223,7 @@ void TileEntity_Box::act(float deltaTime) {
         // Add smoke particles during destruction animation  
         static float last_smoke_time = 0.0f;
         if (destroy_animation > 0.1f && last_smoke_time <= 0.1f) {
-            ParticleSystem* smoke = new ParticleSystem(get_x(), get_y(), SMOKE_TRAILS, get_context());
-            get_context()->register_object(smoke);
+            ParticleSystem* smoke = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), SMOKE_TRAILS, get_context());
             last_smoke_time = destroy_animation;
         }
     }
@@ -255,12 +255,10 @@ void TileEntity_Box::destroy() {
                 SDL_Log("SPECTACULAR tile destruction effects at (%d,%d)!", get_x(), get_y());
             }
             
-            // Add traditional particle effects for destruction using GameContext registration
-            ParticleSystem* dust = new ParticleSystem(get_x(), get_y(), DUST_CLOUDS, get_context());
-            get_context()->register_object(dust);
+            // Add traditional particle effects for destruction using ObjectPool pattern
+            ParticleSystem* dust = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), DUST_CLOUDS, get_context());
             
-            ParticleSystem* sparks = new ParticleSystem(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
-            get_context()->register_object(sparks);
+            ParticleSystem* sparks = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
             
             // Update rate limiting timestamp
             last_particle_emission_time = current_time;

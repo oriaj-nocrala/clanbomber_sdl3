@@ -1,0 +1,5039 @@
+{
+  "entries": {
+    "./src/_deps/cglm-src/.vscode/settings.json": {
+      "file_hash": "b41562318e1fd43aa75646adad597e62e3b84d26d300936435734cf27aa619b9",
+      "last_analyzed": "2025-08-18T06:09:32.225413805Z",
+      "summary": {
+        "file_name": "settings.json",
+        "file_type": "Config",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/cglm-src/.vscode/settings.json",
+        "size": 1103,
+        "line_count": 31,
+        "last_modified": "2025-08-18T06:09:32.225408885Z",
+        "file_type": "Config",
+        "summary": "Configuration file",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.225413665Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 31,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/glad/generator/rust/templates/types/khrplatform.rs": {
+      "file_hash": "b2727dedd4bbf9b8b3caa9bc92d717fff4eb7a77bbf3a3308b1d8d2a044483aa",
+      "last_analyzed": "2025-08-18T06:09:32.231191634Z",
+      "summary": {
+        "file_name": "khrplatform.rs",
+        "file_type": "RustModule",
+        "exports": [],
+        "imports": [],
+        "functions": [],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/glad/generator/rust/templates/types/khrplatform.rs",
+        "size": 650,
+        "line_count": 21,
+        "last_modified": "2025-08-18T06:09:32.231188384Z",
+        "file_type": "RustModule",
+        "summary": "Rust module with 0 functions, 0 structs, 0 enums",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": {
+          "functions": [],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [],
+            "enums": [],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [
+              {
+                "name": "khronos_int8_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 6,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_uint8_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 7,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_int16_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 8,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_uint16_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 9,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_int32_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_uint32_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 11,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_int64_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 12,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_uint64_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 13,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_intptr_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 14,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_uintptr_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 15,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_ssize_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 16,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_usize_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 17,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_float_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 18,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_time_ns_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 19,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_stime_nanoseconds_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 20,
+                  "column": 1
+                }
+              },
+              {
+                "name": "khronos_utime_nanoseconds_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 21,
+                  "column": 1
+                }
+              }
+            ],
+            "macros": [],
+            "use_statements": [
+              {
+                "path": "use std;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              }
+            ]
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.231191474Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 21,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/cglm-src/docs/source/sphinx-static/theme_overrides.css": {
+      "file_hash": "52f644cbd7b73ef05f20da4fd1dcf18c9f8e9efe5315a23c4fa2c6f06c439378",
+      "last_analyzed": "2025-08-18T06:09:32.225448485Z",
+      "summary": {
+        "file_name": "theme_overrides.css",
+        "file_type": "Style",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/cglm-src/docs/source/sphinx-static/theme_overrides.css",
+        "size": 300,
+        "line_count": 12,
+        "last_modified": "2025-08-18T06:09:32.225445445Z",
+        "file_type": "Style",
+        "summary": "Style sheet with 2 selectors",
+        "relevant_sections": [
+          "Media queries"
+        ],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.225448355Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 12,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./.claude/settings.local.json": {
+      "file_hash": "af752e474d2d9b84f0e49d03b733bf6ac4de62e68ea624cf6ecf274e5f3d10f4",
+      "last_analyzed": "2025-08-18T06:09:32.234562625Z",
+      "summary": {
+        "file_name": "settings.local.json",
+        "file_type": "Config",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/.claude/settings.local.json",
+        "size": 275,
+        "line_count": 16,
+        "last_modified": "2025-08-18T06:09:32.234560365Z",
+        "file_type": "Config",
+        "summary": "Configuration file",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.234562495Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 16,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./.vscode/settings.json": {
+      "file_hash": "e7c0c709a331764f8d65153008c5d1e5039545bcad7574a66cba1a965cd6bce0",
+      "last_analyzed": "2025-08-18T06:09:32.234470575Z",
+      "summary": {
+        "file_name": "settings.json",
+        "file_type": "Config",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/.vscode/settings.json",
+        "size": 1864,
+        "line_count": 73,
+        "last_modified": "2025-08-18T06:09:32.234462395Z",
+        "file_type": "Config",
+        "summary": "Configuration file",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.234470455Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 73,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/example/rust/gl-glfw-mx/src/main.rs": {
+      "file_hash": "9ffe73e1bc99c8973e658e2e4f113977d446a84db58ca63ef54e20bc7f3fdccf",
+      "last_analyzed": "2025-08-18T06:09:32.227735623Z",
+      "summary": {
+        "file_name": "main.rs",
+        "file_type": "RustBinary",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "main",
+            "parameters": [],
+            "return_type": "()",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 14,
+              "column": 1
+            },
+            "description": null
+          },
+          {
+            "name": "create_window",
+            "parameters": [
+              {
+                "name": "glfw",
+                "param_type": "&mut glfw::Glfw",
+                "is_optional": false,
+                "default_value": null
+              }
+            ],
+            "return_type": "Window",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 28,
+              "column": 1
+            },
+            "description": null
+          },
+          {
+            "name": "draw",
+            "parameters": [
+              {
+                "name": "window",
+                "param_type": "&mut Window",
+                "is_optional": false,
+                "default_value": null
+              }
+            ],
+            "return_type": "()",
+            "is_async": false,
+            "modifiers": [
+              "unsafe"
+            ],
+            "location": {
+              "line": 43,
+              "column": 1
+            },
+            "description": null
+          },
+          {
+            "name": "handle_window_event",
+            "parameters": [
+              {
+                "name": "window",
+                "param_type": "&mut glfw::Window",
+                "is_optional": false,
+                "default_value": null
+              },
+              {
+                "name": "event",
+                "param_type": "glfw::WindowEvent",
+                "is_optional": false,
+                "default_value": null
+              }
+            ],
+            "return_type": "()",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 56,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/example/rust/gl-glfw-mx/src/main.rs",
+        "size": 1572,
+        "line_count": 63,
+        "last_modified": "2025-08-18T06:09:32.227723053Z",
+        "file_type": "RustBinary",
+        "summary": "Rust binary with 4 functions",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Medium",
+        "detailed_analysis": {
+          "functions": [
+            {
+              "name": "main",
+              "parameters": [],
+              "return_type": "()",
+              "is_async": false,
+              "modifiers": [],
+              "location": {
+                "line": 14,
+                "column": 1
+              },
+              "description": null
+            },
+            {
+              "name": "create_window",
+              "parameters": [
+                {
+                  "name": "glfw",
+                  "param_type": "&mut glfw::Glfw",
+                  "is_optional": false,
+                  "default_value": null
+                }
+              ],
+              "return_type": "Window",
+              "is_async": false,
+              "modifiers": [],
+              "location": {
+                "line": 28,
+                "column": 1
+              },
+              "description": null
+            },
+            {
+              "name": "draw",
+              "parameters": [
+                {
+                  "name": "window",
+                  "param_type": "&mut Window",
+                  "is_optional": false,
+                  "default_value": null
+                }
+              ],
+              "return_type": "()",
+              "is_async": false,
+              "modifiers": [
+                "unsafe"
+              ],
+              "location": {
+                "line": 43,
+                "column": 1
+              },
+              "description": null
+            },
+            {
+              "name": "handle_window_event",
+              "parameters": [
+                {
+                  "name": "window",
+                  "param_type": "&mut glfw::Window",
+                  "is_optional": false,
+                  "default_value": null
+                },
+                {
+                  "name": "event",
+                  "param_type": "glfw::WindowEvent",
+                  "is_optional": false,
+                  "default_value": null
+                }
+              ],
+              "return_type": "()",
+              "is_async": false,
+              "modifiers": [],
+              "location": {
+                "line": 56,
+                "column": 1
+              },
+              "description": null
+            }
+          ],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [
+              {
+                "name": "Window",
+                "is_public": false,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "source",
+                    "field_type": "glfw::Window",
+                    "is_public": false
+                  },
+                  {
+                    "name": "events",
+                    "field_type": "Receiver<(f64, glfw::WindowEvent)>",
+                    "is_public": false
+                  },
+                  {
+                    "name": "gl",
+                    "field_type": "gl::Gl",
+                    "is_public": false
+                  }
+                ],
+                "derives": [],
+                "attributes": [],
+                "generics": [],
+                "location": {
+                  "line": 8,
+                  "column": 1
+                }
+              }
+            ],
+            "enums": [],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [],
+            "macros": [],
+            "use_statements": [
+              {
+                "path": "use std::sync::mpsc::Receiver;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              },
+              {
+                "path": "use glfw::{Action, Context, Key};",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              },
+              {
+                "path": "use glad_gl::gl;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              }
+            ]
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.227735303Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 63,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/CMakeFiles/glad-generator.dir/compiler_depend.ts": {
+      "file_hash": "4fe84d9dcdf41b43e1bb89c64ad2983e5bb9528c9339a5d8c3cdf1210685e1bd",
+      "last_analyzed": "2025-08-18T06:09:32.225274815Z",
+      "summary": {
+        "file_name": "compiler_depend.ts",
+        "file_type": "Other",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/CMakeFiles/glad-generator.dir/compiler_depend.ts",
+        "size": 118,
+        "line_count": 2,
+        "last_modified": "2025-08-18T06:09:32.225263925Z",
+        "file_type": "Other",
+        "summary": "File with 2 lines",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.225274715Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 2,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./.vscode/tasks.json": {
+      "file_hash": "5f4cbdd9934c4c31cc7ce333389164018e845264385af1bd532dc1c9559bec58",
+      "last_analyzed": "2025-08-18T06:09:32.234502805Z",
+      "summary": {
+        "file_name": "tasks.json",
+        "file_type": "Config",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/.vscode/tasks.json",
+        "size": 724,
+        "line_count": 28,
+        "last_modified": "2025-08-18T06:09:32.234498685Z",
+        "file_type": "Config",
+        "summary": "Configuration file",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.234502675Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 28,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/pyproject.toml": {
+      "file_hash": "0e5ed50a0dd86b25898c3c7de8bfd615e7afcca9b7ba692dc103e5764da7fefb",
+      "last_analyzed": "2025-08-18T06:09:32.234388735Z",
+      "summary": {
+        "file_name": "pyproject.toml",
+        "file_type": "Config",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/pyproject.toml",
+        "size": 2077,
+        "line_count": 66,
+        "last_modified": "2025-08-18T06:09:32.234379535Z",
+        "file_type": "Config",
+        "summary": "Configuration file",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.234388585Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 66,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/CMakeFiles/glad.dir/compiler_depend.ts": {
+      "file_hash": "d90eec2df3ddc1d3022427907db138649ff6266c057920fd8d5aa62269741960",
+      "last_analyzed": "2025-08-18T06:09:32.225303865Z",
+      "summary": {
+        "file_name": "compiler_depend.ts",
+        "file_type": "Other",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/CMakeFiles/glad.dir/compiler_depend.ts",
+        "size": 111,
+        "line_count": 2,
+        "last_modified": "2025-08-18T06:09:32.225302665Z",
+        "file_type": "Other",
+        "summary": "File with 2 lines",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.225303665Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 2,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/glad/generator/rust/templates/types/gl.rs": {
+      "file_hash": "b451bd47c1d4aba310331df871d5b79ff7f8f2cb6e0d71612bf6a09d246598f2",
+      "last_analyzed": "2025-08-18T06:09:32.229615329Z",
+      "summary": {
+        "file_name": "gl.rs",
+        "file_type": "RustModule",
+        "exports": [],
+        "imports": [],
+        "functions": [],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/glad/generator/rust/templates/types/gl.rs",
+        "size": 2263,
+        "line_count": 97,
+        "last_modified": "2025-08-18T06:09:32.229601859Z",
+        "file_type": "RustModule",
+        "summary": "Rust module with 0 functions, 0 structs, 3 enums",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Medium",
+        "detailed_analysis": {
+          "functions": [],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [],
+            "enums": [
+              {
+                "name": "__GLsync",
+                "is_public": true,
+                "variants": [],
+                "derives": [],
+                "attributes": [
+                  "cfg(target_os = \"macos\")",
+                  "cfg(not(target_os = \"macos\"))"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 49,
+                  "column": 1
+                }
+              },
+              {
+                "name": "_cl_context",
+                "is_public": true,
+                "variants": [],
+                "derives": [],
+                "attributes": [
+                  "cfg(target_os = \"macos\")",
+                  "cfg(not(target_os = \"macos\"))"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 53,
+                  "column": 1
+                }
+              },
+              {
+                "name": "_cl_event",
+                "is_public": true,
+                "variants": [],
+                "derives": [],
+                "attributes": [
+                  "cfg(target_os = \"macos\")",
+                  "cfg(not(target_os = \"macos\"))"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 55,
+                  "column": 1
+                }
+              }
+            ],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [
+              {
+                "name": "GLvoid",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 5,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLbyte",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 7,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLubyte",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 8,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLchar",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 9,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLboolean",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLshort",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 12,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLushort",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 13,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLint",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 15,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLuint",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 16,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLint64",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 17,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLuint64",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 18,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLintptr",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 20,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLsizeiptr",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 21,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLintptrARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 22,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLsizeiptrARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 23,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLint64EXT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 24,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLuint64EXT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 25,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLsizei",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 27,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLclampx",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 28,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLfixed",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 29,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLhalf",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 30,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLhalfNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 31,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLhalfARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 32,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLenum",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 34,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLbitfield",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 35,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLfloat",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 37,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLdouble",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 38,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLclampf",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 39,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLclampd",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 40,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLcharARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 42,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLhandleARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 45,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLhandleARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 47,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLsync",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 51,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLvdpauSurfaceNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 57,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLeglClientBufferEXT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 58,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLeglImageOES",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 59,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLDEBUGPROC",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 62,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLDEBUGPROCARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 71,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLDEBUGPROCKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 80,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLDEBUGPROCAMD",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 89,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLVULKANPROCNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 97,
+                  "column": 1
+                }
+              }
+            ],
+            "macros": [],
+            "use_statements": [
+              {
+                "path": "use std::os::raw;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              }
+            ]
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.229615089Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 97,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/glad/generator/rust/templates/types/vk.rs": {
+      "file_hash": "b1f39bcb5baeff5075f13e5fedb6ef4f40c3ebc1215b00d2ef80bb2f431a0bfd",
+      "last_analyzed": "2025-08-18T06:09:32.233264081Z",
+      "summary": {
+        "file_name": "vk.rs",
+        "file_type": "RustModule",
+        "exports": [],
+        "imports": [],
+        "functions": [],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/glad/generator/rust/templates/types/vk.rs",
+        "size": 3369,
+        "line_count": 112,
+        "last_modified": "2025-08-18T06:09:32.233249861Z",
+        "file_type": "RustModule",
+        "summary": "Rust module with 0 functions, 1 structs, 0 enums",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Medium",
+        "detailed_analysis": {
+          "functions": [],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [
+              {
+                "name": "SECURITY_ATTRIBUTES",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "nLength",
+                    "field_type": "DWORD",
+                    "is_public": false
+                  },
+                  {
+                    "name": "lpSecurityDescriptor",
+                    "field_type": "LPVOID",
+                    "is_public": false
+                  },
+                  {
+                    "name": "bInheritHandle",
+                    "field_type": "BOOL",
+                    "is_public": false
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Eq",
+                  "PartialEq",
+                  "Debug",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "macro_export",
+                  "macro_export",
+                  "macro_export",
+                  "macro_export",
+                  "macro_export",
+                  "macro_export",
+                  "repr(i{{ type.bitwidth or '32' }})",
+                  "derive(Copy, Clone, Eq, PartialEq, Debug)",
+                  "allow(non_snake_case)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 29,
+                  "column": 1
+                }
+              }
+            ],
+            "enums": [],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [
+              {
+                "name": "xcb_connection_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 9,
+                  "column": 1
+                }
+              },
+              {
+                "name": "xcb_window_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              {
+                "name": "xcb_visualid_t",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 11,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Display",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 13,
+                  "column": 1
+                }
+              },
+              {
+                "name": "RROutput",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 14,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Window",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 15,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VisualID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 16,
+                  "column": 1
+                }
+              },
+              {
+                "name": "BOOL",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 18,
+                  "column": 1
+                }
+              },
+              {
+                "name": "DWORD",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 19,
+                  "column": 1
+                }
+              },
+              {
+                "name": "LPVOID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 20,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HANDLE",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 21,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HMONITOR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 22,
+                  "column": 1
+                }
+              },
+              {
+                "name": "WCHAR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 23,
+                  "column": 1
+                }
+              },
+              {
+                "name": "LPCWSTR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 24,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HINSTANCE",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 25,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HWND",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 26,
+                  "column": 1
+                }
+              },
+              {
+                "name": "wl_display",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 35,
+                  "column": 1
+                }
+              },
+              {
+                "name": "wl_surface",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 36,
+                  "column": 1
+                }
+              },
+              {
+                "name": "MirConnection",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 38,
+                  "column": 1
+                }
+              },
+              {
+                "name": "MirSurface",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 39,
+                  "column": 1
+                }
+              }
+            ],
+            "macros": [
+              {
+                "name": "VK_MAKE_VERSION",
+                "is_public": false,
+                "macro_type": "DeclarativeMacro",
+                "location": {
+                  "line": 43,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VK_VERSION_MAJOR",
+                "is_public": false,
+                "macro_type": "DeclarativeMacro",
+                "location": {
+                  "line": 48,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VK_VERSION_MINOR",
+                "is_public": false,
+                "macro_type": "DeclarativeMacro",
+                "location": {
+                  "line": 50,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VK_VERSION_PATCH",
+                "is_public": false,
+                "macro_type": "DeclarativeMacro",
+                "location": {
+                  "line": 52,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VK_DEFINE_NON_DISPATCHABLE_HANDLE",
+                "is_public": false,
+                "macro_type": "DeclarativeMacro",
+                "location": {
+                  "line": 55,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VK_DEFINE_HANDLE",
+                "is_public": false,
+                "macro_type": "DeclarativeMacro",
+                "location": {
+                  "line": 64,
+                  "column": 1
+                }
+              }
+            ],
+            "use_statements": [
+              {
+                "path": "use std;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              },
+              {
+                "path": "use std::os::raw::*;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              }
+            ]
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.233263881Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 112,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./.vscode/launch.json": {
+      "file_hash": "de5a0511232f84951618cd38bd250f7298cee5d41dcf32222b468b9b1d6707ce",
+      "last_analyzed": "2025-08-18T06:09:32.234541155Z",
+      "summary": {
+        "file_name": "launch.json",
+        "file_type": "Config",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/.vscode/launch.json",
+        "size": 1166,
+        "line_count": 33,
+        "last_modified": "2025-08-18T06:09:32.234536335Z",
+        "file_type": "Config",
+        "summary": "Configuration file",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.234541015Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 33,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/example/rust/gl-glfw/src/main.rs": {
+      "file_hash": "c47d0602957f08172716d13ab2ea317a45211b25adf20776738382cf59fb854d",
+      "last_analyzed": "2025-08-18T06:09:32.228120284Z",
+      "summary": {
+        "file_name": "main.rs",
+        "file_type": "RustBinary",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "main",
+            "parameters": [],
+            "return_type": "()",
+            "is_async": false,
+            "modifiers": [
+              "unsafe"
+            ],
+            "location": {
+              "line": 7,
+              "column": 1
+            },
+            "description": null
+          },
+          {
+            "name": "handle_window_event",
+            "parameters": [
+              {
+                "name": "window",
+                "param_type": "&mut glfw::Window",
+                "is_optional": false,
+                "default_value": null
+              },
+              {
+                "name": "event",
+                "param_type": "glfw::WindowEvent",
+                "is_optional": false,
+                "default_value": null
+              }
+            ],
+            "return_type": "()",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 33,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/example/rust/gl-glfw/src/main.rs",
+        "size": 1072,
+        "line_count": 40,
+        "last_modified": "2025-08-18T06:09:32.228112404Z",
+        "file_type": "RustBinary",
+        "summary": "Rust binary with 2 functions",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": {
+          "functions": [
+            {
+              "name": "main",
+              "parameters": [],
+              "return_type": "()",
+              "is_async": false,
+              "modifiers": [
+                "unsafe"
+              ],
+              "location": {
+                "line": 7,
+                "column": 1
+              },
+              "description": null
+            },
+            {
+              "name": "handle_window_event",
+              "parameters": [
+                {
+                  "name": "window",
+                  "param_type": "&mut glfw::Window",
+                  "is_optional": false,
+                  "default_value": null
+                },
+                {
+                  "name": "event",
+                  "param_type": "glfw::WindowEvent",
+                  "is_optional": false,
+                  "default_value": null
+                }
+              ],
+              "return_type": "()",
+              "is_async": false,
+              "modifiers": [],
+              "location": {
+                "line": 33,
+                "column": 1
+              },
+              "description": null
+            }
+          ],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [],
+            "enums": [],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [],
+            "macros": [],
+            "use_statements": [
+              {
+                "path": "use glfw::{Action, Context, Key};",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              },
+              {
+                "path": "use glad_gl::gl;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              }
+            ]
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.228120004Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 40,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/glad/generator/rust/templates/types/egl.rs": {
+      "file_hash": "d2bc491ac149c37d5cca2a12faafd186869b85b377c308d840aedc56f8274b33",
+      "last_analyzed": "2025-08-18T06:09:32.228971987Z",
+      "summary": {
+        "file_name": "egl.rs",
+        "file_type": "RustModule",
+        "exports": [],
+        "imports": [],
+        "functions": [],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/glad/generator/rust/templates/types/egl.rs",
+        "size": 2957,
+        "line_count": 82,
+        "last_modified": "2025-08-18T06:09:32.228957487Z",
+        "file_type": "RustModule",
+        "summary": "Rust module with 0 functions, 2 structs, 1 enums",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Medium",
+        "detailed_analysis": {
+          "functions": [],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [
+              {
+                "name": "AHardwareBuffer",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": true,
+                "fields": [],
+                "derives": [
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "cfg(target_os = \"macos\")",
+                  "cfg(not(target_os = \"macos\"))",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 45,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLClientPixmapHI",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "pData",
+                    "field_type": "*const std::os::raw::c_void",
+                    "is_public": false
+                  },
+                  {
+                    "name": "iWidth",
+                    "field_type": "EGLint",
+                    "is_public": false
+                  },
+                  {
+                    "name": "iHeight",
+                    "field_type": "EGLint",
+                    "is_public": false
+                  },
+                  {
+                    "name": "iStride",
+                    "field_type": "EGLint",
+                    "is_public": false
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "cfg(target_os = \"macos\")",
+                  "cfg(not(target_os = \"macos\"))",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 71,
+                  "column": 1
+                }
+              }
+            ],
+            "enums": [
+              {
+                "name": "__eglMustCastToProperFunctionPointerType_fn",
+                "is_public": true,
+                "variants": [],
+                "derives": [
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "cfg(target_os = \"macos\")",
+                  "cfg(not(target_os = \"macos\"))",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 35,
+                  "column": 1
+                }
+              }
+            ],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [
+              {
+                "name": "EGLint",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 4,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLNativeDisplayType",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 7,
+                  "column": 34
+                }
+              },
+              {
+                "name": "EGLNativeDisplayType",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 8,
+                  "column": 34
+                }
+              },
+              {
+                "name": "EGLNativeWindowType",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 9,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLNativePixmapType",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLBoolean",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 13,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLenum",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 14,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLClientBuffer",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 16,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLConfig",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 17,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLContext",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 18,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLDeviceEXT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 19,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLDisplay",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 20,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLImage",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 21,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLImageKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 22,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLLabelKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 23,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLObjectKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 24,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLOutputLayerEXT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 25,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLOutputPortEXT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 26,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLStreamKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 27,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLSurface",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 28,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLSync",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 29,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLSyncKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 30,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLSyncNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 31,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLAttrib",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 33,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLAttribKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 34,
+                  "column": 1
+                }
+              },
+              {
+                "name": "__eglMustCastToProperFunctionPointerType",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 36,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLNativeFileDescriptorKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 37,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLnsecsANDROID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 38,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLsizeiANDROID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 39,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLTimeKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 40,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLTime",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 41,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLTimeNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 42,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLuint64KHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 43,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLuint64NV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 44,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLSetBlobFuncANDROID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 47,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLGetBlobFuncANDROID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 53,
+                  "column": 1
+                }
+              },
+              {
+                "name": "EGLDEBUGPROCKHR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 59,
+                  "column": 1
+                }
+              },
+              {
+                "name": "wl_display",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 78,
+                  "column": 1
+                }
+              },
+              {
+                "name": "wl_surface",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 79,
+                  "column": 1
+                }
+              },
+              {
+                "name": "wl_buffer",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 80,
+                  "column": 1
+                }
+              },
+              {
+                "name": "wl_resource",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 81,
+                  "column": 1
+                }
+              }
+            ],
+            "macros": [],
+            "use_statements": []
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.228971717Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 82,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/glad/generator/rust/templates/types/glx.rs": {
+      "file_hash": "f561c01e7cabf65dd6cdd6a690f9cb6f5124601ab901fa339cda0565dd6548b2",
+      "last_analyzed": "2025-08-18T06:09:32.231066724Z",
+      "summary": {
+        "file_name": "glx.rs",
+        "file_type": "RustModule",
+        "exports": [],
+        "imports": [],
+        "functions": [],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/glad/generator/rust/templates/types/glx.rs",
+        "size": 4157,
+        "line_count": 137,
+        "last_modified": "2025-08-18T06:09:32.231050604Z",
+        "file_type": "RustModule",
+        "summary": "Rust module with 0 functions, 8 structs, 3 enums",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Medium",
+        "detailed_analysis": {
+          "functions": [],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [
+              {
+                "name": "XVisualInfo",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "visual",
+                    "field_type": "*mut Visual",
+                    "is_public": true
+                  },
+                  {
+                    "name": "visualid",
+                    "field_type": "VisualID",
+                    "is_public": true
+                  },
+                  {
+                    "name": "screen",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "depth",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "class",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "red_mask",
+                    "field_type": "std::os::raw::c_ulong",
+                    "is_public": true
+                  },
+                  {
+                    "name": "green_mask",
+                    "field_type": "std::os::raw::c_ulong",
+                    "is_public": true
+                  },
+                  {
+                    "name": "blue_mask",
+                    "field_type": "std::os::raw::c_ulong",
+                    "is_public": true
+                  },
+                  {
+                    "name": "colormap_size",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "bits_per_rgb",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 36,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXPbufferClobberEvent",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "event_type",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "draw_type",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "serial",
+                    "field_type": "std::os::raw::c_ulong",
+                    "is_public": true
+                  },
+                  {
+                    "name": "send_event",
+                    "field_type": "Bool",
+                    "is_public": true
+                  },
+                  {
+                    "name": "display",
+                    "field_type": "*const Display",
+                    "is_public": true
+                  },
+                  {
+                    "name": "drawable",
+                    "field_type": "GLXDrawable",
+                    "is_public": true
+                  },
+                  {
+                    "name": "buffer_mask",
+                    "field_type": "std::os::raw::c_uint",
+                    "is_public": true
+                  },
+                  {
+                    "name": "aux_buffer",
+                    "field_type": "std::os::raw::c_uint",
+                    "is_public": true
+                  },
+                  {
+                    "name": "x",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "y",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "width",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "height",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "count",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 51,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXBufferSwapComplete",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "type_",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "serial",
+                    "field_type": "std::os::raw::c_ulong",
+                    "is_public": true
+                  },
+                  {
+                    "name": "send_event",
+                    "field_type": "Bool",
+                    "is_public": true
+                  },
+                  {
+                    "name": "display",
+                    "field_type": "*const Display",
+                    "is_public": true
+                  },
+                  {
+                    "name": "drawable",
+                    "field_type": "GLXDrawable",
+                    "is_public": true
+                  },
+                  {
+                    "name": "event_type",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "ust",
+                    "field_type": "i64",
+                    "is_public": true
+                  },
+                  {
+                    "name": "msc",
+                    "field_type": "i64",
+                    "is_public": true
+                  },
+                  {
+                    "name": "sbc",
+                    "field_type": "i64",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 69,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXBufferClobberEventSGIX",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "type_",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "serial",
+                    "field_type": "std::os::raw::c_ulong",
+                    "is_public": true
+                  },
+                  {
+                    "name": "send_event",
+                    "field_type": "Bool",
+                    "is_public": true
+                  },
+                  {
+                    "name": "display",
+                    "field_type": "*const Display",
+                    "is_public": true
+                  },
+                  {
+                    "name": "drawable",
+                    "field_type": "GLXDrawable",
+                    "is_public": true
+                  },
+                  {
+                    "name": "event_type",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "draw_type",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "mask",
+                    "field_type": "std::os::raw::c_uint",
+                    "is_public": true
+                  },
+                  {
+                    "name": "x",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "y",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "width",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "height",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "count",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 83,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXHyperpipeNetworkSGIX",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "pipeName",
+                    "field_type": "[std::os::raw::c_char; super::enumerations::HYPERPIPE_PIPE_NAME_LENGTH_SGIX as usize]",
+                    "is_public": true
+                  },
+                  {
+                    "name": "networkId",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 101,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXHyperpipeConfigSGIX",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "pipeName",
+                    "field_type": "[std::os::raw::c_char; super::enumerations::HYPERPIPE_PIPE_NAME_LENGTH_SGIX as usize]",
+                    "is_public": true
+                  },
+                  {
+                    "name": "channel",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "participationType",
+                    "field_type": "std::os::raw::c_uint",
+                    "is_public": true
+                  },
+                  {
+                    "name": "timeSlice",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 108,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXPipeRect",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "pipeName",
+                    "field_type": "[std::os::raw::c_char; super::enumerations::HYPERPIPE_PIPE_NAME_LENGTH_SGIX as usize]",
+                    "is_public": true
+                  },
+                  {
+                    "name": "srcXOrigin",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "srcYOrigin",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "srcWidth",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "srcHeight",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "destXOrigin",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "destYOrigin",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "destWidth",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "destHeight",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 117,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXPipeRectLimits",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "pipeName",
+                    "field_type": "[std::os::raw::c_char; super::enumerations::HYPERPIPE_PIPE_NAME_LENGTH_SGIX as usize]",
+                    "is_public": true
+                  },
+                  {
+                    "name": "XOrigin",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "YOrigin",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "maxHeight",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  },
+                  {
+                    "name": "maxWidth",
+                    "field_type": "std::os::raw::c_int",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 131,
+                  "column": 1
+                }
+              }
+            ],
+            "enums": [
+              {
+                "name": "Display",
+                "is_public": true,
+                "variants": [],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 8,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Visual",
+                "is_public": true,
+                "variants": [],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 14,
+                  "column": 1
+                }
+              },
+              {
+                "name": "__GLXextFuncPtr_fn",
+                "is_public": true,
+                "variants": [],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 25,
+                  "column": 1
+                }
+              }
+            ],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [
+              {
+                "name": "XID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 6,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Bool",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 7,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Font",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Pixmap",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 11,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Colormap",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 12,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Status",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 13,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VisualID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 15,
+                  "column": 1
+                }
+              },
+              {
+                "name": "Window",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 16,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXFBConfigID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 17,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXFBConfig",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 18,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXContextID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 19,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXContext",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 20,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXPixmap",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 21,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXDrawable",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 22,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXWindow",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 23,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXPbuffer",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 24,
+                  "column": 1
+                }
+              },
+              {
+                "name": "__GLXextFuncPtr",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 26,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXVideoCaptureDeviceNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 27,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXVideoDeviceNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 28,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXVideoSourceSGIX",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 29,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXFBConfigIDSGIX",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 30,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXFBConfigSGIX",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 31,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLXPbufferSGIX",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 32,
+                  "column": 1
+                }
+              }
+            ],
+            "macros": [],
+            "use_statements": [
+              {
+                "path": "use std;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              }
+            ]
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.231066464Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 137,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/CMakeFiles/clanbomber-modern.dir/compiler_depend.ts": {
+      "file_hash": "314e4d88b7dd4eb96965629e8dad2137a4e3e90cc9838231774c442e4f52fa8d",
+      "last_analyzed": "2025-08-18T06:09:32.225322965Z",
+      "summary": {
+        "file_name": "compiler_depend.ts",
+        "file_type": "Other",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/CMakeFiles/clanbomber-modern.dir/compiler_depend.ts",
+        "size": 124,
+        "line_count": 2,
+        "last_modified": "2025-08-18T06:09:32.225322035Z",
+        "file_type": "Other",
+        "summary": "File with 2 lines",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.225322805Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 2,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/cglm-src/.vscode/c_cpp_properties.json": {
+      "file_hash": "a7781a125a1e0af520c4d75b6956f6a6e8cca4b406d1dfa0f8e8046fb7dd9cee",
+      "last_analyzed": "2025-08-18T06:09:32.225364385Z",
+      "summary": {
+        "file_name": "c_cpp_properties.json",
+        "file_type": "Config",
+        "exports": [],
+        "imports": [],
+        "functions": [
+          {
+            "name": "unknown",
+            "parameters": [],
+            "return_type": "any",
+            "is_async": false,
+            "modifiers": [],
+            "location": {
+              "line": 1,
+              "column": 1
+            },
+            "description": null
+          }
+        ],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/cglm-src/.vscode/c_cpp_properties.json",
+        "size": 630,
+        "line_count": 20,
+        "last_modified": "2025-08-18T06:09:32.225360425Z",
+        "file_type": "Config",
+        "summary": "Configuration file",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Low",
+        "detailed_analysis": null
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.225364225Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 20,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    },
+    "./src/_deps/glad-src/glad/generator/rust/templates/types/wgl.rs": {
+      "file_hash": "707626ae954ce835e0b327504ec10fcb3fb9134c541c9ae51b6253b59ebb8423",
+      "last_analyzed": "2025-08-18T06:09:32.234186014Z",
+      "summary": {
+        "file_name": "wgl.rs",
+        "file_type": "RustModule",
+        "exports": [],
+        "imports": [],
+        "functions": [],
+        "classes": [],
+        "components": [],
+        "services": [],
+        "pipes": [],
+        "modules": [],
+        "key_patterns": [],
+        "dependencies": [],
+        "scss_variables": null,
+        "scss_mixins": null
+      },
+      "metadata": {
+        "path": "/home/oriaj/Prog/ClanBomber/clanbomber-sdl3/src/_deps/glad-src/glad/generator/rust/templates/types/wgl.rs",
+        "size": 3501,
+        "line_count": 136,
+        "last_modified": "2025-08-18T06:09:32.234171114Z",
+        "file_type": "RustModule",
+        "summary": "Rust module with 0 functions, 8 structs, 1 enums",
+        "relevant_sections": [],
+        "exports": [],
+        "imports": [],
+        "complexity": "Medium",
+        "detailed_analysis": {
+          "functions": [],
+          "classes": [],
+          "interfaces": [],
+          "enums": [],
+          "types": [],
+          "variables": [],
+          "component_info": null,
+          "service_info": null,
+          "pipe_info": null,
+          "module_info": null,
+          "rust_module": {
+            "name": "",
+            "is_public": false,
+            "submodules": [],
+            "structs": [
+              {
+                "name": "RECT",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "left",
+                    "field_type": "LONG",
+                    "is_public": false
+                  },
+                  {
+                    "name": "top",
+                    "field_type": "LONG",
+                    "is_public": false
+                  },
+                  {
+                    "name": "right",
+                    "field_type": "LONG",
+                    "is_public": false
+                  },
+                  {
+                    "name": "bottom",
+                    "field_type": "LONG",
+                    "is_public": false
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 40,
+                  "column": 1
+                }
+              },
+              {
+                "name": "POINTFLOAT",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "x",
+                    "field_type": "FLOAT",
+                    "is_public": true
+                  },
+                  {
+                    "name": "y",
+                    "field_type": "FLOAT",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 49,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GLYPHMETRICSFLOAT",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "gmfBlackBoxX",
+                    "field_type": "FLOAT",
+                    "is_public": true
+                  },
+                  {
+                    "name": "gmfBlackBoxY",
+                    "field_type": "FLOAT",
+                    "is_public": true
+                  },
+                  {
+                    "name": "gmfptGlyphOrigin",
+                    "field_type": "POINTFLOAT",
+                    "is_public": true
+                  },
+                  {
+                    "name": "gmfCellIncX",
+                    "field_type": "FLOAT",
+                    "is_public": true
+                  },
+                  {
+                    "name": "gmfCellIncY",
+                    "field_type": "FLOAT",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 56,
+                  "column": 1
+                }
+              },
+              {
+                "name": "LAYERPLANEDESCRIPTOR",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "nSize",
+                    "field_type": "WORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "nVersion",
+                    "field_type": "WORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "dwFlags",
+                    "field_type": "DWORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "iPixelType",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cColorBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cRedBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cRedShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cGreenBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cGreenShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cBlueBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cBlueShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAlphaBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAlphaShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumRedBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumGreenBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumBlueBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumAlphaBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cDepthBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cStencilBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAuxBuffers",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "iLayerType",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "bReserved",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "crTransparent",
+                    "field_type": "COLORREF",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 67,
+                  "column": 1
+                }
+              },
+              {
+                "name": "PIXELFORMATDESCRIPTOR",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "nSize",
+                    "field_type": "WORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "nVersion",
+                    "field_type": "WORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "dwFlags",
+                    "field_type": "DWORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "iPixelType",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cColorBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cRedBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cRedShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cGreenBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cGreenShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cBlueBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cBlueShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAlphaBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAlphaShift",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumRedBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumGreenBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumBlueBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAccumAlphaBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cDepthBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cStencilBits",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "cAuxBuffers",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "iLayerType",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "bReserved",
+                    "field_type": "BYTE",
+                    "is_public": true
+                  },
+                  {
+                    "name": "dwLayerMask",
+                    "field_type": "DWORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "dwVisibleMask",
+                    "field_type": "DWORD",
+                    "is_public": true
+                  },
+                  {
+                    "name": "dwDamageMask",
+                    "field_type": "DWORD",
+                    "is_public": true
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 96,
+                  "column": 1
+                }
+              },
+              {
+                "name": "_GPU_DEVICE",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [
+                  {
+                    "name": "cb",
+                    "field_type": "DWORD",
+                    "is_public": false
+                  },
+                  {
+                    "name": "DeviceName",
+                    "field_type": "[CHAR; 32]",
+                    "is_public": false
+                  },
+                  {
+                    "name": "DeviceString",
+                    "field_type": "[CHAR; 128]",
+                    "is_public": false
+                  },
+                  {
+                    "name": "Flags",
+                    "field_type": "DWORD",
+                    "is_public": false
+                  },
+                  {
+                    "name": "rcVirtualScreen",
+                    "field_type": "RECT",
+                    "is_public": false
+                  }
+                ],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 127,
+                  "column": 1
+                }
+              },
+              {
+                "name": "GPU_DEVICE",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 135,
+                  "column": 1
+                }
+              },
+              {
+                "name": "PGPU_DEVICE",
+                "is_public": true,
+                "is_tuple_struct": false,
+                "is_unit_struct": false,
+                "fields": [],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 136,
+                  "column": 1
+                }
+              }
+            ],
+            "enums": [
+              {
+                "name": "__PROC_fn",
+                "is_public": true,
+                "variants": [],
+                "derives": [
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone",
+                  "Copy",
+                  "Clone"
+                ],
+                "attributes": [
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)",
+                  "repr(C)",
+                  "derive(Copy, Clone)"
+                ],
+                "generics": [],
+                "location": {
+                  "line": 35,
+                  "column": 1
+                }
+              }
+            ],
+            "traits": [],
+            "impl_blocks": [],
+            "functions": [],
+            "constants": [],
+            "type_aliases": [
+              {
+                "name": "BOOL",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 6,
+                  "column": 1
+                }
+              },
+              {
+                "name": "BYTE",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 7,
+                  "column": 1
+                }
+              },
+              {
+                "name": "CHAR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 8,
+                  "column": 1
+                }
+              },
+              {
+                "name": "COLORREF",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 9,
+                  "column": 1
+                }
+              },
+              {
+                "name": "DWORD",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 10,
+                  "column": 1
+                }
+              },
+              {
+                "name": "FLOAT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 11,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HANDLE",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 12,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HDC",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 13,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HENHMETAFILE",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 14,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HGLRC",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 15,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HGPUNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 16,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HPBUFFERARB",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 17,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HPBUFFEREXT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 18,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HPGPUNV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 19,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HPVIDEODEV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 20,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HVIDEOINPUTDEVICENV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 21,
+                  "column": 1
+                }
+              },
+              {
+                "name": "HVIDEOOUTPUTDEVICENV",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 22,
+                  "column": 1
+                }
+              },
+              {
+                "name": "INT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 23,
+                  "column": 1
+                }
+              },
+              {
+                "name": "INT32",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 24,
+                  "column": 1
+                }
+              },
+              {
+                "name": "INT64",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 25,
+                  "column": 1
+                }
+              },
+              {
+                "name": "LONG",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 26,
+                  "column": 1
+                }
+              },
+              {
+                "name": "LPCSTR",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 27,
+                  "column": 1
+                }
+              },
+              {
+                "name": "LPVOID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 28,
+                  "column": 1
+                }
+              },
+              {
+                "name": "PVOID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 29,
+                  "column": 1
+                }
+              },
+              {
+                "name": "UINT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 30,
+                  "column": 1
+                }
+              },
+              {
+                "name": "USHORT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 31,
+                  "column": 1
+                }
+              },
+              {
+                "name": "VOID",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 32,
+                  "column": 1
+                }
+              },
+              {
+                "name": "WORD",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 33,
+                  "column": 1
+                }
+              },
+              {
+                "name": "PROC",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 36,
+                  "column": 1
+                }
+              },
+              {
+                "name": "LPGLYPHMETRICSFLOAT",
+                "is_public": true,
+                "target_type": "unknown",
+                "generics": [],
+                "location": {
+                  "line": 63,
+                  "column": 1
+                }
+              }
+            ],
+            "macros": [],
+            "use_statements": [
+              {
+                "path": "use std;",
+                "alias": null,
+                "is_public": false,
+                "items": []
+              }
+            ]
+          }
+        }
+      },
+      "change_log": [
+        {
+          "timestamp": "2025-08-18T06:09:32.234185794Z",
+          "change_type": "Created",
+          "description": "File analyzed",
+          "lines_changed": 136,
+          "impact_level": "Medium"
+        }
+      ],
+      "dependencies": [],
+      "dependents": []
+    }
+  },
+  "last_updated": "2025-08-18T06:09:32.234563105Z",
+  "cache_version": "1.0.0"
+}

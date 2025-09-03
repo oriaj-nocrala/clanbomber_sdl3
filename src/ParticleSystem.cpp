@@ -46,6 +46,17 @@ ParticleSystem::ParticleSystem(int _x, int _y, ParticleType type, GameContext* c
 ParticleSystem::~ParticleSystem() {
 }
 
+void ParticleSystem::reset_for_pool() {
+    // Clear all particles and reset system state
+    particles.clear();
+    emission_timer = 0.0f;
+    system_lifetime = 0.0f;
+    delete_me = false;
+    
+    // Reset random generator
+    random_gen.seed(std::random_device{}());
+}
+
 void ParticleSystem::act(float deltaTime) {
     system_lifetime += deltaTime;
     

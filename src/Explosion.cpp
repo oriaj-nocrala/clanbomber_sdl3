@@ -13,6 +13,7 @@
 #include "GameContext.h"
 #include "SpatialPartitioning.h"
 #include "CoordinateSystem.h"
+#include "MemoryManagement.h"
 #include "RenderingFacade.h"
 #include "Controller_Joystick.h"
 #include <SDL3/SDL_timer.h>
@@ -46,12 +47,10 @@ Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* co
         }
     }
     
-    // Create additional particle effects using GameContext registration
-    ParticleSystem* explosion_sparks = new ParticleSystem(_x, _y, EXPLOSION_SPARKS, get_context());
-    get_context()->register_object(explosion_sparks);
+    // Create additional particle effects using ObjectPool pattern
+    ParticleSystem* explosion_sparks = GameObjectFactory::getInstance().create_particle_system(_x, _y, EXPLOSION_SPARKS, get_context());
     
-    ParticleSystem* dust_cloud = new ParticleSystem(_x, _y, DUST_CLOUDS, get_context());
-    get_context()->register_object(dust_cloud);
+    ParticleSystem* dust_cloud = GameObjectFactory::getInstance().create_particle_system(_x, _y, DUST_CLOUDS, get_context());
 
     length_up = length_down = length_left = length_right = 0;
 
