@@ -205,6 +205,12 @@ public:
    * Override in derived classes that need pool compatibility
    */
   virtual void		reset_for_pool() {}
+  
+  /**
+   * @brief Indicates if this object supports ObjectPool reuse
+   * Override in derived classes that can be pooled (e.g., ParticleSystem)
+   */
+  virtual bool		supports_object_pooling() const { return false; }
 
 protected:
   /**

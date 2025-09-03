@@ -7,6 +7,7 @@
 
 // Forward declarations
 class GameObject;
+class GameObjectFactory;
 class MapTile;
 class TileEntity;
 class GameContext;

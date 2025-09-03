@@ -4,6 +4,7 @@
 #include "MapTile_Box.h"
 #include "TileEntity.h"
 #include "GameContext.h"
+#include "MemoryManagement.h"
 #include <algorithm>
 #include <SDL3/SDL.h>
 
@@ -198,14 +199,21 @@ void LifecycleManager::cleanup_dead_objects() {
         [this](const ManagedObject& managed) {
             if (managed.state == ObjectState::DELETED) {
                 try {
-                    SDL_Log("LifecycleManager: Deleting object %p during cleanup", managed.object);
+                    SDL_Log("LifecycleManager: Cleaning up object %p during cleanup", managed.object);
                     
-                    // CRITICAL FIX: Remove from GameContext systems BEFORE deleting
+                    // CRITICAL FIX: Remove from GameContext systems BEFORE cleanup
                     if (game_context) {
                         game_context->remove_from_spatial_systems(managed.object);
                     }
                     
-                    delete managed.object;  // LifecycleManager deletes the object
+                    // Try to return to ObjectPool first, then delete if not poolable
+                    bool returned_to_pool = GameObjectFactory::getInstance().try_return_to_pool(managed.object);
+                    if (returned_to_pool) {
+                        SDL_Log("LifecycleManager: Returned object %p to ObjectPool for reuse", managed.object);
+                    } else {
+                        SDL_Log("LifecycleManager: Deleting object %p (not poolable)", managed.object);
+                        delete managed.object;
+                    }
                 } catch (...) {
                     SDL_Log("ERROR: Exception during object cleanup %p - continuing", managed.object);
                 }

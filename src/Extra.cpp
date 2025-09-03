@@ -126,7 +126,7 @@ void Extra::collect() {
     collected = true;
     
     // Create pickup particle effect using ObjectPool pattern
-    ParticleSystem* pickup_sparkles = GameObjectFactory::getInstance().create_particle_system(x, y, EXPLOSION_SPARKS, get_context());
+    ParticleSystem* pickup_sparkles = GameObjectFactory::getInstance().create_particle_system(x, y, static_cast<int>(EXPLOSION_SPARKS), get_context());
     
     // Play collection sound
     AudioPosition extra_pos(x, y, 0.0f);

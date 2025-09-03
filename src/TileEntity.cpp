@@ -223,7 +223,7 @@ void TileEntity_Box::act(float deltaTime) {
         // Add smoke particles during destruction animation  
         static float last_smoke_time = 0.0f;
         if (destroy_animation > 0.1f && last_smoke_time <= 0.1f) {
-            ParticleSystem* smoke = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), SMOKE_TRAILS, get_context());
+            ParticleSystem* smoke = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), static_cast<int>(SMOKE_TRAILS), get_context());
             last_smoke_time = destroy_animation;
         }
     }
@@ -256,9 +256,9 @@ void TileEntity_Box::destroy() {
             }
             
             // Add traditional particle effects for destruction using ObjectPool pattern
-            ParticleSystem* dust = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), DUST_CLOUDS, get_context());
+            ParticleSystem* dust = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), static_cast<int>(DUST_CLOUDS), get_context());
             
-            ParticleSystem* sparks = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
+            ParticleSystem* sparks = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), static_cast<int>(EXPLOSION_SPARKS), get_context());
             
             // Update rate limiting timestamp
             last_particle_emission_time = current_time;

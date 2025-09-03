@@ -82,9 +82,9 @@ void BomberCorpse::create_gore_explosion() {
     std::mt19937 gen(rd());
     
     // Add particle effects for gore explosion using ObjectPool pattern
-    ParticleSystem* blood_splatter = GameObjectFactory::getInstance().create_particle_system(x, y, FIRE_PARTICLES, get_context()); // Red particles
+    ParticleSystem* blood_splatter = GameObjectFactory::getInstance().create_particle_system(x, y, static_cast<int>(FIRE_PARTICLES), get_context()); // Red particles
     
-    ParticleSystem* gore_smoke = GameObjectFactory::getInstance().create_particle_system(x, y, SMOKE_TRAILS, get_context());
+    ParticleSystem* gore_smoke = GameObjectFactory::getInstance().create_particle_system(x, y, static_cast<int>(SMOKE_TRAILS), get_context());
     
     // Create 8-12 body parts with realistic explosion physics
     std::uniform_int_distribution<> part_count_dist(8, 12);

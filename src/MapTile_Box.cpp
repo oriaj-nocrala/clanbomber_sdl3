@@ -33,7 +33,7 @@ void MapTile_Box::act() {
         
         // Add smoke particles during destruction animation  
         if (destroy_animation > 0.1f && prev_animation <= 0.1f) {
-            ParticleSystem* smoke = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), SMOKE_TRAILS, get_context());
+            ParticleSystem* smoke = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), static_cast<int>(SMOKE_TRAILS), get_context());
         }
         
         // Set delete_me exactly when animation completes to prevent black gap
@@ -261,8 +261,8 @@ void MapTile_Box::destroy() {
         }
         
         // Add traditional particle effects for destruction using ObjectPool pattern
-        ParticleSystem* dust = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), DUST_CLOUDS, get_context());
+        ParticleSystem* dust = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), static_cast<int>(DUST_CLOUDS), get_context());
         
-        ParticleSystem* sparks = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), EXPLOSION_SPARKS, get_context());
+        ParticleSystem* sparks = GameObjectFactory::getInstance().create_particle_system(get_x(), get_y(), static_cast<int>(EXPLOSION_SPARKS), get_context());
     }
 }

@@ -10,7 +10,7 @@
 // Forward declarations
 class ParticleSystem;
 class GameContext;
-enum ParticleType;
+class GameObject;
 
 /**
  * @brief Estrategia consistente de memory management para ClanBomber
@@ -153,25 +153,15 @@ public:
     
     /**
      * @brief Specialized factory for ParticleSystem with ObjectPool and auto-registration
-     * Implements proper architecture with object reuse for performance
+     * Declared here, defined in GameObjectFactory.cpp to avoid forward declaration issues
      */
-    template<typename... Args>
-    class ParticleSystem* create_particle_system(int x, int y, ParticleType type, GameContext* context, Args&&... args) {
-        auto& pool = get_pool<ParticleSystem>();
-        auto particle_system = pool.acquire();
-        
-        if (particle_system) {
-            // Reuse existing object by reinitializing it
-            particle_system->reinitialize(x, y, type, context, std::forward<Args>(args)...);
-        } else {
-            // Create new object if pool is empty
-            particle_system = std::make_unique<ParticleSystem>(x, y, type, context, std::forward<Args>(args)...);
-        }
-        
-        auto* raw_ptr = particle_system.release(); // Transfer ownership to GameContext
-        context->register_object(raw_ptr);
-        return raw_ptr;
-    }
+    class ParticleSystem* create_particle_system(int x, int y, int particle_type, GameContext* context);
+    
+    /**
+     * @brief Attempts to return a GameObject to appropriate pool
+     * Declared here, defined in GameObjectFactory.cpp to avoid forward declaration issues
+     */
+    bool try_return_to_pool(GameObject* obj);
     
     /**
      * @brief Obtiene estadísticas de memory usage

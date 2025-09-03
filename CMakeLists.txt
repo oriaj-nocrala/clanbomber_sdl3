@@ -147,6 +147,7 @@ add_executable(clanbomber-modern
     src/GameSystems.cpp
     src/GameLogic.cpp
     src/ErrorHandling.cpp
+    src/GameObjectFactory.cpp
     src/SpatialPartitioning.cpp
     src/RenderingFacade.cpp
 )
