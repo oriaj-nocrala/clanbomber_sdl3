@@ -1,0 +1,6321 @@
+{
+  "magic_numbers": [
+    {
+      "type": "magic_number_to_constant",
+      "value": 3,
+      "occurrences": 48,
+      "suggested_constant": "RGB_COMPONENTS or MAX_POWER_LEVEL",
+      "locations": [
+        "src/SettingsScreen.cpp:35",
+        "src/SettingsScreen.cpp:205",
+        "src/SettingsScreen.cpp:208",
+        "src/SettingsScreen.cpp:236",
+        "src/ParticleSystem.cpp:61"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 255,
+      "occurrences": 48,
+      "suggested_constant": "COLOR_MAX or ALPHA_MAX",
+      "locations": [
+        "src/SettingsScreen.cpp:54",
+        "src/SettingsScreen.cpp:54",
+        "src/SettingsScreen.cpp:54",
+        "src/SettingsScreen.cpp:54",
+        "src/SettingsScreen.cpp:69"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 150,
+      "occurrences": 10,
+      "suggested_constant": "MENU_WIDTH or UI_ELEMENT_WIDTH",
+      "locations": [
+        "src/SettingsScreen.cpp:95",
+        "src/SettingsScreen.cpp:95",
+        "src/SettingsScreen.cpp:95",
+        "src/SettingsScreen.cpp:129",
+        "src/SettingsScreen.cpp:129"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 200,
+      "occurrences": 10,
+      "suggested_constant": "MENU_HEIGHT or UI_ELEMENT_HEIGHT",
+      "locations": [
+        "src/SettingsScreen.cpp:113",
+        "src/SettingsScreen.cpp:113",
+        "src/SettingsScreen.cpp:161",
+        "src/SettingsScreen.cpp:161",
+        "src/GPUAcceleratedRenderer.cpp:1073"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 300,
+      "occurrences": 5,
+      "suggested_constant": "CONSTANT_VALUE_300",
+      "locations": [
+        "src/SettingsScreen.cpp:126",
+        "src/SettingsScreen.cpp:174",
+        "src/Controller_Joystick.cpp:551",
+        "src/RenderingFacade.cpp:267",
+        "src/GameplayScreen.cpp:508"
+      ],
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 4,
+      "occurrences": 49,
+      "suggested_constant": "PLAYER_COUNT or DIRECTION_COUNT",
+      "locations": [
+        "src/SettingsScreen.cpp:127",
+        "src/SettingsScreen.cpp:237",
+        "src/ParticleSystem.cpp:64",
+        "src/MapTile_Box.cpp:73",
+        "src/MapTile_Box.cpp:93"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 30,
+      "occurrences": 6,
+      "suggested_constant": "CONSTANT_VALUE_30",
+      "locations": [
+        "src/SettingsScreen.cpp:156",
+        "src/BomberComponents.cpp:354",
+        "src/BomberComponents.cpp:387",
+        "src/Explosion.cpp:42",
+        "src/Resources.cpp:36"
+      ],
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 8,
+      "occurrences": 20,
+      "suggested_constant": "TILE_SIZE or ANIMATION_FRAMES",
+      "locations": [
+        "src/MapEntry.cpp:26",
+        "src/BomberCorpse.cpp:91",
+        "src/GPUAcceleratedRenderer.cpp:883",
+        "src/GPUAcceleratedRenderer.cpp:894",
+        "src/Game.cpp:27"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 20,
+      "occurrences": 17,
+      "suggested_constant": "DEFAULT_SPEED or TIMER_INTERVAL",
+      "locations": [
+        "src/ParticleSystem.cpp:192",
+        "src/ParticleSystem.cpp:194",
+        "src/BomberCorpse.cpp:125",
+        "src/Extra.cpp:162",
+        "src/Extra.cpp:200"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 7,
+      "occurrences": 18,
+      "suggested_constant": "CONSTANT_VALUE_7",
+      "locations": [
+        "src/MapTile_Box.cpp:83",
+        "src/MapTile_Box.cpp:93",
+        "src/MapTile_Box.cpp:194",
+        "src/Controller.cpp:100",
+        "src/GameConfig.cpp:579"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 6,
+      "occurrences": 15,
+      "suggested_constant": "CONSTANT_VALUE_6",
+      "locations": [
+        "src/MapTile_Box.cpp:101",
+        "src/GPUAcceleratedRenderer.cpp:433",
+        "src/GPUAcceleratedRenderer.cpp:745",
+        "src/Controller.cpp:98",
+        "src/Game.cpp:23"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 5,
+      "occurrences": 25,
+      "suggested_constant": "CONSTANT_VALUE_5",
+      "locations": [
+        "src/MapTile_Box.cpp:140",
+        "src/GPUAcceleratedRenderer.cpp:472",
+        "src/GPUAcceleratedRenderer.cpp:1018",
+        "src/GPUAcceleratedRenderer.cpp:1019",
+        "src/Controller.cpp:96"
+      ],
+      "priority": "HIGH"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 9,
+      "occurrences": 5,
+      "suggested_constant": "CONSTANT_VALUE_9",
+      "locations": [
+        "src/MapTile_Box.cpp:144",
+        "src/GameConfig.cpp:41",
+        "src/TileEntity.cpp:359",
+        "src/Map.cpp:288",
+        "src/Map.cpp:289"
+      ],
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 40,
+      "occurrences": 5,
+      "suggested_constant": "CONSTANT_VALUE_40",
+      "locations": [
+        "src/BomberCorpse.cpp:33",
+        "src/MainMenuScreen.cpp:160",
+        "src/Extra.cpp:186",
+        "src/Resources.cpp:43",
+        "src/Resources.cpp:44"
+      ],
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 12,
+      "occurrences": 5,
+      "suggested_constant": "CONSTANT_VALUE_12",
+      "locations": [
+        "src/BomberCorpse.cpp:91",
+        "src/GameConfig.cpp:40",
+        "src/Map.cpp:286",
+        "src/Map.cpp:287",
+        "src/Map.cpp:289"
+      ],
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_number_to_constant",
+      "value": 400,
+      "occurrences": 6,
+      "suggested_constant": "CONSTANT_VALUE_400",
+      "locations": [
+        "src/MainMenuScreen.cpp:145",
+        "src/MainMenuScreen.cpp:148",
+        "src/MainMenuScreen.cpp:158",
+        "src/MainMenuScreen.cpp:165",
+        "src/Controller_Joystick.cpp:546"
+      ],
+      "priority": "MEDIUM"
+    }
+  ],
+  "unused_functions": [
+    {
+      "type": "remove_unused_function",
+      "function": "init",
+      "file": "src/Timer.cpp",
+      "line": 8,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void init()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "tick",
+      "file": "src/Timer.cpp",
+      "line": 13,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void tick()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_events",
+      "file": "src/SettingsScreen.cpp",
+      "line": 18,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void handle_events(SDL_Event & event)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update",
+      "file": "src/SettingsScreen.cpp",
+      "line": 49,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render",
+      "file": "src/SettingsScreen.cpp",
+      "line": 52,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render(SDL_Renderer * renderer)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_next_state",
+      "file": "src/SettingsScreen.cpp",
+      "line": 108,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "GameState get_next_state()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_player_setup",
+      "file": "src/SettingsScreen.cpp",
+      "line": 112,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_player_setup()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_game_options",
+      "file": "src/SettingsScreen.cpp",
+      "line": 160,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_game_options()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_player_setup_input",
+      "file": "src/SettingsScreen.cpp",
+      "line": 199,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void handle_player_setup_input(SDL_Event & event)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_controller_name",
+      "file": "src/SettingsScreen.cpp",
+      "line": 222,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string get_controller_name(int controller_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_team_name",
+      "file": "src/SettingsScreen.cpp",
+      "line": 231,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string get_team_name(int team)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load",
+      "file": "src/MapEntry.cpp",
+      "line": 44,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool load()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "read_bomber_positions",
+      "file": "src/MapEntry.cpp",
+      "line": 92,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void read_bomber_positions()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_keyboard_state",
+      "file": "src/Controller_Keyboard.cpp",
+      "line": 42,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_keyboard_state()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "reset",
+      "file": "src/Controller_Keyboard.cpp",
+      "line": 51,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void reset()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_left",
+      "file": "src/Controller_Keyboard.cpp",
+      "line": 54,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_left()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_right",
+      "file": "src/Controller_Keyboard.cpp",
+      "line": 58,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_right()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_up",
+      "file": "src/Controller_Keyboard.cpp",
+      "line": 62,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_up()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_down",
+      "file": "src/Controller_Keyboard.cpp",
+      "line": 66,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_down()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_bomb",
+      "file": "src/Controller_Keyboard.cpp",
+      "line": 70,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_bomb()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "calculate_stereo_pan",
+      "file": "src/AudioMixer.cpp",
+      "line": 21,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void calculate_stereo_pan(const AudioPosition & sound_pos, float & left_gain, float & right_gain)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "shutdown",
+      "file": "src/AudioMixer.cpp",
+      "line": 55,
+      "category": "audio_functions",
+      "priority": "LOW",
+      "signature": "void shutdown()",
+      "reason": "Never called (audio_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load_sound",
+      "file": "src/AudioMixer.cpp",
+      "line": 70,
+      "category": "audio_functions",
+      "priority": "LOW",
+      "signature": "MixerAudio * load_sound(const std::string & path)",
+      "reason": "Never called (audio_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "add_sound",
+      "file": "src/AudioMixer.cpp",
+      "line": 106,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void add_sound(const std::string & name, MixerAudio * audio)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "play_sound",
+      "file": "src/AudioMixer.cpp",
+      "line": 112,
+      "category": "audio_functions",
+      "priority": "LOW",
+      "signature": "bool play_sound(const std::string & name)",
+      "reason": "Never called (audio_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "play_sound_3d",
+      "file": "src/AudioMixer.cpp",
+      "line": 116,
+      "category": "audio_functions",
+      "priority": "LOW",
+      "signature": "bool play_sound_3d(const std::string & name, const AudioPosition & pos, float max_distance)",
+      "reason": "Never called (audio_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_listener_position",
+      "file": "src/AudioMixer.cpp",
+      "line": 164,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_listener_position(const AudioPosition & pos)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "audio_callback",
+      "file": "src/AudioMixer.cpp",
+      "line": 168,
+      "category": "audio_functions",
+      "priority": "LOW",
+      "signature": "void audio_callback(void * userdata, SDL_AudioStream * stream, int additional_amount, int total_amount)",
+      "reason": "Never called (audio_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "on_destruction_request",
+      "file": "src/MapTile_Pure.cpp",
+      "line": 66,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void on_destruction_request()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_all_systems",
+      "file": "src/GameSystems.cpp",
+      "line": 19,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_all_systems(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_all_systems",
+      "file": "src/GameSystems.cpp",
+      "line": 46,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_all_systems()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_input_system",
+      "file": "src/GameSystems.cpp",
+      "line": 52,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_input_system(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_physics_system",
+      "file": "src/GameSystems.cpp",
+      "line": 56,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_physics_system(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_ai_system",
+      "file": "src/GameSystems.cpp",
+      "line": 67,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_ai_system(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_collision_system",
+      "file": "src/GameSystems.cpp",
+      "line": 78,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_collision_system(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_animation_system",
+      "file": "src/GameSystems.cpp",
+      "line": 82,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_animation_system(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_world",
+      "file": "src/GameSystems.cpp",
+      "line": 86,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_world()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_effects",
+      "file": "src/GameSystems.cpp",
+      "line": 90,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_effects()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_ui",
+      "file": "src/GameSystems.cpp",
+      "line": 94,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_ui()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_object_references",
+      "file": "src/GameSystems.cpp",
+      "line": 98,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_object_references(int * objects, int * bombers)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "init_all_systems",
+      "file": "src/GameSystems.cpp",
+      "line": 105,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void init_all_systems()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_object",
+      "file": "src/GameSystems.cpp",
+      "line": 121,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_object(GameObject * obj)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_bomber",
+      "file": "src/GameSystems.cpp",
+      "line": 128,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_bomber(Bomber * bomber)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "cleanup_destroyed_objects",
+      "file": "src/GameSystems.cpp",
+      "line": 135,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void cleanup_destroyed_objects()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "act",
+      "file": "src/ParticleSystem.cpp",
+      "line": 49,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void act(float deltaTime)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "show",
+      "file": "src/ParticleSystem.cpp",
+      "line": 82,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void show()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_particles",
+      "file": "src/ParticleSystem.cpp",
+      "line": 86,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_particles(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_particles",
+      "file": "src/ParticleSystem.cpp",
+      "line": 122,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_particles()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_particle",
+      "file": "src/ParticleSystem.cpp",
+      "line": 126,
+      "category": "particle_functions",
+      "priority": "LOW",
+      "signature": "void create_particle(float px, float py, float vel_x, float vel_y, float life, float size, Uint8 r, Uint8 g, Uint8 b)",
+      "reason": "Never called (particle_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "emit_explosion_sparks",
+      "file": "src/ParticleSystem.cpp",
+      "line": 148,
+      "category": "particle_functions",
+      "priority": "LOW",
+      "signature": "void emit_explosion_sparks(int count)",
+      "reason": "Never called (particle_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "emit_dust_cloud",
+      "file": "src/ParticleSystem.cpp",
+      "line": 170,
+      "category": "particle_functions",
+      "priority": "LOW",
+      "signature": "void emit_dust_cloud(int count)",
+      "reason": "Never called (particle_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "emit_fire_particles",
+      "file": "src/ParticleSystem.cpp",
+      "line": 203,
+      "category": "particle_functions",
+      "priority": "LOW",
+      "signature": "void emit_fire_particles(int count)",
+      "reason": "Never called (particle_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "emit_smoke_trail",
+      "file": "src/ParticleSystem.cpp",
+      "line": 238,
+      "category": "particle_functions",
+      "priority": "LOW",
+      "signature": "void emit_smoke_trail(int count)",
+      "reason": "Never called (particle_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "destroy",
+      "file": "src/MapTile_Box.cpp",
+      "line": 242,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void destroy()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "apply_force",
+      "file": "src/CorpsePart.cpp",
+      "line": 158,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void apply_force(const Vector2D & force)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "apply_drag",
+      "file": "src/CorpsePart.cpp",
+      "line": 164,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void apply_drag()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "apply_gravity",
+      "file": "src/CorpsePart.cpp",
+      "line": 179,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void apply_gravity()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_collisions",
+      "file": "src/CorpsePart.cpp",
+      "line": 185,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void handle_collisions(float deltaTime)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_blood_trail",
+      "file": "src/CorpsePart.cpp",
+      "line": 227,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_blood_trail(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "emit_blood",
+      "file": "src/CorpsePart.cpp",
+      "line": 244,
+      "category": "particle_functions",
+      "priority": "LOW",
+      "signature": "void emit_blood()",
+      "reason": "Never called (particle_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_blood_trails",
+      "file": "src/CorpsePart.cpp",
+      "line": 262,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_blood_trails()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_part_mass",
+      "file": "src/CorpsePart.cpp",
+      "line": 268,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "float get_part_mass(int part_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_part_surface_area",
+      "file": "src/CorpsePart.cpp",
+      "line": 279,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "float get_part_surface_area(int part_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "explode",
+      "file": "src/BomberCorpse.cpp",
+      "line": 68,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void explode()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_gore_explosion",
+      "file": "src/BomberCorpse.cpp",
+      "line": 79,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void create_gore_explosion()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_error",
+      "file": "src/ErrorHandling.cpp",
+      "line": 6,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "ErrorRecoveryStrategy handle_error(const GameException & error)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_error_handler",
+      "file": "src/ErrorHandling.cpp",
+      "line": 34,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_error_handler(GameErrorType error_type, ErrorCallback callback)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_error_statistics",
+      "file": "src/ErrorHandling.cpp",
+      "line": 45,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "ErrorHandler::ErrorStats get_error_statistics()",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_error_statistics",
+      "file": "src/ErrorHandling.cpp",
+      "line": 73,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "void clear_error_statistics()",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "log_error",
+      "file": "src/ErrorHandling.cpp",
+      "line": 78,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "void log_error(const GameException & error)",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_default_strategy",
+      "file": "src/ErrorHandling.cpp",
+      "line": 119,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "ErrorRecoveryStrategy get_default_strategy(GameErrorType type, ErrorSeverity severity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_frame",
+      "file": "src/GameLogic.cpp",
+      "line": 16,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_frame(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_all_objects",
+      "file": "src/GameLogic.cpp",
+      "line": 36,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_all_objects(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_all_objects",
+      "file": "src/GameLogic.cpp",
+      "line": 55,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_all_objects()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "cleanup_deleted_objects",
+      "file": "src/GameLogic.cpp",
+      "line": 82,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void cleanup_deleted_objects()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_object_by_id",
+      "file": "src/GameLogic.cpp",
+      "line": 89,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "GameObject * find_object_by_id(int object_id)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_bomber_by_id",
+      "file": "src/GameLogic.cpp",
+      "line": 96,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Bomber * find_bomber_by_id(int bomber_id)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "count_active_objects",
+      "file": "src/GameLogic.cpp",
+      "line": 103,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int count_active_objects()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_all_objects",
+      "file": "src/GameLogic.cpp",
+      "line": 114,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear_all_objects()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "reset_game_state",
+      "file": "src/GameLogic.cpp",
+      "line": 121,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void reset_game_state()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "log_frame_statistics",
+      "file": "src/GameLogic.cpp",
+      "line": 166,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "void log_frame_statistics()",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "should_skip_object_update",
+      "file": "src/GameLogic.cpp",
+      "line": 178,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "bool should_skip_object_update(GameObject * obj)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 36,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "GameResult<void> initialize(SDL_Window * _window, int width, int height)",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load_all_shaders",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 211,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool load_all_shaders()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "compile_shader",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 325,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int compile_shader(const std::string & source, int type, const std::string & name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_program",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 344,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int create_program(int vertex, int fragment, const std::string & name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_compute_program",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 372,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int create_compute_program(int compute, const std::string & name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "setup_matrices",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 391,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void setup_matrices()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "setup_sprite_rendering",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 408,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void setup_sprite_rendering()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "init_particle_system",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 480,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "bool init_particle_system(int max_particles)",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "begin_frame",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 520,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void begin_frame()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "end_frame",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 536,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void end_frame()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "present",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 545,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void present()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "check_gl_error",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 550,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void check_gl_error(const std::string & operation)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "preprocess_shader_includes",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 566,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string preprocess_shader_includes(const std::string & source)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "begin_batch",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 616,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void begin_batch(EffectType effect)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "flush_batch",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 623,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void flush_batch()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_uniforms",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 762,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_uniforms()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "add_sprite",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 847,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void add_sprite(float x, float y, float w, float h, int texture, const float * color, float rotation, const float * scale, int sprite_number)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "add_animated_sprite",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 852,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void add_animated_sprite(float x, float y, float w, float h, int texture, const float * color, float rotation, const float * scale, EffectType effect, int sprite_number)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "end_batch",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 933,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void end_batch()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_particles_gpu",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 937,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_particles_gpu(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "emit_particles",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 997,
+      "category": "particle_functions",
+      "priority": "LOW",
+      "signature": "void emit_particles(float x, float y, int count, ParticleType type, const float * velocity, float life)",
+      "reason": "Never called (particle_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_camera",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1089,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_camera(const float * position, float zoom)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_global_effect_params",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1102,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_global_effect_params(const float * params)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_texture_from_surface",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1108,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int create_texture_from_surface(SDL_Surface * surface)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "print_performance_stats",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1127,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void print_performance_stats()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_texture_metadata",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1136,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_texture_metadata(int texture_id, int width, int height, int sprite_width, int sprite_height)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "calculate_sprite_uv",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1148,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void calculate_sprite_uv(int texture, int sprite_number, float & u_start, float & u_end, float & v_start, float & v_end)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_explosion_effect",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1183,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_explosion_effect(float center_x, float center_y, float radius, float strength)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_vortex_effect",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1190,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_vortex_effect(float center_x, float center_y, float radius, float strength)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_environmental_effects",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1197,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_environmental_effects(float air_density_value, const float * magnetic_field_value)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_effects",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1207,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear_effects()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_explosion_info",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1217,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_explosion_info(float center_x, float center_y, float age, int up, int down, int left, int right)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_explosion_info",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1232,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear_explosion_info()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize_game_context",
+      "file": "src/ClanBomber.cpp",
+      "line": 65,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void initialize_game_context()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_server",
+      "file": "src/ClanBomber.cpp",
+      "line": 98,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_server()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_client",
+      "file": "src/ClanBomber.cpp",
+      "line": 102,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_client()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_server",
+      "file": "src/ClanBomber.cpp",
+      "line": 106,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Server * get_server()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_client",
+      "file": "src/ClanBomber.cpp",
+      "line": 110,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Client * get_client()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_server_setup",
+      "file": "src/ClanBomber.cpp",
+      "line": 114,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "ServerSetup * get_server_setup()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_client_setup",
+      "file": "src/ClanBomber.cpp",
+      "line": 118,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "ClientSetup * get_client_setup()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_chat",
+      "file": "src/ClanBomber.cpp",
+      "line": 122,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Chat * get_chat()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_menu",
+      "file": "src/ClanBomber.cpp",
+      "line": 126,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Menu * get_menu()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_next_object_id",
+      "file": "src/ClanBomber.cpp",
+      "line": 130,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "unsigned short get_next_object_id()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_map_path",
+      "file": "src/ClanBomber.cpp",
+      "line": 135,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::filesystem::path get_map_path()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_local_map_path",
+      "file": "src/ClanBomber.cpp",
+      "line": 139,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::filesystem::path get_local_map_path()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "lock",
+      "file": "src/ClanBomber.cpp",
+      "line": 143,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void lock()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "unlock",
+      "file": "src/ClanBomber.cpp",
+      "line": 147,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void unlock()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "wait",
+      "file": "src/ClanBomber.cpp",
+      "line": 151,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void wait()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "signal",
+      "file": "src/ClanBomber.cpp",
+      "line": 155,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void signal()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "delete_all_game_objects",
+      "file": "src/ClanBomber.cpp",
+      "line": 159,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void delete_all_game_objects()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_object_by_id",
+      "file": "src/ClanBomber.cpp",
+      "line": 171,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "GameObject * get_object_by_id(int object_id)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_server_frame_counter",
+      "file": "src/ClanBomber.cpp",
+      "line": 180,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_server_frame_counter()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "inc_server_frame_counter",
+      "file": "src/ClanBomber.cpp",
+      "line": 184,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void inc_server_frame_counter()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "paused_game",
+      "file": "src/ClanBomber.cpp",
+      "line": 188,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool paused_game()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_pause_game",
+      "file": "src/ClanBomber.cpp",
+      "line": 192,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_pause_game(bool paused)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_client_disconnected_from_server",
+      "file": "src/ClanBomber.cpp",
+      "line": 196,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_client_disconnected_from_server(bool d)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_client_disconnected_from_server",
+      "file": "src/ClanBomber.cpp",
+      "line": 200,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_client_disconnected_from_server()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_client_connecting_to_new_server",
+      "file": "src/ClanBomber.cpp",
+      "line": 204,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_client_connecting_to_new_server(bool c)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_client_connecting_to_new_server",
+      "file": "src/ClanBomber.cpp",
+      "line": 208,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_client_connecting_to_new_server()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "request_effect",
+      "file": "src/ParticleEffectsManager.cpp",
+      "line": 18,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void request_effect(const EffectRequest & request)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_box_destruction_effect",
+      "file": "src/ParticleEffectsManager.cpp",
+      "line": 41,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void create_box_destruction_effect(float x, float y, float intensity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_explosion_effect",
+      "file": "src/ParticleEffectsManager.cpp",
+      "line": 45,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void create_explosion_effect(float x, float y, float intensity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "process_box_destruction",
+      "file": "src/ParticleEffectsManager.cpp",
+      "line": 49,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void process_box_destruction(float x, float y, float intensity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "process_explosion",
+      "file": "src/ParticleEffectsManager.cpp",
+      "line": 68,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void process_explosion(float x, float y, float intensity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load_font",
+      "file": "src/TextRenderer.cpp",
+      "line": 49,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool load_font(const std::string & name, const std::string & path, int size)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "create_gl_texture_from_surface",
+      "file": "src/TextRenderer.cpp",
+      "line": 69,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int create_gl_texture_from_surface(SDL_Surface * surface)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "draw_text",
+      "file": "src/TextRenderer.cpp",
+      "line": 147,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void draw_text(RenderingFacade * rendering_facade, const std::string & text, const std::string & font_name, float x, float y, SDL_Color color)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "draw_text_centered",
+      "file": "src/TextRenderer.cpp",
+      "line": 163,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void draw_text_centered(RenderingFacade * rendering_facade, const std::string & text, const std::string & font_name, float center_x, float y, SDL_Color color)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "attach",
+      "file": "src/Controller.cpp",
+      "line": 36,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void attach(Bomber * _bomber)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "activate",
+      "file": "src/Controller.cpp",
+      "line": 41,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void activate()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "deactivate",
+      "file": "src/Controller.cpp",
+      "line": 46,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void deactivate()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "revert",
+      "file": "src/Controller.cpp",
+      "line": 51,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void revert()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "bomb_normal",
+      "file": "src/Controller.cpp",
+      "line": 56,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void bomb_normal()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "bomb_always",
+      "file": "src/Controller.cpp",
+      "line": 61,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void bomb_always()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_type",
+      "file": "src/Controller.cpp",
+      "line": 107,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Controller::CONTROLLER_TYPE get_type()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "run",
+      "file": "src/Game.cpp",
+      "line": 154,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void run()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "change_screen",
+      "file": "src/Game.cpp",
+      "line": 222,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void change_screen(GameState next_state)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_name",
+      "file": "src/GameConfig.cpp",
+      "line": 100,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_name(std::string _name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_name",
+      "file": "src/GameConfig.cpp",
+      "line": 107,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string get_name()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_skin",
+      "file": "src/GameConfig.cpp",
+      "line": 112,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_skin(int _skin)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_skin",
+      "file": "src/GameConfig.cpp",
+      "line": 117,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_skin()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_team",
+      "file": "src/GameConfig.cpp",
+      "line": 122,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_team(int _team)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_team",
+      "file": "src/GameConfig.cpp",
+      "line": 127,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_team()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_controller",
+      "file": "src/GameConfig.cpp",
+      "line": 132,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_controller(int _controller)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "enable",
+      "file": "src/GameConfig.cpp",
+      "line": 142,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void enable()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "disable",
+      "file": "src/GameConfig.cpp",
+      "line": 147,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void disable()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_highlight_maptile",
+      "file": "src/GameConfig.cpp",
+      "line": 152,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_highlight_maptile(bool _highlight_maptile)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_highlight_maptile",
+      "file": "src/GameConfig.cpp",
+      "line": 157,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_highlight_maptile()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_enabled",
+      "file": "src/GameConfig.cpp",
+      "line": 162,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int is_enabled()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_enabled",
+      "file": "src/GameConfig.cpp",
+      "line": 167,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_enabled(bool _enabled)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_client_index",
+      "file": "src/GameConfig.cpp",
+      "line": 172,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_client_index(int index)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_client_index",
+      "file": "src/GameConfig.cpp",
+      "line": 177,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_client_index()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_config_index",
+      "file": "src/GameConfig.cpp",
+      "line": 182,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_config_index()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_config_index",
+      "file": "src/GameConfig.cpp",
+      "line": 187,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_config_index(int index)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_client_ip",
+      "file": "src/GameConfig.cpp",
+      "line": 192,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "char * get_client_ip()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_client_ip",
+      "file": "src/GameConfig.cpp",
+      "line": 197,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_client_ip(char * ip_string)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_number_of_players",
+      "file": "src/GameConfig.cpp",
+      "line": 202,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_number_of_players()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_number_of_opponents",
+      "file": "src/GameConfig.cpp",
+      "line": 215,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_number_of_opponents()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_round_time",
+      "file": "src/GameConfig.cpp",
+      "line": 237,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_round_time(int _round_time)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_random_map_order",
+      "file": "src/GameConfig.cpp",
+      "line": 242,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_random_map_order(int _random_map_order)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_max_skateboards",
+      "file": "src/GameConfig.cpp",
+      "line": 247,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_max_skateboards(int _max_skateboards)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_max_power",
+      "file": "src/GameConfig.cpp",
+      "line": 252,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_max_power(int _max_power)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_max_bombs",
+      "file": "src/GameConfig.cpp",
+      "line": 257,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_max_bombs(int _max_bombs)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_start_skateboards",
+      "file": "src/GameConfig.cpp",
+      "line": 262,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_start_skateboards(int _start_skateboards)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_start_power",
+      "file": "src/GameConfig.cpp",
+      "line": 267,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_start_power(int _start_power)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_start_bombs",
+      "file": "src/GameConfig.cpp",
+      "line": 272,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_start_bombs(int _start_bombs)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_start_kick",
+      "file": "src/GameConfig.cpp",
+      "line": 277,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_start_kick(int _start_kick)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_start_glove",
+      "file": "src/GameConfig.cpp",
+      "line": 282,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_start_glove(int _start_glove)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_skateboards",
+      "file": "src/GameConfig.cpp",
+      "line": 287,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_skateboards(int _skateboards)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_power",
+      "file": "src/GameConfig.cpp",
+      "line": 292,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_power(int _power)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_bombs",
+      "file": "src/GameConfig.cpp",
+      "line": 297,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_bombs(int _bombs)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_kick",
+      "file": "src/GameConfig.cpp",
+      "line": 302,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_kick(int _kick)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_glove",
+      "file": "src/GameConfig.cpp",
+      "line": 307,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_glove(int _glove)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_joint",
+      "file": "src/GameConfig.cpp",
+      "line": 312,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_joint(int _joint)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_viagra",
+      "file": "src/GameConfig.cpp",
+      "line": 317,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_viagra(int _viagra)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_koks",
+      "file": "src/GameConfig.cpp",
+      "line": 322,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_koks(int _koks)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_start_map",
+      "file": "src/GameConfig.cpp",
+      "line": 327,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_start_map(int _start_map)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_points_to_win",
+      "file": "src/GameConfig.cpp",
+      "line": 332,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_points_to_win(int _points_to_win)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_theme",
+      "file": "src/GameConfig.cpp",
+      "line": 337,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_theme(int _theme)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_filename",
+      "file": "src/GameConfig.cpp",
+      "line": 342,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_filename(std::filesystem::path _filename)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_path",
+      "file": "src/GameConfig.cpp",
+      "line": 347,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_path(std::filesystem::path _path)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_music",
+      "file": "src/GameConfig.cpp",
+      "line": 352,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_music(int _music)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_kids_mode",
+      "file": "src/GameConfig.cpp",
+      "line": 357,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_kids_mode(int _kids_mode)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_corpse_parts",
+      "file": "src/GameConfig.cpp",
+      "line": 362,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_corpse_parts(int _corpse_parts)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_shaky_explosions",
+      "file": "src/GameConfig.cpp",
+      "line": 367,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_shaky_explosions(int _shaky_explosions)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_highlight_maptiles",
+      "file": "src/GameConfig.cpp",
+      "line": 372,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_highlight_maptiles(int _highlight_maptiles)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_random_positions",
+      "file": "src/GameConfig.cpp",
+      "line": 377,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_random_positions(int _random_positions)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_bomb_countdown",
+      "file": "src/GameConfig.cpp",
+      "line": 383,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_bomb_countdown(int _bomb_countdown)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_bomb_delay",
+      "file": "src/GameConfig.cpp",
+      "line": 388,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_bomb_delay(int _bomb_delay)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_bomb_speed",
+      "file": "src/GameConfig.cpp",
+      "line": 393,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_bomb_speed(int _bomb_speed)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_max_skateboards",
+      "file": "src/GameConfig.cpp",
+      "line": 398,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_max_skateboards()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_max_power",
+      "file": "src/GameConfig.cpp",
+      "line": 403,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_max_power()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_max_bombs",
+      "file": "src/GameConfig.cpp",
+      "line": 408,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_max_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_start_skateboards",
+      "file": "src/GameConfig.cpp",
+      "line": 413,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_start_skateboards()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_start_power",
+      "file": "src/GameConfig.cpp",
+      "line": 418,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_start_power()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_start_bombs",
+      "file": "src/GameConfig.cpp",
+      "line": 423,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_start_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_start_kick",
+      "file": "src/GameConfig.cpp",
+      "line": 428,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_start_kick()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_start_glove",
+      "file": "src/GameConfig.cpp",
+      "line": 433,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_start_glove()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_skateboards",
+      "file": "src/GameConfig.cpp",
+      "line": 438,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_skateboards()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_power",
+      "file": "src/GameConfig.cpp",
+      "line": 443,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_power()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bombs",
+      "file": "src/GameConfig.cpp",
+      "line": 448,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_kick",
+      "file": "src/GameConfig.cpp",
+      "line": 453,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_kick()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_glove",
+      "file": "src/GameConfig.cpp",
+      "line": 458,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_glove()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_joint",
+      "file": "src/GameConfig.cpp",
+      "line": 463,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_joint()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_viagra",
+      "file": "src/GameConfig.cpp",
+      "line": 468,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_viagra()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_koks",
+      "file": "src/GameConfig.cpp",
+      "line": 473,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_koks()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_start_map",
+      "file": "src/GameConfig.cpp",
+      "line": 478,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_start_map()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_random_map_order",
+      "file": "src/GameConfig.cpp",
+      "line": 483,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_random_map_order()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_round_time",
+      "file": "src/GameConfig.cpp",
+      "line": 488,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_round_time()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_points_to_win",
+      "file": "src/GameConfig.cpp",
+      "line": 493,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_points_to_win()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_theme",
+      "file": "src/GameConfig.cpp",
+      "line": 498,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_theme()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_sound_enabled",
+      "file": "src/GameConfig.cpp",
+      "line": 503,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_sound_enabled()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_music",
+      "file": "src/GameConfig.cpp",
+      "line": 508,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_music()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_kids_mode",
+      "file": "src/GameConfig.cpp",
+      "line": 513,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_kids_mode()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_corpse_parts",
+      "file": "src/GameConfig.cpp",
+      "line": 518,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_corpse_parts()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_shaky_explosions",
+      "file": "src/GameConfig.cpp",
+      "line": 523,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_shaky_explosions()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_highlight_maptiles",
+      "file": "src/GameConfig.cpp",
+      "line": 528,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_highlight_maptiles()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_random_positions",
+      "file": "src/GameConfig.cpp",
+      "line": 534,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_random_positions()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bomb_countdown",
+      "file": "src/GameConfig.cpp",
+      "line": 539,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_bomb_countdown()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bomb_delay",
+      "file": "src/GameConfig.cpp",
+      "line": 544,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_bomb_delay()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bomb_speed",
+      "file": "src/GameConfig.cpp",
+      "line": 549,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_bomb_speed()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_fullscreen",
+      "file": "src/GameConfig.cpp",
+      "line": 554,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool get_fullscreen()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_fullscreen",
+      "file": "src/GameConfig.cpp",
+      "line": 559,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_fullscreen(bool val)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "save",
+      "file": "src/GameConfig.cpp",
+      "line": 564,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool save(bool init)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_last_server",
+      "file": "src/GameConfig.cpp",
+      "line": 737,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_last_server(std::string server_name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_last_server",
+      "file": "src/GameConfig.cpp",
+      "line": 742,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string get_last_server()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_local",
+      "file": "src/GameConfig.cpp",
+      "line": 748,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_local(bool _local)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_local",
+      "file": "src/GameConfig.cpp",
+      "line": 754,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_local()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_server_bomber",
+      "file": "src/GameConfig.cpp",
+      "line": 759,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_server_bomber()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_server_bomber",
+      "file": "src/GameConfig.cpp",
+      "line": 764,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_server_bomber(bool from_server)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize_joystick_system",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 94,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void initialize_joystick_system()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "shutdown_joystick_system",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 127,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void shutdown_joystick_system()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_all_joysticks",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 146,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void update_all_joysticks()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_joystick_count",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 155,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "int get_joystick_count()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize_joystick",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 171,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "bool initialize_joystick()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "cleanup_joystick",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 231,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void cleanup_joystick()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_joystick_connected",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 245,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "bool is_joystick_connected()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_input_state",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 249,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_input_state()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_analog_left",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 266,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "bool get_analog_left()",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_analog_right",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 275,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "bool get_analog_right()",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_analog_up",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 284,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "bool get_analog_up()",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_analog_down",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 293,
+      "category": "debug_functions",
+      "priority": "HIGH",
+      "signature": "bool get_analog_down()",
+      "reason": "Never called (debug_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_dpad_left",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 304,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool get_dpad_left()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_dpad_right",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 313,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool get_dpad_right()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_dpad_up",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 322,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool get_dpad_up()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_dpad_down",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 331,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool get_dpad_down()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_button_bomb",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 342,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool get_button_bomb()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize_haptic",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 366,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void initialize_haptic()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "cleanup_haptic",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 390,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void cleanup_haptic()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "apply_vibration",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 399,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void apply_vibration(float intensity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "trigger_explosion_vibration",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 500,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void trigger_explosion_vibration(float explosion_x, float explosion_y, float explosion_power, float bomber_x, float bomber_y, bool bomber_died)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_haptic",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 571,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_haptic(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "stop_vibration",
+      "file": "src/Controller_Joystick.cpp",
+      "line": 593,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void stop_vibration()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_tile",
+      "file": "src/LifecycleManager.cpp",
+      "line": 32,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_tile(MapTile * tile, int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_tile_entity",
+      "file": "src/LifecycleManager.cpp",
+      "line": 45,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_tile_entity(TileEntity * tile_entity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "mark_for_destruction",
+      "file": "src/LifecycleManager.cpp",
+      "line": 53,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void mark_for_destruction(GameObject * obj)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "mark_tile_for_destruction",
+      "file": "src/LifecycleManager.cpp",
+      "line": 73,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void mark_tile_for_destruction(MapTile * tile, MapTile * replacement)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "mark_tile_entity_for_destruction",
+      "file": "src/LifecycleManager.cpp",
+      "line": 91,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void mark_tile_entity_for_destruction(TileEntity * tile_entity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_states",
+      "file": "src/LifecycleManager.cpp",
+      "line": 99,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_states(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_object_state",
+      "file": "src/LifecycleManager.cpp",
+      "line": 115,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_object_state(ManagedObject & managed, float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_tile_state",
+      "file": "src/LifecycleManager.cpp",
+      "line": 150,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_tile_state(ManagedTile & managed, float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "cleanup_dead_objects",
+      "file": "src/LifecycleManager.cpp",
+      "line": 195,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void cleanup_dead_objects()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_tile_entity_state",
+      "file": "src/LifecycleManager.cpp",
+      "line": 253,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "LifecycleManager::ObjectState get_tile_entity_state(TileEntity * tile_entity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_dying_or_dead",
+      "file": "src/LifecycleManager.cpp",
+      "line": 258,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_dying_or_dead(GameObject * obj)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_all",
+      "file": "src/LifecycleManager.cpp",
+      "line": 273,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear_all()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_active_object_count",
+      "file": "src/LifecycleManager.cpp",
+      "line": 295,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_active_object_count()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_active_tile_count",
+      "file": "src/LifecycleManager.cpp",
+      "line": 302,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_active_tile_count()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_managed_object",
+      "file": "src/LifecycleManager.cpp",
+      "line": 310,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "LifecycleManager::ManagedObject * find_managed_object(GameObject * obj)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_managed_tile",
+      "file": "src/LifecycleManager.cpp",
+      "line": 318,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "LifecycleManager::ManagedTile * find_managed_tile(MapTile * tile)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "explode_delayed",
+      "file": "src/Bomb.cpp",
+      "line": 81,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void explode_delayed()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "kick",
+      "file": "src/Bomb.cpp",
+      "line": 88,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void kick(Direction dir)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "stop",
+      "file": "src/Bomb.cpp",
+      "line": 98,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void stop()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "collect",
+      "file": "src/Extra.cpp",
+      "line": 122,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void collect()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "apply_effect_to_bomber",
+      "file": "src/Extra.cpp",
+      "line": 144,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void apply_effect_to_bomber(Bomber * bomber)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_screen",
+      "file": "src/RenderingFacade.cpp",
+      "line": 126,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear_screen(uint8_t r, uint8_t g, uint8_t b, uint8_t a)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_sprite_at_grid",
+      "file": "src/RenderingFacade.cpp",
+      "line": 199,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "GameResult<void> render_sprite_at_grid(const std::string & texture_name, const GridCoord & grid_position, int sprite_nr, float rotation, uint8_t opacity)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_sprite_batch",
+      "file": "src/RenderingFacade.cpp",
+      "line": 208,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "GameResult<void> render_sprite_batch(const std::string & texture_name, const int & commands)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_particle_effect",
+      "file": "src/RenderingFacade.cpp",
+      "line": 295,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "GameResult<void> render_particle_effect(const std::string & effect_type, const PixelCoord & position, float intensity)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "screen_to_world",
+      "file": "src/RenderingFacade.cpp",
+      "line": 335,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "PixelCoord screen_to_world(const PixelCoord & screen_coord)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "world_to_screen",
+      "file": "src/RenderingFacade.cpp",
+      "line": 341,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "PixelCoord world_to_screen(const PixelCoord & world_coord)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_position_visible",
+      "file": "src/RenderingFacade.cpp",
+      "line": 346,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_position_visible(const PixelCoord & position)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_viewport_bounds",
+      "file": "src/RenderingFacade.cpp",
+      "line": 351,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "RenderingFacade::ViewportBounds get_viewport_bounds()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_config",
+      "file": "src/RenderingFacade.cpp",
+      "line": 357,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_config(const RenderingConfig & new_config)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_debug_mode",
+      "file": "src/RenderingFacade.cpp",
+      "line": 367,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_debug_mode(bool enabled)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "reset_statistics",
+      "file": "src/RenderingFacade.cpp",
+      "line": 374,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void reset_statistics()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_debug_info",
+      "file": "src/RenderingFacade.cpp",
+      "line": 378,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_debug_info()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "preload_texture",
+      "file": "src/RenderingFacade.cpp",
+      "line": 392,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "GameResult<void> preload_texture(const std::string & texture_name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "unload_texture",
+      "file": "src/RenderingFacade.cpp",
+      "line": 410,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void unload_texture(const std::string & texture_name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_texture_info",
+      "file": "src/RenderingFacade.cpp",
+      "line": 418,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "RenderingFacade::TextureInfo get_texture_info(const std::string & texture_name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize_gpu_renderer",
+      "file": "src/RenderingFacade.cpp",
+      "line": 438,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "GameResult<void> initialize_gpu_renderer(SDL_Window * window)",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize_text_renderer",
+      "file": "src/RenderingFacade.cpp",
+      "line": 465,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "GameResult<void> initialize_text_renderer()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "initialize_particle_manager",
+      "file": "src/RenderingFacade.cpp",
+      "line": 507,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "GameResult<void> initialize_particle_manager()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_statistics",
+      "file": "src/RenderingFacade.cpp",
+      "line": 528,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_statistics()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "validate_rendering_state",
+      "file": "src/RenderingFacade.cpp",
+      "line": 539,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void validate_rendering_state()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_gpu_error",
+      "file": "src/RenderingFacade.cpp",
+      "line": 551,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "GameResult<void> handle_gpu_error(const std::string & operation)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_text_error",
+      "file": "src/RenderingFacade.cpp",
+      "line": 557,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "GameResult<void> handle_text_error(const std::string & operation)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_particle_error",
+      "file": "src/RenderingFacade.cpp",
+      "line": 562,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "GameResult<void> handle_particle_error(const std::string & operation)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "die",
+      "file": "src/Bomber.cpp",
+      "line": 87,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void die()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_dead",
+      "file": "src/Bomber.cpp",
+      "line": 91,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_dead()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_lives",
+      "file": "src/Bomber.cpp",
+      "line": 96,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_lives(int lives)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_lives",
+      "file": "src/Bomber.cpp",
+      "line": 100,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_lives()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "lose_life",
+      "file": "src/Bomber.cpp",
+      "line": 104,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void lose_life()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "has_lives",
+      "file": "src/Bomber.cpp",
+      "line": 108,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool has_lives()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "respawn",
+      "file": "src/Bomber.cpp",
+      "line": 113,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void respawn()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_respawning",
+      "file": "src/Bomber.cpp",
+      "line": 117,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_respawning()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_invincible",
+      "file": "src/Bomber.cpp",
+      "line": 121,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_invincible(bool inv)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_invincible",
+      "file": "src/Bomber.cpp",
+      "line": 125,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_invincible()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_number",
+      "file": "src/Bomber.cpp",
+      "line": 148,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_number(int number)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_number",
+      "file": "src/Bomber.cpp",
+      "line": 152,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_number()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "fly_to",
+      "file": "src/Bomber.cpp",
+      "line": 157,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void fly_to(int target_x, int target_y, float duration_ms)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "can_move",
+      "file": "src/Bomber.cpp",
+      "line": 167,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool can_move()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "place_bomb",
+      "file": "src/Bomber.cpp",
+      "line": 172,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void place_bomb()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "throw_bomb",
+      "file": "src/Bomber.cpp",
+      "line": 176,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void throw_bomb()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "can_place_bomb",
+      "file": "src/Bomber.cpp",
+      "line": 180,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool can_place_bomb()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "inc_speed",
+      "file": "src/Bomber.cpp",
+      "line": 185,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void inc_speed(int amount)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "dec_speed",
+      "file": "src/Bomber.cpp",
+      "line": 192,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void dec_speed(int amount)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "inc_power",
+      "file": "src/Bomber.cpp",
+      "line": 203,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void inc_power(int amount)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "inc_max_bombs",
+      "file": "src/Bomber.cpp",
+      "line": 212,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void inc_max_bombs(int amount)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_current_bombs",
+      "file": "src/Bomber.cpp",
+      "line": 216,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_current_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "inc_current_bombs",
+      "file": "src/Bomber.cpp",
+      "line": 220,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void inc_current_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "dec_current_bombs",
+      "file": "src/Bomber.cpp",
+      "line": 224,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void dec_current_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "can_kick",
+      "file": "src/Bomber.cpp",
+      "line": 229,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool can_kick()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "can_throw",
+      "file": "src/Bomber.cpp",
+      "line": 233,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool can_throw()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "can_ignore_bomb_collision",
+      "file": "src/Bomber.cpp",
+      "line": 237,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool can_ignore_bomb_collision(Bomb * bomb)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_can_kick",
+      "file": "src/Bomber.cpp",
+      "line": 241,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_can_kick(bool kick)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_can_throw",
+      "file": "src/Bomber.cpp",
+      "line": 245,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_can_throw(bool throw_ability)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "init_game",
+      "file": "src/GameplayScreen.cpp",
+      "line": 49,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void init_game()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "deinit_game",
+      "file": "src/GameplayScreen.cpp",
+      "line": 189,
+      "category": "timer_functions",
+      "priority": "HIGH",
+      "signature": "void deinit_game()",
+      "reason": "Never called (timer_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_audio_listener",
+      "file": "src/GameplayScreen.cpp",
+      "line": 332,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_audio_listener()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "act_all",
+      "file": "src/GameplayScreen.cpp",
+      "line": 381,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void act_all()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "delete_some",
+      "file": "src/GameplayScreen.cpp",
+      "line": 412,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void delete_some()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "show_all",
+      "file": "src/GameplayScreen.cpp",
+      "line": 446,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void show_all()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "check_victory_conditions",
+      "file": "src/GameplayScreen.cpp",
+      "line": 483,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void check_victory_conditions()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_victory_screen",
+      "file": "src/GameplayScreen.cpp",
+      "line": 540,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_victory_screen()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "calculate_flight_path",
+      "file": "src/ThrownBomb.cpp",
+      "line": 28,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void calculate_flight_path()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "spawn_extra",
+      "file": "src/MapTile.cpp",
+      "line": 61,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void spawn_extra()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_position_blocked",
+      "file": "src/GameContext.cpp",
+      "line": 64,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_position_blocked(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "has_bomb_at",
+      "file": "src/GameContext.cpp",
+      "line": 68,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool has_bomb_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_position_walkable",
+      "file": "src/GameContext.cpp",
+      "line": 72,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_position_walkable(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "request_destruction_effect",
+      "file": "src/GameContext.cpp",
+      "line": 76,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void request_destruction_effect(float x, float y, float intensity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "remove_from_spatial_systems",
+      "file": "src/GameContext.cpp",
+      "line": 91,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void remove_from_spatial_systems(GameObject * obj)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_object_lists",
+      "file": "src/GameContext.cpp",
+      "line": 120,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_object_lists(int * objects)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_map",
+      "file": "src/GameContext.cpp",
+      "line": 125,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_map(Map * new_map)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_object_position_in_spatial_grid",
+      "file": "src/GameContext.cpp",
+      "line": 130,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_object_position_in_spatial_grid(GameObject * obj, float old_x, float old_y)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_destruction_animation",
+      "file": "src/TileEntity.cpp",
+      "line": 171,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_destruction_animation(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_destruction_effects",
+      "file": "src/TileEntity.cpp",
+      "line": 188,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_destruction_effects()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "render_fragmentation_effects",
+      "file": "src/TileEntity.cpp",
+      "line": 273,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void render_fragmentation_effects()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "enumerate_maps",
+      "file": "src/Map.cpp",
+      "line": 42,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void enumerate_maps()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear",
+      "file": "src/Map.cpp",
+      "line": 79,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "reload",
+      "file": "src/Map.cpp",
+      "line": 97,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void reload()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_tile",
+      "file": "src/Map.cpp",
+      "line": 191,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_tile(int tx, int ty, MapTile * tile)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_tile_entity",
+      "file": "src/Map.cpp",
+      "line": 201,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_tile_entity(int tx, int ty, TileEntity * tile_entity)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_tile_entity_at",
+      "file": "src/Map.cpp",
+      "line": 211,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear_tile_entity_at(int tx, int ty)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load_random_valid",
+      "file": "src/Map.cpp",
+      "line": 223,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void load_random_valid()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load_next_valid",
+      "file": "src/Map.cpp",
+      "line": 231,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void load_next_valid(int map_nr)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "refresh_holes",
+      "file": "src/Map.cpp",
+      "line": 252,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void refresh_holes()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "any_valid_map",
+      "file": "src/Map.cpp",
+      "line": 256,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool any_valid_map()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_map_count",
+      "file": "src/Map.cpp",
+      "line": 260,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_map_count()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_author",
+      "file": "src/Map.cpp",
+      "line": 271,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string get_author()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "randomize_bomber_positions",
+      "file": "src/Map.cpp",
+      "line": 296,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void randomize_bomber_positions()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_context",
+      "file": "src/TileManager.cpp",
+      "line": 20,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_context(GameContext * new_context)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_tiles",
+      "file": "src/TileManager.cpp",
+      "line": 31,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_tiles(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_tile_updates",
+      "file": "src/TileManager.cpp",
+      "line": 47,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void handle_tile_updates()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "coordinate_with_lifecycle_manager",
+      "file": "src/TileManager.cpp",
+      "line": 57,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void coordinate_with_lifecycle_manager()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "process_dying_tiles",
+      "file": "src/TileManager.cpp",
+      "line": 68,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void process_dying_tiles()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "process_dead_tiles",
+      "file": "src/TileManager.cpp",
+      "line": 80,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void process_dead_tiles()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "request_tile_destruction",
+      "file": "src/TileManager.cpp",
+      "line": 94,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void request_tile_destruction(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "replace_tile_when_ready",
+      "file": "src/TileManager.cpp",
+      "line": 138,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void replace_tile_when_ready(int map_x, int map_y, int new_tile_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_tile_ready_for_replacement",
+      "file": "src/TileManager.cpp",
+      "line": 144,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_tile_ready_for_replacement(MapTile * tile)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_tile_blocking_at",
+      "file": "src/TileManager.cpp",
+      "line": 175,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_tile_blocking_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_tile_destructible_at",
+      "file": "src/TileManager.cpp",
+      "line": 207,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_tile_destructible_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_bomb_at",
+      "file": "src/TileManager.cpp",
+      "line": 225,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_bomb_at(int map_x, int map_y, Bomb * bomb)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "unregister_bomb_at",
+      "file": "src/TileManager.cpp",
+      "line": 233,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void unregister_bomb_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bomb_at",
+      "file": "src/TileManager.cpp",
+      "line": 252,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Bomb * get_bomb_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_bomber_at",
+      "file": "src/TileManager.cpp",
+      "line": 257,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_bomber_at(int map_x, int map_y, Bomber * bomber)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "unregister_bomber_at",
+      "file": "src/TileManager.cpp",
+      "line": 265,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void unregister_bomber_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bomber_at",
+      "file": "src/TileManager.cpp",
+      "line": 273,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Bomber * get_bomber_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "has_bomber_at",
+      "file": "src/TileManager.cpp",
+      "line": 278,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool has_bomber_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "iterate_all_tiles",
+      "file": "src/TileManager.cpp",
+      "line": 284,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void iterate_all_tiles(std::function<void (MapTile *, int, int)> callback)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_destructible_tiles_in_radius",
+      "file": "src/TileManager.cpp",
+      "line": 295,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_destructible_tiles_in_radius(int center_x, int center_y, int radius)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_single_tile",
+      "file": "src/TileManager.cpp",
+      "line": 317,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_single_tile(MapTile * tile, int map_x, int map_y)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_tile_destruction_request",
+      "file": "src/TileManager.cpp",
+      "line": 329,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void handle_tile_destruction_request(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "perform_tile_replacement",
+      "file": "src/TileManager.cpp",
+      "line": 337,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void perform_tile_replacement(int map_x, int map_y, int new_tile_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_valid_position",
+      "file": "src/TileManager.cpp",
+      "line": 362,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_valid_position(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "handle_controller_input",
+      "file": "src/BomberComponents.cpp",
+      "line": 31,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void handle_controller_input(Controller * controller, float deltaTime)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_flight_animation",
+      "file": "src/BomberComponents.cpp",
+      "line": 103,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_flight_animation(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_bomb_cooldown",
+      "file": "src/BomberComponents.cpp",
+      "line": 275,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_bomb_cooldown(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_bomb_throwing",
+      "file": "src/BomberComponents.cpp",
+      "line": 284,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_bomb_throwing(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_bomb_escape_status",
+      "file": "src/BomberComponents.cpp",
+      "line": 299,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_bomb_escape_status()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_texture_from_color",
+      "file": "src/BomberComponents.cpp",
+      "line": 342,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_texture_from_color(int color)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_animation_frame",
+      "file": "src/BomberComponents.cpp",
+      "line": 346,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_animation_frame(float deltaTime, Direction direction)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_standing_sprite",
+      "file": "src/BomberComponents.cpp",
+      "line": 380,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_standing_sprite(Direction direction)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_invincibility_effects",
+      "file": "src/BomberComponents.cpp",
+      "line": 397,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_invincibility_effects(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "choose_texture_for_color",
+      "file": "src/BomberComponents.cpp",
+      "line": 405,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void choose_texture_for_color(int color)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_respawn_timer",
+      "file": "src/BomberComponents.cpp",
+      "line": 441,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_respawn_timer(float deltaTime)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "add_object",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 27,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void add_object(GameObject * obj)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "remove_object",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 37,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void remove_object(GameObject * obj)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_object_position",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 47,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_object_position(GameObject * obj, const PixelCoord & old_position)",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "rebuild_from_objects",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 62,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void rebuild_from_objects(const int & objects)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_objects_at_position",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 74,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_objects_at_position(const PixelCoord & position)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_objects_of_type_near",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 85,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_objects_of_type_near(const PixelCoord & position, GameObject::ObjectType object_type, int radius)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bombers_near",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 108,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_bombers_near(const PixelCoord & position, int radius)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bombs_near",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 112,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_bombs_near(const PixelCoord & position, int radius)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_extras_near",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 116,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_extras_near(const PixelCoord & position, int radius)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_objects_in_area",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 120,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_objects_in_area(const PixelCoord & top_left, const PixelCoord & bottom_right, GameObject::ObjectType object_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_collisions",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 149,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int find_collisions(GameObject * obj, float collision_radius, GameObject::ObjectType object_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "has_object_at_position",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 178,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool has_object_at_position(const PixelCoord & position, GameObject::ObjectType object_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "print_debug_info",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 223,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void print_debug_info()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "visualize_grid",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 236,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string visualize_grid(int max_width, int max_height)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_cells_in_radius",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 291,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_cells_in_radius(const GridCoord & center, int radius)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_cells_in_area",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 304,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_cells_in_area(const PixelCoord & top_left, const PixelCoord & bottom_right)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_cell",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 324,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "const SpatialCell * get_cell(const GridCoord & coord)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "add_object_to_cell",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 332,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void add_object_to_cell(GameObject * obj, const GridCoord & coord)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "remove_object_from_cell",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 337,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void remove_object_from_cell(GameObject * obj, const GridCoord & coord)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_nearest_bomber",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 351,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "GameObject * find_nearest_bomber(const PixelCoord & extra_position, float max_distance)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_explosion_victims",
+      "file": "src/SpatialPartitioning.cpp",
+      "line": 404,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int find_explosion_victims(const int & explosion_area)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "objecttype2string",
+      "file": "src/GameObject.cpp",
+      "line": 48,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "const char * objecttype2string(ObjectType t)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_object_id",
+      "file": "src/GameObject.cpp",
+      "line": 131,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_object_id()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_object_id",
+      "file": "src/GameObject.cpp",
+      "line": 136,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_object_id(int obj_id)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_server_x",
+      "file": "src/GameObject.cpp",
+      "line": 141,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_server_x()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_server_y",
+      "file": "src/GameObject.cpp",
+      "line": 146,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_server_y()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_orig_x",
+      "file": "src/GameObject.cpp",
+      "line": 151,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_orig_x()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_orig_y",
+      "file": "src/GameObject.cpp",
+      "line": 156,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_orig_y()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_server_dir",
+      "file": "src/GameObject.cpp",
+      "line": 161,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Direction get_server_dir()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_client_dir",
+      "file": "src/GameObject.cpp",
+      "line": 166,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Direction get_client_dir()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_server_x",
+      "file": "src/GameObject.cpp",
+      "line": 171,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_server_x(int sx)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_server_y",
+      "file": "src/GameObject.cpp",
+      "line": 176,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_server_y(int sy)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_server_dir",
+      "file": "src/GameObject.cpp",
+      "line": 181,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_server_dir(int sd)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_client_dir",
+      "file": "src/GameObject.cpp",
+      "line": 186,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_client_dir(int cd)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_local_dir",
+      "file": "src/GameObject.cpp",
+      "line": 191,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_local_dir(int ld)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_cur_dir",
+      "file": "src/GameObject.cpp",
+      "line": 196,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_cur_dir(int cd)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_offset",
+      "file": "src/GameObject.cpp",
+      "line": 201,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_offset(int _x, int _y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_blocked",
+      "file": "src/GameObject.cpp",
+      "line": 211,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_blocked(float check_x, float check_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "move_dist",
+      "file": "src/GameObject.cpp",
+      "line": 331,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool move_dist(float distance, Direction dir)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "move",
+      "file": "src/GameObject.cpp",
+      "line": 434,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool move(float deltaTime)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "continue_flying",
+      "file": "src/GameObject.cpp",
+      "line": 512,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void continue_flying(float deltaTime)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "fall",
+      "file": "src/GameObject.cpp",
+      "line": 572,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void fall()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "continue_falling",
+      "file": "src/GameObject.cpp",
+      "line": 587,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void continue_falling(float deltaTime)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "snap",
+      "file": "src/GameObject.cpp",
+      "line": 603,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void snap()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_dir",
+      "file": "src/GameObject.cpp",
+      "line": 612,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_dir(Direction _dir)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_pos",
+      "file": "src/GameObject.cpp",
+      "line": 617,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_pos(int _x, int _y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_orig",
+      "file": "src/GameObject.cpp",
+      "line": 623,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_orig(int _x, int _y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "move_pos",
+      "file": "src/GameObject.cpp",
+      "line": 629,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void move_pos(int _x, int _y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_x",
+      "file": "src/GameObject.cpp",
+      "line": 645,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_x()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_y",
+      "file": "src/GameObject.cpp",
+      "line": 650,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_y()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_z",
+      "file": "src/GameObject.cpp",
+      "line": 655,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_z()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_speed",
+      "file": "src/GameObject.cpp",
+      "line": 660,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_speed()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_speed",
+      "file": "src/GameObject.cpp",
+      "line": 703,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_speed(int _speed)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_flying",
+      "file": "src/GameObject.cpp",
+      "line": 708,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_flying()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_stopped",
+      "file": "src/GameObject.cpp",
+      "line": 713,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_stopped()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_cur_dir",
+      "file": "src/GameObject.cpp",
+      "line": 718,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "Direction get_cur_dir()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "whats_left",
+      "file": "src/GameObject.cpp",
+      "line": 723,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int whats_left()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "whats_right",
+      "file": "src/GameObject.cpp",
+      "line": 728,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int whats_right()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "whats_up",
+      "file": "src/GameObject.cpp",
+      "line": 733,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int whats_up()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "whats_down",
+      "file": "src/GameObject.cpp",
+      "line": 738,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int whats_down()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_legacy_tile",
+      "file": "src/GameObject.cpp",
+      "line": 759,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "MapTile * get_legacy_tile()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_tile_type_at",
+      "file": "src/GameObject.cpp",
+      "line": 791,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_tile_type_at(int pixel_x, int pixel_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_bomb_on_tile",
+      "file": "src/GameObject.cpp",
+      "line": 885,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_bomb_on_tile(Bomb * bomb)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "remove_bomb_from_tile",
+      "file": "src/GameObject.cpp",
+      "line": 890,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void remove_bomb_from_tile(Bomb * bomb)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_falling",
+      "file": "src/GameObject.cpp",
+      "line": 958,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_falling()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "output_object_info",
+      "file": "src/GameObject.cpp",
+      "line": 963,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void output_object_info()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_next_fly_job",
+      "file": "src/GameObject.cpp",
+      "line": 983,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_next_fly_job(int flyjobx, int flyjoby, int flyjobspeed)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "reset_next_fly_job",
+      "file": "src/GameObject.cpp",
+      "line": 990,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void reset_next_fly_job()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_next_fly_job",
+      "file": "src/GameObject.cpp",
+      "line": 997,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_next_fly_job()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "detonate_other_bombs",
+      "file": "src/Explosion.cpp",
+      "line": 106,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void detonate_other_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "draw_explosion_tile",
+      "file": "src/Explosion.cpp",
+      "line": 194,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void draw_explosion_tile(float tile_x, float tile_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_dummy_white_texture",
+      "file": "src/Explosion.cpp",
+      "line": 227,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_dummy_white_texture()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "kill_bombers",
+      "file": "src/Explosion.cpp",
+      "line": 311,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void kill_bombers()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "explode_corpses",
+      "file": "src/Explosion.cpp",
+      "line": 441,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void explode_corpses()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "destroy_tile_at",
+      "file": "src/Explosion.cpp",
+      "line": 559,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void destroy_tile_at(int map_x, int map_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "notify_explosion_haptics",
+      "file": "src/Explosion.cpp",
+      "line": 570,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void notify_explosion_haptics()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load_texture",
+      "file": "src/Resources.cpp",
+      "line": 115,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "TextureInfo * load_texture(const std::string & path, int sprite_width, int sprite_height)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_gl_texture",
+      "file": "src/Resources.cpp",
+      "line": 182,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int get_gl_texture(const std::string & name)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "load_shader_source",
+      "file": "src/Resources.cpp",
+      "line": 224,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string load_shader_source(const std::string & path)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "register_gl_texture_metadata",
+      "file": "src/Resources.cpp",
+      "line": 237,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void register_gl_texture_metadata(const std::string & texture_name, GPUAcceleratedRenderer * renderer)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "execute",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 57,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void execute()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_personality",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 215,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_personality(ModernAIPersonality new_personality)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "generate_rating_map",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 290,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void generate_rating_map()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "apply_bomb_rating",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 372,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void apply_bomb_rating(int x, int y, int power, float countdown, int dir)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "job_ready",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 407,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool job_ready()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_new_jobs",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 429,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void find_new_jobs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "do_job",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 456,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void do_job()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "avoid_bombs",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 462,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool avoid_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_bombing_opportunities",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 491,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool find_bombing_opportunities(int max_distance)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_way",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 531,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool find_way(int dest_rating, int avoid_rating, int max_distance)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "clear_all_jobs",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 633,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void clear_all_jobs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_hotspot",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 637,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_hotspot(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_death",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 642,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_death(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "can_escape_from_bomb",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 647,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool can_escape_from_bomb(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "bomber_rating",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 660,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int bomber_rating(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "extra_rating",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 665,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int extra_rating(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_aggression_modifier",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 670,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "float get_aggression_modifier()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_reaction_delay",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 681,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "float get_reaction_delay()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "should_hunt_enemies",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 685,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool should_hunt_enemies()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_current_state",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 698,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "std::string get_current_state()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_starting_corner_position",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 711,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_starting_corner_position(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "can_escape_from_bomb_safely",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 719,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool can_escape_from_bomb_safely(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "bombing_is_beneficial",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 769,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool bombing_is_beneficial(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "should_move_to_better_position",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 808,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool should_move_to_better_position()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "count_active_bombs",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 845,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int count_active_bombs()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "add_escape_sequence",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 880,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void add_escape_sequence(int bomb_x, int bomb_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_best_escape_direction",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 893,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int find_best_escape_direction(int bomb_x, int bomb_y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "evaluate_escape_direction",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 911,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int evaluate_escape_direction(int bomb_x, int bomb_y, int direction)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "count_nearby_threats",
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 953,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int count_nearby_threats(int x, int y)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "vector_add",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 39,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "CL_Vector vector_add(const CL_Vector & a, const CL_Vector & b)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "vector_multiply",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 43,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "CL_Vector vector_multiply(const CL_Vector & v, float scalar)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "vector_normalize",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 47,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "CL_Vector vector_normalize(const CL_Vector & v)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "think",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 166,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void think()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "update_current_state",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 185,
+      "category": "ui_functions",
+      "priority": "MEDIUM",
+      "signature": "void update_current_state()",
+      "reason": "Never called (ui_functions)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "transition_to_state",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 220,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void transition_to_state(AIState new_state)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "execute_behavior",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 248,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void execute_behavior()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "find_path_to",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 338,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int find_path_to(CL_Vector target)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_position_safe",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 401,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_position_safe(CL_Vector pos, float time_ahead)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "scan_for_targets",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 524,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int scan_for_targets()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "select_best_target",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 626,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "AITarget select_best_target(const int & targets)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "evaluate_powerup_value",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 650,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "float evaluate_powerup_value(int powerup_type)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "should_place_bomb",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 655,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool should_place_bomb()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "would_hit_enemy",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 692,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool would_hit_enemy(CL_Vector bomb_pos)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "predict_explosion_tiles",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 715,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "int predict_explosion_tiles(CL_Vector bomb_pos, int power)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "analyze_enemies",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 752,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void analyze_enemies()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "predict_enemy_position",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 776,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "CL_Vector predict_enemy_position(Bomber * enemy, float time_ahead)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "is_enemy_dangerous",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 784,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "bool is_enemy_dangerous(Bomber * enemy)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "get_bomb_frequency_modifier",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 809,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "float get_bomb_frequency_modifier()",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_reaction_time",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 817,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_reaction_time(float seconds)",
+      "reason": "Never called (misc)"
+    },
+    {
+      "type": "remove_unused_function",
+      "function": "set_aggression_level",
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 821,
+      "category": "misc",
+      "priority": "LOW",
+      "signature": "void set_aggression_level(float level)",
+      "reason": "Never called (misc)"
+    }
+  ],
+  "dead_code": [
+    {
+      "type": "remove_commented_code",
+      "file": "src/SettingsScreen.cpp",
+      "start_line": 58,
+      "end_line": 61,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "    // float title_width, title_height;..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/SettingsScreen.cpp",
+      "start_line": 75,
+      "end_line": 77,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "        // float width, height;..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/SettingsScreen.cpp",
+      "start_line": 99,
+      "end_line": 102,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "    // float inst_width, inst_height;..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/SettingsScreen.cpp",
+      "start_line": 117,
+      "end_line": 120,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "    // float header_width, header_height;..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/SettingsScreen.cpp",
+      "start_line": 148,
+      "end_line": 151,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "        // float player_width, player_height;..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/SettingsScreen.cpp",
+      "start_line": 165,
+      "end_line": 168,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "    // float header_width, header_height;..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/SettingsScreen.cpp",
+      "start_line": 187,
+      "end_line": 190,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "        // float option_width, option_height;..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "start_line": 773,
+      "end_line": 776,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "    // if (u_model >= 0) {..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Game.cpp",
+      "start_line": 127,
+      "end_line": 131,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "    // font = Resources::get_font(\"big\");..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/GameplayScreen.cpp",
+      "start_line": 207,
+      "end_line": 210,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "    // if (observer) {..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/GameplayScreen.cpp",
+      "start_line": 254,
+      "end_line": 257,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "    // observer->act();..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 126,
+      "end_line": 129,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "// void Explosion::show() {..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 131,
+      "end_line": 134,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "//     // Only render if explosion is still active..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 137,
+      "end_line": 141,
+      "lines_count": 4,
+      "priority": "MEDIUM",
+      "preview": "//     if (app && get_context()->get_renderer()) {..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 150,
+      "end_line": 156,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "//         // Set explosion information for shader..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 168,
+      "end_line": 170,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "//         for (int i = 1; i <= length_up; i++) {..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 173,
+      "end_line": 175,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "//         for (int i = 1; i <= length_down; i++) ..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 178,
+      "end_line": 180,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "//         for (int i = 1; i <= length_left; i++) ..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 183,
+      "end_line": 185,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "//         for (int i = 1; i <= length_right; i++)..."
+    },
+    {
+      "type": "remove_commented_code",
+      "file": "src/Explosion.cpp",
+      "start_line": 190,
+      "end_line": 192,
+      "lines_count": 3,
+      "priority": "MEDIUM",
+      "preview": "//         get_context()->get_renderer()->clear_ex..."
+    }
+  ],
+  "enum_suggestions": [
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/SettingsScreen.cpp",
+      "line": 35,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/SettingsScreen.cpp",
+      "line": 205,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/SettingsScreen.cpp",
+      "line": 208,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/SettingsScreen.cpp",
+      "line": 236,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/ParticleSystem.cpp",
+      "line": 61,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile_Box.cpp",
+      "line": 92,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile_Box.cpp",
+      "line": 121,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile_Box.cpp",
+      "line": 148,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile_Box.cpp",
+      "line": 171,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile_Box.cpp",
+      "line": 208,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile_Box.cpp",
+      "line": 210,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/CorpsePart.cpp",
+      "line": 274,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/CorpsePart.cpp",
+      "line": 285,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/BomberCorpse.cpp",
+      "line": 92,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 51,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 52,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 438,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 462,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1044,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1050,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1056,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1062,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GPUAcceleratedRenderer.cpp",
+      "line": 1070,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller.cpp",
+      "line": 92,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MainMenuScreen.cpp",
+      "line": 55,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MainMenuScreen.cpp",
+      "line": 111,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GameConfig.cpp",
+      "line": 575,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/GameplayScreen.cpp",
+      "line": 132,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile.cpp",
+      "line": 80,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/MapTile.cpp",
+      "line": 90,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 131,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 141,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 307,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 336,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 363,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 386,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 423,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/TileEntity.cpp",
+      "line": 425,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Map.cpp",
+      "line": 125,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Map.cpp",
+      "line": 287,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/BomberComponents.cpp",
+      "line": 410,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 451,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 475,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 731,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 781,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 875,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller_AI_Modern.cpp",
+      "line": 955,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    },
+    {
+      "type": "magic_to_enum",
+      "value": 3,
+      "file": "src/Controller_AI_Smart.cpp",
+      "line": 321,
+      "suggested_enum": "Direction",
+      "enum_value": "DIR_RIGHT",
+      "priority": "MEDIUM"
+    }
+  ],
+  "duplicate_code": [],
+  "summary": {
+    "total_issues": 631,
+    "high_priority": 37
+  }
+}
