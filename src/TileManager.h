@@ -4,6 +4,7 @@
 #include <functional>
 #include <vector>
 #include "UtilsCL_Vector.h"
+#include "CoordinateSystem.h"
 
 class MapTile;
 class TileEntity;

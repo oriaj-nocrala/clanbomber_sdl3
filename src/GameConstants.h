@@ -46,6 +46,17 @@ namespace GameConstants {
     constexpr int DISTANCE_THRESHOLD = 100;
     constexpr int PERCENT_MAX = 100;
     
+    // Audio System Constants
+    constexpr float DEFAULT_LISTENER_X = 400.0f;           // Default audio listener X position
+    constexpr float DEFAULT_LISTENER_Y = 300.0f;           // Default audio listener Y position  
+    constexpr float STEREO_PAN_RANGE = 400.0f;             // Stereo effect range in pixels
+    
+    // AI and Proximity Detection
+    constexpr float EXPLOSION_PROXIMITY_THRESHOLD = 30.0f;  // Distance to consider enemy in explosion range
+    constexpr float TILE_COLLISION_TOLERANCE = 20.0f;       // Half tile size for collision detection
+    constexpr float AI_TARGET_DISTANCE = 100.0f;            // AI target acquisition distance
+    constexpr float AI_PATHFINDING_THRESHOLD = 40.0f;       // AI pathfinding distance threshold
+    
     // Common Mathematical Constants
     constexpr int DECIMAL_BASE = 10;
     constexpr int BITS_PER_BYTE = 8;

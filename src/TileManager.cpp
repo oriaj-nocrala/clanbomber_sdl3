@@ -284,8 +284,8 @@ bool TileManager::has_bomber_at(int map_x, int map_y) {
 void TileManager::iterate_all_tiles(std::function<void(MapTile*, int, int)> callback) {
     if (!context->get_map() || !callback) return;
     
-    for (int x = 0; x < MAP_WIDTH; x++) {
-        for (int y = 0; y < MAP_HEIGHT; y++) {
+    for (int x = 0; x < CoordinateConfig::MAX_GRID_WIDTH; x++) {
+        for (int y = 0; y < CoordinateConfig::MAX_GRID_HEIGHT; y++) {
             MapTile* tile = context->get_map()->get_tile(x, y);
             callback(tile, x, y);
         }
@@ -360,10 +360,7 @@ void TileManager::perform_tile_replacement(int map_x, int map_y, int new_tile_ty
 // === VALIDACIÓN ===
 
 bool TileManager::is_valid_position(int map_x, int map_y) const {
-    // Debug assertions for development builds
-    assert(MAP_WIDTH > 0 && MAP_HEIGHT > 0);
-    assert(map_x >= -1000 && map_x <= 1000); // Sanity check for extreme values
-    assert(map_y >= -1000 && map_y <= 1000);
-    
-    return map_x >= 0 && map_x < MAP_WIDTH && map_y >= 0 && map_y < MAP_HEIGHT;
+    // Use unified coordinate system for validation
+    GridCoord grid(map_x, map_y);
+    return CoordinateSystem::is_grid_valid(grid);
 }

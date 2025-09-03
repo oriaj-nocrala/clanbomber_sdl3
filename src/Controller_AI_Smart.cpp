@@ -14,6 +14,7 @@
 static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 #include "GameContext.h"
 #include "SpatialPartitioning.h"
+#include "GameConstants.h"
 #include <algorithm>
 #include <cmath>
 #include <random>
@@ -284,7 +285,7 @@ void Controller_AI_Smart::execute_behavior() {
             
             // Place bomb if hunting and close to target
             if (current_state == AIState::HUNTING && should_place_bomb()) {
-                if (vector_distance(my_pos, current_target) < 100.0f && bomb_cooldown_ai <= 0) {
+                if (vector_distance(my_pos, current_target) < GameConstants::AI_TARGET_DISTANCE && bomb_cooldown_ai <= 0) {
                     current_input.bomb = true;
                     bomb_cooldown_ai = 1.0f + (1.0f - aggression_level);
                     last_bomb_time = get_total_time();
@@ -350,7 +351,7 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
     CL_Vector direction = vector_subtract(target, current);
     float distance = vector_length(direction);
     
-    if (distance < 40.0f) {
+    if (distance < GameConstants::AI_PATHFINDING_THRESHOLD) {
         path.push_back(target);
         return path;
     }
@@ -701,8 +702,16 @@ bool Controller_AI_Smart::would_hit_enemy(CL_Vector bomb_pos) {
         if (enemy && enemy != bomber && !enemy->is_dead()) {
             CL_Vector enemy_pos(enemy->get_x(), enemy->get_y());
             
+            // Convert enemy position to grid coordinates for accurate tile-based comparison
+            GridCoord enemy_grid = CoordinateSystem::pixel_to_grid(PixelCoord(enemy_pos.x, enemy_pos.y));
+            
             for (const auto& explosion_tile : explosion_tiles) {
-                if (vector_distance(enemy_pos, explosion_tile) < 30.0f) {
+                // Convert explosion tile to grid coordinates
+                GridCoord explosion_grid = CoordinateSystem::pixel_to_grid(PixelCoord(explosion_tile.x, explosion_tile.y));
+                
+                // Use grid-based distance for tile-accurate collision detection
+                float grid_dist = CoordinateSystem::grid_distance(enemy_grid, explosion_grid);
+                if (grid_dist <= 1.0f) {  // Same tile or adjacent tiles
                     return true;
                 }
             }

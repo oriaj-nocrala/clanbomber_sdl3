@@ -43,7 +43,6 @@ public:
     static void set_listener_position(const AudioPosition& pos);
     static AudioPosition get_listener_position() { return listener_pos; }
     
-    static SDL_AudioStream* get_stream() { return stream; }
 
 private:
     static void audio_callback(void* userdata, SDL_AudioStream* stream, int additional_amount, int total_amount);

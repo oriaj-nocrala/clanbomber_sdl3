@@ -1,4 +1,5 @@
 #include "AudioMixer.h"
+#include "GameConstants.h"
 #include <iostream>
 #include <algorithm>
 #include <vector>
@@ -7,7 +8,7 @@
 SDL_AudioStream* AudioMixer::stream = nullptr;
 SDL_AudioSpec AudioMixer::device_spec;
 std::map<std::string, MixerAudio*> AudioMixer::sounds;
-AudioPosition AudioMixer::listener_pos(400.0f, 300.0f, 0.0f);
+AudioPosition AudioMixer::listener_pos(GameConstants::DEFAULT_LISTENER_X, GameConstants::DEFAULT_LISTENER_Y, 0.0f);
 Channel AudioMixer::channels[MAX_CHANNELS];
 
 // Helper functions for 3D audio calculations
@@ -20,7 +21,7 @@ static float calculate_distance(const AudioPosition& sound_pos) {
 
 static void calculate_stereo_pan(const AudioPosition& sound_pos, float& left_gain, float& right_gain) {
     float dx = sound_pos.x - AudioMixer::get_listener_position().x;
-    float pan_range = 400.0f; // Stereo effect range in pixels
+    float pan_range = GameConstants::STEREO_PAN_RANGE; // Stereo effect range in pixels
     
     float pan = std::max(-1.0f, std::min(1.0f, dx / pan_range));
     
