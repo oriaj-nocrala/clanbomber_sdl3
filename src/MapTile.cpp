@@ -7,6 +7,9 @@
 #include "CoordinateSystem.h"
 #include <random>
 
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
+
 MapTile::MapTile(int x, int y, GameContext* context) : GameObject(x, y, context) {
     blocking = false;
     destructible = false;
@@ -37,7 +40,7 @@ MapTile* MapTile::create(MAPTILE_TYPE type, int x, int y, GameContext* context) 
     
     // Register with LifecycleManager through GameContext
     if (tile && context && context->get_lifecycle_manager()) {
-        context->get_lifecycle_manager()->register_tile(tile, x/40, y/40);
+        context->get_lifecycle_manager()->register_tile(tile, x/TILE_SIZE, y/TILE_SIZE);
     }
     
     return tile;

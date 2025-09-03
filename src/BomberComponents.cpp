@@ -13,6 +13,9 @@
 #include "GameContext.h"
 #include "Bomber.h"  // Need for cast in can_move()
 
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
+
 // ===== MOVEMENT COMPONENT IMPLEMENTATION =====
 
 BomberMovementComponent::BomberMovementComponent(GameObject* owner, GameContext* context)
@@ -179,7 +182,7 @@ void BomberCombatComponent::place_bomb() {
     int expected_map_y = expected_grid.grid_y;
     
     SDL_Log("🔍 DEBUG: Bomber at (%d,%d) -> get_map_x()=%d, get_map_y()=%d", bomber_x, bomber_y, map_x, map_y);
-    SDL_Log("🔍 DEBUG: Expected tile calculation: (%d+20)/40=%d, (%d+20)/40=%d", bomber_x, expected_map_x, bomber_y, expected_map_y);
+    SDL_Log("🔍 DEBUG: Expected tile calculation: (%d+%d)/%d=%d, (%d+%d)/%d=%d", bomber_x, TILE_SIZE/2, TILE_SIZE, expected_map_x, bomber_y, TILE_SIZE/2, TILE_SIZE, expected_map_y);
     
     // Check if there's already a bomb at this position
     if (context->has_bomb_at(map_x, map_y)) {

@@ -3,6 +3,10 @@
 #include "Map.h"
 #include "Bomber.h"
 #include "Timer.h"
+#include "CoordinateSystem.h"
+
+// Phase 4: Import CoordinateConfig constants
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 #include "Bomb.h"
 #include "MapTile.h"
 #include "TileEntity.h"
@@ -53,27 +57,39 @@ AIJob_Go::~AIJob_Go() {
 void AIJob_Go::execute() {
     controller->current_dir = dir;
     
+    // Phase 4: Refactor modulo calculations to use CoordinateSystem
+    PixelCoord bomber_pos(bomber->get_x(), bomber->get_y());
+    GridCoord current_grid = CoordinateSystem::pixel_to_grid(bomber_pos);
+    PixelCoord tile_center = CoordinateSystem::grid_to_pixel(current_grid);
+    
+    // Calculate position within tile (distance from tile center)
+    float offset_x = bomber_pos.pixel_x - tile_center.pixel_x;
+    float offset_y = bomber_pos.pixel_y - tile_center.pixel_y;
+    
+    // Alignment thresholds: within 15 pixels of tile center for direction change
+    const float ALIGNMENT_THRESHOLD = 15.0f;
+    
     switch(dir) {
         case DIR_UP:
-            if (bomber->get_map_y() <= start - distance && bomber->get_y() % 40 < 15) {
+            if (bomber->get_map_y() <= start - distance && offset_y < -ALIGNMENT_THRESHOLD) {
                 finished = true;
                 controller->current_dir = DIR_NONE;
             }
             break;
         case DIR_DOWN:
-            if (bomber->get_map_y() >= start + distance && bomber->get_y() % 40 > 25) {
+            if (bomber->get_map_y() >= start + distance && offset_y > ALIGNMENT_THRESHOLD) {
                 finished = true;
                 controller->current_dir = DIR_NONE;
             }
             break;
         case DIR_LEFT:
-            if (bomber->get_map_x() <= start - distance && bomber->get_x() % 40 < 15) {
+            if (bomber->get_map_x() <= start - distance && offset_x < -ALIGNMENT_THRESHOLD) {
                 finished = true;
                 controller->current_dir = DIR_NONE;
             }
             break;
         case DIR_RIGHT:
-            if (bomber->get_map_x() >= start + distance && bomber->get_x() % 40 > 25) {
+            if (bomber->get_map_x() >= start + distance && offset_x > ALIGNMENT_THRESHOLD) {
                 finished = true;
                 controller->current_dir = DIR_NONE;
             }
@@ -141,8 +157,11 @@ void AIJob_PutBomb::execute() {
     controller->put_bomb = true;
     finished = true;
     
-    // Check if there's already a bomb here using new architecture
-    if (bomber->has_bomb_at(bomber->get_x() + 20, bomber->get_y() + 20)) {
+    // Phase 4: Check if there's already a bomb at current tile center using CoordinateSystem
+    PixelCoord bomber_pos(bomber->get_x(), bomber->get_y());
+    GridCoord current_grid = CoordinateSystem::pixel_to_grid(bomber_pos);
+    PixelCoord tile_center = CoordinateSystem::grid_to_pixel(current_grid);
+    if (bomber->has_bomb_at(static_cast<int>(tile_center.pixel_x), static_cast<int>(tile_center.pixel_y))) {
         obsolete = true;
         return;
     }

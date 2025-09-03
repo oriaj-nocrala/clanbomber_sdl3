@@ -12,6 +12,9 @@
 #include <cmath>
 #include <SDL3/SDL.h>
 
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
+
 // Static initialization for particle rate limiting
 float TileEntity::last_particle_emission_time = 0.0f;
 const float TileEntity::PARTICLE_EMISSION_COOLDOWN = 0.05f; // 50ms minimum between emissions
@@ -46,7 +49,7 @@ TileEntity::~TileEntity() {
 void TileEntity::act(float deltaTime) {
     // DEFENSIVE: Detect corruption early
     if (tile_data == (MapTile_Pure*)0xffffffffffffffff) {
-        SDL_Log("CRITICAL: TileEntity::act() - tile_data corrupted to 0xffffffffffffffff at (%d,%d)!", get_x()/40, get_y()/40);
+        SDL_Log("CRITICAL: TileEntity::act() - tile_data corrupted to 0xffffffffffffffff at (%d,%d)!", get_x()/TILE_SIZE, get_y()/TILE_SIZE);
         // Try to recover by setting tile_data to nullptr to prevent further crashes
         tile_data = nullptr;
         return;
@@ -197,7 +200,7 @@ void TileEntity::render_destruction_effects() {
                 float scale[2] = {1.0f, 1.0f};
                 
                 get_context()->get_renderer()->add_sprite(
-                    (float)get_x(), (float)get_y(), 40.0f, 40.0f,
+                    (float)get_x(), (float)get_y(), (float)TILE_SIZE, (float)TILE_SIZE,
                     gl_texture, color, 0.0f, scale, sprite_nr
                 );
             }

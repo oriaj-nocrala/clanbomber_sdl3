@@ -8,9 +8,12 @@
 #include "TileEntity.h"
 #include "TileManager.h"
 #include "Extra.h"
+#include "CoordinateSystem.h"
+
+// Phase 4: Import CoordinateConfig constants
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 #include "GameContext.h"
 #include "SpatialPartitioning.h"
-#include "CoordinateSystem.h"
 #include <algorithm>
 #include <cmath>
 #include <random>
@@ -354,26 +357,30 @@ std::vector<CL_Vector> Controller_AI_Smart::find_path_to(CL_Vector target) {
     
     direction = vector_normalize(direction);
     
-    // Take steps towards target
-    for (float step = 40.0f; step < distance; step += 40.0f) {
+    // Phase 4: Take steps towards target using CoordinateSystem
+    float tile_size_f = static_cast<float>(TILE_SIZE);
+    for (float step = tile_size_f; step < distance; step += tile_size_f) {
         CL_Vector next_pos = vector_add(current, vector_multiply(direction, step));
         
-        // Check if position is walkable
-        int grid_x = (int)(next_pos.x / 40);
-        int grid_y = (int)(next_pos.y / 40);
+        // Check if position is walkable using CoordinateSystem
+        GridCoord grid = CoordinateSystem::pixel_to_grid(PixelCoord(next_pos.x, next_pos.y));
+        int grid_x = grid.grid_x;
+        int grid_y = grid.grid_y;
         
         if (!bomber->get_context()->get_tile_manager()->is_tile_blocking_at(grid_x, grid_y)) {
             path.push_back(next_pos);
         } else {
-            // Simple obstacle avoidance - try perpendicular directions
+            // Phase 4: Simple obstacle avoidance using CoordinateSystem
             CL_Vector perp1(-direction.y, direction.x);
             CL_Vector perp2(direction.y, -direction.x);
             
-            CL_Vector alt1 = vector_add(current, vector_multiply(perp1, 40.0f));
-            CL_Vector alt2 = vector_add(current, vector_multiply(perp2, 40.0f));
+            CL_Vector alt1 = vector_add(current, vector_multiply(perp1, tile_size_f));
+            CL_Vector alt2 = vector_add(current, vector_multiply(perp2, tile_size_f));
             
-            int alt1_x = (int)(alt1.x / 40), alt1_y = (int)(alt1.y / 40);
-            int alt2_x = (int)(alt2.x / 40), alt2_y = (int)(alt2.y / 40);
+            GridCoord alt1_grid = CoordinateSystem::pixel_to_grid(PixelCoord(alt1.x, alt1.y));
+            GridCoord alt2_grid = CoordinateSystem::pixel_to_grid(PixelCoord(alt2.x, alt2.y));
+            int alt1_x = alt1_grid.grid_x, alt1_y = alt1_grid.grid_y;
+            int alt2_x = alt2_grid.grid_x, alt2_y = alt2_grid.grid_y;
             
             bool tile1_blocking = bomber->get_context()->get_tile_manager()->is_tile_blocking_at(alt1_x, alt1_y);
             bool tile2_blocking = bomber->get_context()->get_tile_manager()->is_tile_blocking_at(alt2_x, alt2_y);
@@ -482,6 +489,7 @@ CL_Vector Controller_AI_Smart::find_safe_position() {
     CL_Vector my_pos(bomber->get_x(), bomber->get_y());
     CL_Vector safest_pos = my_pos;
     float lowest_danger = 1.0f;
+    float tile_size_f = static_cast<float>(TILE_SIZE);  // Phase 4: Local tile size constant
     
     // Search in expanding radius for safe position
     for (int radius = 1; radius <= 8; radius++) {
@@ -489,11 +497,13 @@ CL_Vector Controller_AI_Smart::find_safe_position() {
             for (int dy = -radius; dy <= radius; dy++) {
                 if (abs(dx) != radius && abs(dy) != radius) continue; // Only check perimeter
                 
-                CL_Vector test_pos = vector_add(my_pos, CL_Vector(dx * 40, dy * 40));
+                // Phase 4: Calculate test position using CoordinateSystem
+                CL_Vector test_pos = vector_add(my_pos, CL_Vector(dx * tile_size_f, dy * tile_size_f));
                 
-                // Check if position is on map and walkable
-                int grid_x = (int)(test_pos.x / 40);
-                int grid_y = (int)(test_pos.y / 40);
+                // Check if position is on map and walkable using CoordinateSystem
+                GridCoord test_grid = CoordinateSystem::pixel_to_grid(PixelCoord(test_pos.x, test_pos.y));
+                int grid_x = test_grid.grid_x;
+                int grid_y = test_grid.grid_y;
                 
                 if (bomber->get_context()->get_tile_manager()->is_tile_blocking_at(grid_x, grid_y)) continue;
                 
@@ -705,15 +715,35 @@ bool Controller_AI_Smart::would_hit_enemy(CL_Vector bomb_pos) {
 std::vector<CL_Vector> Controller_AI_Smart::predict_explosion_tiles(CL_Vector bomb_pos, int power) {
     std::vector<CL_Vector> tiles;
     
-    // Center tile
-    tiles.push_back(bomb_pos);
+    // Phase 4: Refactor explosion calculation to use CoordinateSystem
+    // Convert bomb position to grid coordinates first
+    GridCoord bomb_grid = CoordinateSystem::pixel_to_grid(PixelCoord(bomb_pos.x, bomb_pos.y));
     
-    // Explosion rays in 4 directions
+    // Center tile (get exact tile center)
+    PixelCoord center_pixel = CoordinateSystem::grid_to_pixel(bomb_grid);
+    tiles.push_back(CL_Vector(center_pixel.pixel_x, center_pixel.pixel_y));
+    
+    // Explosion rays in 4 directions using grid-based calculation
     for (int i = 1; i <= power; i++) {
-        tiles.push_back(vector_add(bomb_pos, CL_Vector(i * 40, 0)));  // Right
-        tiles.push_back(vector_add(bomb_pos, CL_Vector(-i * 40, 0))); // Left
-        tiles.push_back(vector_add(bomb_pos, CL_Vector(0, i * 40)));  // Down
-        tiles.push_back(vector_add(bomb_pos, CL_Vector(0, -i * 40))); // Up
+        // Right: increment grid_x
+        GridCoord right_grid(bomb_grid.grid_x + i, bomb_grid.grid_y);
+        PixelCoord right_pixel = CoordinateSystem::grid_to_pixel(right_grid);
+        tiles.push_back(CL_Vector(right_pixel.pixel_x, right_pixel.pixel_y));
+        
+        // Left: decrement grid_x
+        GridCoord left_grid(bomb_grid.grid_x - i, bomb_grid.grid_y);
+        PixelCoord left_pixel = CoordinateSystem::grid_to_pixel(left_grid);
+        tiles.push_back(CL_Vector(left_pixel.pixel_x, left_pixel.pixel_y));
+        
+        // Down: increment grid_y
+        GridCoord down_grid(bomb_grid.grid_x, bomb_grid.grid_y + i);
+        PixelCoord down_pixel = CoordinateSystem::grid_to_pixel(down_grid);
+        tiles.push_back(CL_Vector(down_pixel.pixel_x, down_pixel.pixel_y));
+        
+        // Up: decrement grid_y
+        GridCoord up_grid(bomb_grid.grid_x, bomb_grid.grid_y - i);
+        PixelCoord up_pixel = CoordinateSystem::grid_to_pixel(up_grid);
+        tiles.push_back(CL_Vector(up_pixel.pixel_x, up_pixel.pixel_y));
     }
     
     return tiles;

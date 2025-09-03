@@ -20,6 +20,7 @@
 #define GameObject_h
 
 #include "ClanBomber.h"
+#include "CoordinateSystem.h"
 #include <string>
 class ClanBomberApplication;
 class MapTile;
@@ -143,15 +144,27 @@ public:
   
   // LEGACY BOMB KICKING REMOVED - Game uses modern collision detection
   
-  // COORDINATE CALCULATION HELPERS (reduces code duplication)
-  int pixel_to_map_x(int pixel_x) const { return pixel_x / 40; }
-  int pixel_to_map_y(int pixel_y) const { return pixel_y / 40; }
-  int map_to_pixel_x(int map_x) const { return map_x * 40; }
-  int map_to_pixel_y(int map_y) const { return map_y * 40; }
+  // COORDINATE CALCULATION HELPERS - Phase 2: Refactored to use CoordinateSystem
+  int pixel_to_map_x(int pixel_x) const { 
+    return CoordinateSystem::pixel_to_grid(PixelCoord(pixel_x, 0)).grid_x; 
+  }
+  int pixel_to_map_y(int pixel_y) const { 
+    return CoordinateSystem::pixel_to_grid(PixelCoord(0, pixel_y)).grid_y; 
+  }
+  int map_to_pixel_x(int map_x) const { 
+    return static_cast<int>(CoordinateSystem::grid_to_pixel(GridCoord(map_x, 0)).pixel_x); 
+  }
+  int map_to_pixel_y(int map_y) const { 
+    return static_cast<int>(CoordinateSystem::grid_to_pixel(GridCoord(0, map_y)).pixel_y); 
+  }
   
-  // Common object-to-tile coordinate conversions
-  int get_center_map_x() const { return (x + 20) / 40; }
-  int get_center_map_y() const { return (y + 20) / 40; }
+  // Common object-to-tile coordinate conversions - Phase 2: Refactored to use CoordinateSystem
+  int get_center_map_x() const { 
+    return CoordinateSystem::pixel_to_grid(PixelCoord(x, y)).grid_x; 
+  }
+  int get_center_map_y() const { 
+    return CoordinateSystem::pixel_to_grid(PixelCoord(x, y)).grid_y; 
+  }
   
   // NEW ARCHITECTURE SUPPORT: Bomb-tile synchronization
   void set_bomb_on_tile(class Bomb* bomb) const;   // Sets bomb on both MapTile and TileEntity

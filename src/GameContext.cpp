@@ -8,7 +8,11 @@
 #include "GameObject.h"
 #include "SpatialPartitioning.h"
 #include "RenderingFacade.h"
+#include "CoordinateSystem.h"
 #include <SDL3/SDL.h>
+
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 
 GameContext::GameContext(LifecycleManager* lifecycle,
                          TileManager* tiles,
@@ -28,8 +32,8 @@ GameContext::GameContext(LifecycleManager* lifecycle,
     , render_objects(nullptr) {
     
     // Initialize spatial grid for collision optimization
-    spatial_grid = new SpatialGrid(40); // 40 pixels = tile size
-    SDL_Log("GameContext: Created SpatialGrid with 40-pixel cells");
+    spatial_grid = new SpatialGrid(TILE_SIZE); // TILE_SIZE pixels = tile size
+    SDL_Log("GameContext: Created SpatialGrid with %d-pixel cells", TILE_SIZE);
     
     // ARCHITECTURE FIX: Set up LifecycleManager coordination
     if (lifecycle_manager) {

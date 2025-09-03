@@ -42,6 +42,9 @@
 #include <iostream>
 #include <math.h>
 
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
+
 const char* GameObject::objecttype2string(ObjectType t)
 {
     switch(t) {
@@ -528,7 +531,7 @@ void GameObject::continue_flying(float deltaTime)
 		Map* map = context ? context->get_map() : nullptr;
 		
 		if (get_type() == CORPSE_PART  &&  map != nullptr) {
-			if (!can_fly_over_walls && get_tile_type_at(x+20, y+20) == MapTile::WALL) {
+			if (!can_fly_over_walls && get_tile_type_at(x+TILE_SIZE/2, y+TILE_SIZE/2) == MapTile::WALL) {
 				x -= time_step * fly_speed * fly_dist_x;
 				y -= time_step * fly_speed * fly_dist_y;
 				fly_dest_x = x;
@@ -599,8 +602,11 @@ void GameObject::stop(bool by_arrow)
 
 void GameObject::snap()
 {
-	x = ((get_x()+20)/40)*40;
-	y = ((get_y()+20)/40)*40;
+	// Phase 3: Refactor to use CoordinateSystem for proper tile snapping
+	GridCoord current_grid = CoordinateSystem::pixel_to_grid(PixelCoord(get_x(), get_y()));
+	PixelCoord snapped_center = CoordinateSystem::grid_to_pixel(current_grid);
+	x = static_cast<int>(snapped_center.pixel_x);
+	y = static_cast<int>(snapped_center.pixel_y);
 }
 
 void GameObject::set_dir ( Direction _dir)
@@ -659,8 +665,8 @@ int GameObject::get_speed() const
 int GameObject::get_map_x() const
 {
     // FIXED: Use center coordinates directly to determine tile
-    // Previous (get_x()+20)/40 caused objects near edges to be detected in wrong tile
-    int tmp = get_x()/40;
+    // Previous (get_x()+TILE_SIZE/2)/TILE_SIZE caused objects near edges to be detected in wrong tile
+    int tmp = get_x()/TILE_SIZE;
 	if (tmp < 0) {
 		tmp = 0;
 	}
@@ -673,8 +679,8 @@ int GameObject::get_map_x() const
 int GameObject::get_map_y() const
 {
 	// FIXED: Use center coordinates directly to determine tile
-	// Previous (get_y()+20)/40 caused objects near edges to be detected in wrong tile
-	int tmp = get_y()/40;
+	// Previous (get_y()+TILE_SIZE/2)/TILE_SIZE caused objects near edges to be detected in wrong tile
+	int tmp = get_y()/TILE_SIZE;
 	if (tmp < 0) {
         tmp = 0; 
     }
@@ -716,22 +722,22 @@ Direction GameObject::get_cur_dir() const
 
 int GameObject::whats_left()
 {
-	return get_tile_type_at(x-1, y+20);
+	return get_tile_type_at(x-1, y+TILE_SIZE/2);
 }
 
 int GameObject::whats_right()
 {
-	return get_tile_type_at(x+40, y+20);
+	return get_tile_type_at(x+TILE_SIZE, y+TILE_SIZE/2);
 }
 
 int GameObject::whats_up()
 {
-	return get_tile_type_at(x+20, y-1);
+	return get_tile_type_at(x+TILE_SIZE/2, y-1);
 }
 
 int GameObject::whats_down()
 {
-	return get_tile_type_at(x+20, y+40);
+	return get_tile_type_at(x+TILE_SIZE/2, y+TILE_SIZE);
 }
 
 MapTile* GameObject::get_tile() const
@@ -744,7 +750,9 @@ MapTile* GameObject::get_tile() const
 	}
 	Map* map = context->get_map();
 	
-	return map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
+	// Phase 3: Refactor to use CoordinateSystem for proper coordinate conversion
+	GridCoord grid = CoordinateSystem::pixel_to_grid(PixelCoord(x, y));
+	return map->get_tile(grid.grid_x, grid.grid_y);
 }
 
 // NEW ARCHITECTURE SUPPORT: Get legacy tile
@@ -758,7 +766,9 @@ MapTile* GameObject::get_legacy_tile() const
 	}
 	Map* map = context->get_map();
 	
-	return map->get_tile( (int)(x+20)/40, (int)(y+20)/40 );
+	// Phase 3: Refactor to use CoordinateSystem for proper coordinate conversion
+	GridCoord grid = CoordinateSystem::pixel_to_grid(PixelCoord(x, y));
+	return map->get_tile(grid.grid_x, grid.grid_y);
 }
 
 // NEW ARCHITECTURE SUPPORT: Get new TileEntity
@@ -772,7 +782,9 @@ TileEntity* GameObject::get_tile_entity() const
 	}
 	Map* map = context->get_map();
 	
-	return map->get_tile_entity( (int)(x+20)/40, (int)(y+20)/40 );
+	// Phase 3: Refactor to use CoordinateSystem for proper coordinate conversion
+	GridCoord grid = CoordinateSystem::pixel_to_grid(PixelCoord(x, y));
+	return map->get_tile_entity(grid.grid_x, grid.grid_y);
 }
 
 // NEW ARCHITECTURE SUPPORT: Get tile type at pixel position (works with both architectures)
@@ -786,8 +798,8 @@ int GameObject::get_tile_type_at(int pixel_x, int pixel_y) const
 	}
 	Map* map = context->get_map();
 	
-	int map_x = pixel_x / 40;
-	int map_y = pixel_y / 40;
+	int map_x = pixel_x / TILE_SIZE;
+	int map_y = pixel_y / TILE_SIZE;
 	
 	// Try legacy MapTile first
 	MapTile* legacy_tile = map->get_tile(map_x, map_y);
@@ -815,8 +827,8 @@ bool GameObject::is_tile_blocking_at(int pixel_x, int pixel_y) const
 		return false;
 	}
 	
-	int map_x = pixel_x / 40;
-	int map_y = pixel_y / 40;
+	int map_x = pixel_x / TILE_SIZE;
+	int map_y = pixel_y / TILE_SIZE;
 	return context->is_position_blocked(map_x, map_y);
 }
 
@@ -830,8 +842,8 @@ bool GameObject::has_bomb_at(int pixel_x, int pixel_y) const
 		return false;
 	}
 	
-	int map_x = pixel_x / 40;
-	int map_y = pixel_y / 40;
+	int map_x = pixel_x / TILE_SIZE;
+	int map_y = pixel_y / TILE_SIZE;
 	return context->has_bomb_at(map_x, map_y);
 }
 
@@ -846,8 +858,8 @@ bool GameObject::has_bomber_at(int pixel_x, int pixel_y) const
 	}
 	Map* map = context->get_map();
 	
-	int map_x = pixel_x / 40;
-	int map_y = pixel_y / 40;
+	int map_x = pixel_x / TILE_SIZE;
+	int map_y = pixel_y / TILE_SIZE;
 	
 	// Try legacy MapTile first
 	MapTile* legacy_tile = map->get_tile(map_x, map_y);
@@ -911,8 +923,8 @@ void GameObject::show()
             render_y = static_cast<float>(get_y());
         } else {
             // Dynamic objects (BOMBER, BOMB, etc.): Convert center→top-left for rendering
-            const int SPRITE_WIDTH = 40;
-            const int SPRITE_HEIGHT = 40;
+            const int SPRITE_WIDTH = TILE_SIZE;
+            const int SPRITE_HEIGHT = TILE_SIZE;
             render_x = static_cast<float>(get_x()) - (SPRITE_WIDTH / 2);   // Center → top-left
             render_y = static_cast<float>(get_y()) - (SPRITE_HEIGHT / 2);  // Center → top-left
         }

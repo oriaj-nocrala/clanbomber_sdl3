@@ -4,10 +4,14 @@
 #include "MapTile_Pure.h"
 #include "MapEntry.h"
 #include "GameContext.h"
+#include "CoordinateSystem.h"
 #include <algorithm>
 #include <random>
 #include <filesystem>
 #include <SDL3/SDL.h>
+
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 
 Map::Map(GameContext* _context) {
     context = _context;
@@ -146,7 +150,7 @@ void Map::reload() {
                 tile_type == MapTile_Pure::GROUND ? MapTile::GROUND :
                 tile_type == MapTile_Pure::WALL ? MapTile::WALL :
                 MapTile::BOX, 
-                x*40, y*40, context);
+                x*TILE_SIZE, y*TILE_SIZE, context);
         }
     }
     

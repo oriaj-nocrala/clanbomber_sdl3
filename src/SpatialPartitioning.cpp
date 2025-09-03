@@ -8,6 +8,9 @@
 #include <sstream>
 #include <set>
 
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
+
 // === SpatialGrid Implementation ===
 
 SpatialGrid::SpatialGrid(int cell_size_pixels) 
@@ -349,7 +352,7 @@ GameObject* CollisionHelper::find_nearest_bomber(const PixelCoord& extra_positio
     if (!spatial_grid) return nullptr;
     
     // Search in expanding radius until we find a bomber or reach max distance
-    int max_radius = static_cast<int>(std::ceil(max_distance / CoordinateConfig::TILE_SIZE));
+    int max_radius = static_cast<int>(std::ceil(max_distance / static_cast<float>(TILE_SIZE)));
     
     for (int radius = 1; radius <= max_radius; radius++) {
         std::vector<GameObject*> bombers = spatial_grid->get_bombers_near(extra_position, radius);
@@ -410,16 +413,16 @@ std::vector<GameObject*> CollisionHelper::find_explosion_victims(const std::vect
     // FAIRNESS FIX: Instead of discrete tile checking, use area-based detection
     // This prevents bombers from dying when they're visually outside the explosion
     
-    const float TILE_SIZE = 40.0f;
-    const float BOMBER_SIZE = 40.0f; // Slightly smaller than tile to avoid bleeding into adjacent tiles
+    const float TILE_SIZE_FLOAT = static_cast<float>(TILE_SIZE);
+    const float BOMBER_SIZE = TILE_SIZE_FLOAT; // Slightly smaller than tile to avoid bleeding into adjacent tiles
     
     // Get all potentially affected objects in the explosion area + adjacent tiles
     for (const GridCoord& grid_coord : explosion_area) {
         // Define explosion tile area
-        float explosion_left = grid_coord.grid_x * TILE_SIZE;
-        float explosion_top = grid_coord.grid_y * TILE_SIZE;
-        float explosion_right = explosion_left + TILE_SIZE;
-        float explosion_bottom = explosion_top + TILE_SIZE;
+        float explosion_left = grid_coord.grid_x * TILE_SIZE_FLOAT;
+        float explosion_top = grid_coord.grid_y * TILE_SIZE_FLOAT;
+        float explosion_right = explosion_left + TILE_SIZE_FLOAT;
+        float explosion_bottom = explosion_top + TILE_SIZE_FLOAT;
         
         // SMART SEARCH: Search in explosion tile + adjacent tiles, but ONLY accept objects
         // whose bounding box actually intersects the explosion tile (not just nearby)
@@ -446,8 +449,8 @@ std::vector<GameObject*> CollisionHelper::find_explosion_victims(const std::vect
                             float bomber_y = static_cast<float>(obj->get_y());
                             
                             // Calculate bomber's current tile
-                            int bomber_tile_x = static_cast<int>(bomber_x / TILE_SIZE);
-                            int bomber_tile_y = static_cast<int>(bomber_y / TILE_SIZE);
+                            int bomber_tile_x = static_cast<int>(bomber_x / TILE_SIZE_FLOAT);
+                            int bomber_tile_y = static_cast<int>(bomber_y / TILE_SIZE_FLOAT);
                             
                             // Check if bomber's tile matches this explosion tile
                             bool in_explosion_tile = (bomber_tile_x == grid_coord.grid_x && 

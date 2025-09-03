@@ -1,12 +1,16 @@
 #include "Resources.h"
 #include "AudioMixer.h"
 #include "GPUAcceleratedRenderer.h"
+#include "CoordinateSystem.h"
 #include <SDL3_image/SDL_image.h>
 #include <glad/gl.h>
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <vector>
+
+// Phase 3: Import CoordinateConfig constants
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 
 std::string Resources::base_path;
 std::map<std::string, TextureInfo*> Resources::textures;
@@ -33,37 +37,37 @@ void Resources::init() {
     textures["playersetup_background"] = load_texture("data/pics/playersetup.png");
     textures["mapselector_background"] = load_texture("data/pics/level_selection.png");
     textures["mapselector_not_available"] = load_texture("data/pics/not_available.png");
-    textures["gamestatus_tools"] = load_texture("data/pics/cup2.png", 40, 40);
+    textures["gamestatus_tools"] = load_texture("data/pics/cup2.png", TILE_SIZE, TILE_SIZE);
     textures["gamestatus_background"] = load_texture("data/pics/game_status.png");
     textures["horst_evil"] = load_texture("data/pics/horst_evil.png");
     textures["bomber_snake"] = load_texture("data/pics/bomber_snake.png", 40, 60);
     textures["bomber_tux"] = load_texture("data/pics/bomber_tux.png", 40, 60);
-    textures["bomber_spider"] = load_texture("data/pics/bomber_spider.png", 40, 40);
-    textures["bomber_bsd"] = load_texture("data/pics/bomber_bsd.png", 40, 60);
-    textures["bomber_dull_red"] = load_texture("data/pics/bomber_dull_red.png", 40, 40);
-    textures["bomber_dull_blue"] = load_texture("data/pics/bomber_dull_blue.png", 40, 40);
-    textures["bomber_dull_yellow"] = load_texture("data/pics/bomber_dull_yellow.png", 40, 40);
-    textures["bomber_dull_green"] = load_texture("data/pics/bomber_dull_green.png", 40, 40);
-    textures["observer"] = load_texture("data/pics/observer.png", 40, 40);
-    textures["maptiles"] = load_texture("data/pics/maptiles.png", 40, 40);
-    textures["maptile_addons"] = load_texture("data/pics/maptile_addons.png", 40, 40);
-    textures["bombs"] = load_texture("data/pics/bombs.png", 40, 40);
-    textures["explosion"] = load_texture("data/pics/explosion2.png", 40, 40);
+    textures["bomber_spider"] = load_texture("data/pics/bomber_spider.png", TILE_SIZE, TILE_SIZE);
+    textures["bomber_bsd"] = load_texture("data/pics/bomber_bsd.png", TILE_SIZE, 60);
+    textures["bomber_dull_red"] = load_texture("data/pics/bomber_dull_red.png", TILE_SIZE, TILE_SIZE);
+    textures["bomber_dull_blue"] = load_texture("data/pics/bomber_dull_blue.png", TILE_SIZE, TILE_SIZE);
+    textures["bomber_dull_yellow"] = load_texture("data/pics/bomber_dull_yellow.png", TILE_SIZE, TILE_SIZE);
+    textures["bomber_dull_green"] = load_texture("data/pics/bomber_dull_green.png", TILE_SIZE, TILE_SIZE);
+    textures["observer"] = load_texture("data/pics/observer.png", TILE_SIZE, TILE_SIZE);
+    textures["maptiles"] = load_texture("data/pics/maptiles.png", TILE_SIZE, TILE_SIZE);
+    textures["maptile_addons"] = load_texture("data/pics/maptile_addons.png", TILE_SIZE, TILE_SIZE);
+    textures["bombs"] = load_texture("data/pics/bombs.png", TILE_SIZE, TILE_SIZE);
+    textures["explosion"] = load_texture("data/pics/explosion2.png", TILE_SIZE, TILE_SIZE);
     SDL_Log("DEBUG: Loaded explosion texture, pointer: %p", textures["explosion"]);
     
     // Load power-up textures (extras2_X)
-    textures["extras2_0"] = load_texture("data/pics/extras2_0.png", 40, 40);  // BOMB
-    textures["extras2_1"] = load_texture("data/pics/extras2_1.png", 40, 40);  // FLAME
-    textures["extras2_2"] = load_texture("data/pics/extras2_2.png", 40, 40);  // SPEED
-    textures["extras2_3"] = load_texture("data/pics/extras2_3.png", 40, 40);  // KICK
-    textures["extras2_4"] = load_texture("data/pics/extras2_4.png", 40, 40);  // GLOVE
-    textures["extras2_5"] = load_texture("data/pics/extras2_5.png", 40, 40);  // SKATE
-    textures["extras2_6"] = load_texture("data/pics/extras2_6.png", 40, 40);  // DISEASE
-    textures["extras2_7"] = load_texture("data/pics/extras2_7.png", 40, 40);  // KOKS
-    textures["extras2_8"] = load_texture("data/pics/extras2_8.png", 40, 40);  // VIAGRA
+    textures["extras2_0"] = load_texture("data/pics/extras2_0.png", TILE_SIZE, TILE_SIZE);  // BOMB
+    textures["extras2_1"] = load_texture("data/pics/extras2_1.png", TILE_SIZE, TILE_SIZE);  // FLAME
+    textures["extras2_2"] = load_texture("data/pics/extras2_2.png", TILE_SIZE, TILE_SIZE);  // SPEED
+    textures["extras2_3"] = load_texture("data/pics/extras2_3.png", TILE_SIZE, TILE_SIZE);  // KICK
+    textures["extras2_4"] = load_texture("data/pics/extras2_4.png", TILE_SIZE, TILE_SIZE);  // GLOVE
+    textures["extras2_5"] = load_texture("data/pics/extras2_5.png", TILE_SIZE, TILE_SIZE);  // SKATE
+    textures["extras2_6"] = load_texture("data/pics/extras2_6.png", TILE_SIZE, TILE_SIZE);  // DISEASE
+    textures["extras2_7"] = load_texture("data/pics/extras2_7.png", TILE_SIZE, TILE_SIZE);  // KOKS
+    textures["extras2_8"] = load_texture("data/pics/extras2_8.png", TILE_SIZE, TILE_SIZE);  // VIAGRA
     textures["cb_logo_small"] = load_texture("data/pics/cb_logo_small.png");
     textures["map_editor_background"] = load_texture("data/pics/map_editor.png");
-    textures["corpse_parts"] = load_texture("data/pics/corpse_parts.png", 40, 40);
+    textures["corpse_parts"] = load_texture("data/pics/corpse_parts.png", TILE_SIZE, TILE_SIZE);
 
     // Initialize audio mixer
     AudioMixer::init();
@@ -242,8 +246,8 @@ void Resources::register_gl_texture_metadata(const std::string& texture_name, GP
     if (!surface) return;
     
     // Register metadata with GPU renderer
-    int sprite_width = (tex_info->sprite_width > 0) ? tex_info->sprite_width : 40;
-    int sprite_height = (tex_info->sprite_height > 0) ? tex_info->sprite_height : 40;
+    int sprite_width = (tex_info->sprite_width > 0) ? tex_info->sprite_width : TILE_SIZE;
+    int sprite_height = (tex_info->sprite_height > 0) ? tex_info->sprite_height : TILE_SIZE;
     
     renderer->register_texture_metadata(tex_info->gl_texture, surface->w, surface->h, 
                                        sprite_width, sprite_height);

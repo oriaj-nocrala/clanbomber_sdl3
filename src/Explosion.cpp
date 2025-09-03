@@ -17,6 +17,9 @@
 #include "Controller_Joystick.h"
 #include <SDL3/SDL_timer.h>
 
+// Phase 3: Import CoordinateConfig constants
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
+
 Explosion::Explosion(int _x, int _y, int _power, Bomber* _owner, GameContext* context) : GameObject(_x, _y, context) {
     owner = _owner;
     power = _power;
@@ -133,7 +136,7 @@ void Explosion::detonate_other_bombs() {
 //     // Draw explosion using OpenGL batch rendering with procedural shader effects
 //     if (app && get_context()->get_renderer()) {
 //         // Calculate tile-aligned center position
-//         float tile_size = 40.0f;
+//         float tile_size = static_cast<float>(TILE_SIZE);
 //         int map_x = get_map_x();
 //         int map_y = get_map_y();
         
@@ -202,7 +205,7 @@ void Explosion::draw_explosion_tile(float tile_x, float tile_y) {
     // The shader will generate the explosion effect procedurally
     GLuint dummy_texture = get_dummy_white_texture();
     
-    float tile_size = 40.0f;
+    float tile_size = static_cast<float>(TILE_SIZE);
     float white_color[4] = {1.0f, 1.0f, 1.0f, 1.0f};
     float scale[2] = {1.0f, 1.0f};
     
@@ -254,7 +257,7 @@ void Explosion::show() {
     if (get_context() && get_context()->get_rendering_facade()) {
         GPUAcceleratedRenderer* gpu_renderer = get_context()->get_rendering_facade()->get_gpu_renderer();
         if (gpu_renderer) {
-            float tile_size = 40.0f;
+            float tile_size = static_cast<float>(TILE_SIZE);
             int map_x = get_map_x();
             int map_y = get_map_y();
             

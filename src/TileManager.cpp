@@ -6,8 +6,12 @@
 #include "LifecycleManager.h"
 #include "Bomb.h"
 #include "Bomber.h"
+#include "CoordinateSystem.h"
 #include <SDL3/SDL.h>
 #include <cassert>
+
+// Import CoordinateConfig constants for refactoring Phase 1
+static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 
 TileManager::TileManager(GameContext* context) : context(context) {
     SDL_Log("TileManager: Initialized intelligent tile coordination system");
@@ -344,7 +348,7 @@ void TileManager::perform_tile_replacement(int map_x, int map_y, int new_tile_ty
     // Crear nuevo tile
     MapTile* new_tile = MapTile::create(
         static_cast<MapTile::MAPTILE_TYPE>(new_tile_type),
-        map_x * 40, map_y * 40, context
+        map_x * TILE_SIZE, map_y * TILE_SIZE, context
     );
     
     // Actualizar grid usando el setter
