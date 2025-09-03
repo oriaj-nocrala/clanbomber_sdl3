@@ -17,6 +17,8 @@
 #include <set>
 #include <vector>
 #include <string>
+#include <memory>
+#include "GameObject.h"
 
 GameplayScreen::GameplayScreen(ClanBomberApplication* app) : app(app), game_systems(nullptr), game_logic(nullptr) {
     SDL_Log("GameplayScreen::GameplayScreen() - Loading game configuration...");

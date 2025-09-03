@@ -40,6 +40,10 @@
                 <div class="stat-value" id="commented-blocks">-</div>
             </div>
             <div class="stat-card">
+                <h3>🎯 Raw Pointers</h3>
+                <div class="stat-value" id="raw-pointers">-</div>
+            </div>
+            <div class="stat-card">
                 <h3>⚠️ Total Findings</h3>
                 <div class="stat-value" id="total-findings">-</div>
             </div>
@@ -53,6 +57,14 @@
             <div class="chart-container">
                 <h3>📈 Function Status Distribution</h3>
                 <canvas id="functionStatusChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>🎯 Raw Pointer Severity</h3>
+                <canvas id="rawPointerSeverityChart"></canvas>
+            </div>
+            <div class="chart-container">
+                <h3>📋 Raw Pointer Patterns</h3>
+                <canvas id="rawPointerPatternsChart"></canvas>
             </div>
         </div>
 
@@ -90,6 +102,27 @@
                             </tr>
                         </thead>
                         <tbody id="magic-tbody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="table-container">
+                <h3>🚨 Dangerous Raw Pointers</h3>
+                <div class="table-wrapper">
+                    <table id="dangerous-pointers-table">
+                        <thead>
+                            <tr>
+                                <th>Variable</th>
+                                <th>Type</th>
+                                <th>Pattern</th>
+                                <th>Severity</th>
+                                <th>File</th>
+                                <th>Line</th>
+                                <th>Fix</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dangerous-pointers-tbody">
                         </tbody>
                     </table>
                 </div>

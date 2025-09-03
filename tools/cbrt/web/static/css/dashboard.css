@@ -323,3 +323,42 @@ tr:hover {
         font-size: 0.9rem;
     }
 }
+
+/* Raw Pointer Severity Badges */
+.badge {
+    display: inline-block;
+    padding: 4px 8px;
+    font-size: 0.75rem;
+    font-weight: bold;
+    border-radius: 4px;
+    text-transform: uppercase;
+    color: white;
+}
+
+.severity-critical {
+    background-color: #dc3545;
+}
+
+.severity-high {
+    background-color: #fd7e14;
+}
+
+.severity-medium {
+    background-color: #ffc107;
+    color: #333;
+}
+
+.severity-low {
+    background-color: #28a745;
+}
+
+.badge-pattern {
+    background-color: #6c757d;
+    color: white;
+}
+
+/* Table row hover effects */
+table tbody tr:hover {
+    background-color: rgba(0, 123, 255, 0.1);
+    cursor: pointer;
+}

@@ -4,6 +4,7 @@
 #include "Bomber.h"
 #include "Timer.h"
 #include <SDL3/SDL.h>
+#include <memory>
 
 GameSystems::GameSystems(GameContext* context) 
     : context(context)

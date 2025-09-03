@@ -21,6 +21,7 @@ class AnalysisType(Enum):
     COMMENTED_CODE = "commented_code"
     DUPLICATES = "duplicates"
     DEPENDENCIES = "dependencies"
+    RAW_POINTERS = "raw_pointers"
 
 class Severity(Enum):
     """Severity levels for findings"""
@@ -102,6 +103,31 @@ class CommentedCodeBlock:
         return ""
 
 @dataclass
+class RawPointer:
+    """Represents a raw pointer usage that might be dangerous"""
+    location: SourceLocation
+    variable_name: str
+    type_name: str
+    context: str
+    danger_level: Severity
+    pattern_type: str  # "parameter", "member", "local", "return", "allocation"
+    ownership_unclear: bool = True
+    suggested_fix: Optional[str] = None
+    
+    @property
+    def is_dangerous(self) -> bool:
+        """Returns True if this raw pointer usage is considered dangerous"""
+        return self.danger_level in [Severity.HIGH, Severity.CRITICAL]
+    
+    @property
+    def description(self) -> str:
+        """Generate a description of the raw pointer issue"""
+        base = f"Raw pointer '{self.variable_name}' of type '{self.type_name}'"
+        if self.ownership_unclear:
+            base += " with unclear ownership semantics"
+        return base
+
+@dataclass
 class Finding:
     """Represents an analysis finding"""
     id: str
@@ -139,6 +165,7 @@ class AnalysisResult:
     function_calls: List[FunctionCall] = field(default_factory=list)
     magic_numbers: List[MagicNumber] = field(default_factory=list)
     commented_blocks: List[CommentedCodeBlock] = field(default_factory=list)
+    raw_pointers: List[RawPointer] = field(default_factory=list)
     findings: List[Finding] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     
@@ -183,6 +210,7 @@ class AnalysisResult:
             'function_calls': [asdict(call) for call in self.function_calls],
             'magic_numbers': [asdict(num) for num in self.magic_numbers],
             'commented_blocks': [asdict(block) for block in self.commented_blocks],
+            'raw_pointers': [asdict(pointer) for pointer in self.raw_pointers],
             'findings': [f.to_dict() for f in self.findings],
             'source_files': self.source_files
         }

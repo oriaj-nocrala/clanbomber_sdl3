@@ -4,6 +4,8 @@ class Dashboard {
     constructor() {
         this.severityChart = null;
         this.functionChart = null;
+        this.rawPointerSeverityChart = null;
+        this.rawPointerPatternsChart = null;
         this.isLoading = false;
         
         this.init();
@@ -77,6 +79,7 @@ class Dashboard {
         document.getElementById('unused-functions').textContent = stats.unused_functions;
         document.getElementById('magic-numbers').textContent = stats.magic_numbers;
         document.getElementById('commented-blocks').textContent = stats.commented_blocks;
+        document.getElementById('raw-pointers').textContent = stats.raw_pointers;
         document.getElementById('total-findings').textContent = stats.total_findings;
         
         // Update last updated time
@@ -98,6 +101,9 @@ class Dashboard {
         
         this.updateSeverityChart(findingsData.by_severity);
         this.updateFunctionChart(functionsData);
+        
+        // Load raw pointers data
+        await this.loadRawPointers();
     }
     
     updateSeverityChart(severityData) {
@@ -325,6 +331,137 @@ class Dashboard {
         setTimeout(() => {
             btn.style.background = originalStyle;
         }, 1000);
+    }
+    
+    async loadRawPointers() {
+        try {
+            const response = await fetch('/api/analysis/raw-pointers');
+            const data = await response.json();
+            
+            if (data.error) {
+                console.error('Raw pointers data error:', data.error);
+                return;
+            }
+            
+            this.updateRawPointerCharts(data);
+            this.updateDangerousPointersTable(data.dangerous_pointers);
+            
+        } catch (error) {
+            console.error('Error loading raw pointers:', error);
+        }
+    }
+    
+    updateRawPointerCharts(data) {
+        // Update severity chart
+        const severityCtx = document.getElementById('rawPointerSeverityChart').getContext('2d');
+        
+        if (this.rawPointerSeverityChart) {
+            this.rawPointerSeverityChart.destroy();
+        }
+        
+        const severityColors = {
+            'critical': '#dc3545',
+            'high': '#fd7e14',
+            'medium': '#ffc107',
+            'low': '#28a745'
+        };
+        
+        const severityLabels = Object.keys(data.severity_breakdown);
+        const severityValues = Object.values(data.severity_breakdown);
+        const severityChartColors = severityLabels.map(label => severityColors[label] || '#6c757d');
+        
+        this.rawPointerSeverityChart = new Chart(severityCtx, {
+            type: 'doughnut',
+            data: {
+                labels: severityLabels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+                datasets: [{
+                    data: severityValues,
+                    backgroundColor: severityChartColors,
+                    borderWidth: 2,
+                    borderColor: '#fff'
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Raw Pointer Risk Levels'
+                    }
+                }
+            }
+        });
+        
+        // Update patterns chart
+        const patternsCtx = document.getElementById('rawPointerPatternsChart').getContext('2d');
+        
+        if (this.rawPointerPatternsChart) {
+            this.rawPointerPatternsChart.destroy();
+        }
+        
+        const patternLabels = Object.keys(data.pattern_breakdown);
+        const patternValues = Object.values(data.pattern_breakdown);
+        
+        this.rawPointerPatternsChart = new Chart(patternsCtx, {
+            type: 'bar',
+            data: {
+                labels: patternLabels.map(l => l.charAt(0).toUpperCase() + l.slice(1)),
+                datasets: [{
+                    label: 'Count',
+                    data: patternValues,
+                    backgroundColor: '#007bff',
+                    borderColor: '#0056b3',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            stepSize: 1
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    title: {
+                        display: true,
+                        text: 'Raw Pointer Usage Patterns'
+                    }
+                }
+            }
+        });
+    }
+    
+    updateDangerousPointersTable(pointers) {
+        const tbody = document.getElementById('dangerous-pointers-tbody');
+        tbody.innerHTML = '';
+        
+        pointers.forEach(pointer => {
+            const row = tbody.insertRow();
+            const severityClass = `severity-${pointer.danger_level.toLowerCase()}`;
+            
+            row.innerHTML = `
+                <td><code>${pointer.variable_name}</code></td>
+                <td><code>${pointer.type_name}</code></td>
+                <td><span class="badge badge-pattern">${pointer.pattern_type}</span></td>
+                <td><span class="badge ${severityClass}">${pointer.danger_level}</span></td>
+                <td><code>${pointer.file}</code></td>
+                <td>${pointer.line}</td>
+                <td><small>${pointer.suggested_fix}</small></td>
+            `;
+            
+            // Add click handler for row details
+            row.style.cursor = 'pointer';
+            row.title = pointer.context;
+        });
     }
 }
 

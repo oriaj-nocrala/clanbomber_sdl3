@@ -1,6 +1,7 @@
 #include "Bomb.h"
 #include "Explosion.h"
 #include "ClanBomber.h"
+#include "GameObject.h"
 #include "Timer.h"
 #include "GameConfig.h"
 #include "Map.h"

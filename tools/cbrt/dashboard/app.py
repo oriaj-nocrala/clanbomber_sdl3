@@ -81,6 +81,7 @@ def analysis_overview():
             'unused_functions': len(result.get_unused_functions()),
             'magic_numbers': len(result.magic_numbers),
             'commented_blocks': len(result.commented_blocks),
+            'raw_pointers': len(result.raw_pointers),
             'total_findings': len(result.findings)
         }
     }
@@ -228,6 +229,60 @@ def file_stats():
             file_stats[filename]['findings'] += 1
     
     return jsonify(file_stats)
+
+@app.route('/api/analysis/raw-pointers')
+def raw_pointers_data():
+    """Get raw pointers analysis data"""
+    result = get_cached_analysis()
+    if not result:
+        return jsonify({'error': 'Failed to run analysis'}), 500
+    
+    # Group raw pointers by severity and pattern
+    severity_stats = {'critical': 0, 'high': 0, 'medium': 0, 'low': 0}
+    pattern_stats = {}
+    dangerous_pointers = []
+    
+    for pointer in result.raw_pointers:
+        # Count by severity
+        severity = pointer.danger_level.value.lower()
+        if severity in severity_stats:
+            severity_stats[severity] += 1
+        
+        # Count by pattern
+        pattern = pointer.pattern_type
+        if pattern not in pattern_stats:
+            pattern_stats[pattern] = 0
+        pattern_stats[pattern] += 1
+        
+        # Include dangerous pointers for detailed view
+        if pointer.danger_level.value in ['CRITICAL', 'HIGH']:
+            dangerous_pointers.append({
+                'variable_name': pointer.variable_name,
+                'type_name': pointer.type_name,
+                'pattern_type': pointer.pattern_type,
+                'danger_level': pointer.danger_level.value,
+                'file': pointer.location.filename,
+                'line': pointer.location.line,
+                'context': pointer.context[:100] + '...' if len(pointer.context) > 100 else pointer.context,
+                'suggested_fix': pointer.suggested_fix,
+                'ownership_unclear': pointer.ownership_unclear
+            })
+    
+    # Sort dangerous pointers by severity
+    severity_order = {'CRITICAL': 0, 'HIGH': 1, 'MEDIUM': 2, 'LOW': 3}
+    dangerous_pointers.sort(key=lambda x: severity_order.get(x['danger_level'], 999))
+    
+    return jsonify({
+        'total_count': len(result.raw_pointers),
+        'severity_breakdown': severity_stats,
+        'pattern_breakdown': pattern_stats,
+        'dangerous_pointers': dangerous_pointers[:50],  # Limit to 50 most dangerous
+        'summary': {
+            'critical_count': severity_stats['critical'],
+            'high_risk_count': severity_stats['high'],
+            'total_dangerous': severity_stats['critical'] + severity_stats['high']
+        }
+    })
 
 if __name__ == '__main__':
     print("Starting ClanBomber Refactor Tool Dashboard...")

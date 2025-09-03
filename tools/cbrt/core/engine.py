@@ -11,7 +11,7 @@ import uuid
 
 from .models import (
     AnalysisResult, FunctionInfo, FunctionCall, MagicNumber, 
-    CommentedCodeBlock, Finding, SourceLocation, FunctionStatus,
+    CommentedCodeBlock, RawPointer, Finding, SourceLocation, FunctionStatus,
     AnalysisType, Severity
 )
 
@@ -60,7 +60,8 @@ class AnalysisEngine:
             analysis_types = [
                 AnalysisType.FUNCTIONS,
                 AnalysisType.MAGIC_NUMBERS,
-                AnalysisType.COMMENTED_CODE
+                AnalysisType.COMMENTED_CODE,
+                AnalysisType.RAW_POINTERS
             ]
         
         print(f"🔍 Starting analysis of {src_path}")
@@ -78,6 +79,9 @@ class AnalysisEngine:
         
         if AnalysisType.COMMENTED_CODE in analysis_types:
             self._analyze_commented_code()
+            
+        if AnalysisType.RAW_POINTERS in analysis_types:
+            self._analyze_raw_pointers()
         
         # Generate findings
         self._generate_findings()
@@ -487,8 +491,198 @@ class AnalysisEngine:
                     }
                 )
                 self.result.findings.append(finding)
+        
+        # Generate findings for dangerous raw pointers
+        critical_pointers = [p for p in self.result.raw_pointers if p.danger_level == Severity.CRITICAL]
+        high_pointers = [p for p in self.result.raw_pointers if p.danger_level == Severity.HIGH]
+        
+        for pointer in critical_pointers + high_pointers:
+            finding = Finding(
+                id=str(uuid.uuid4())[:8],
+                type=AnalysisType.RAW_POINTERS,
+                severity=pointer.danger_level,
+                title=f"Dangerous raw pointer: {pointer.variable_name}",
+                description=pointer.description,
+                location=pointer.location,
+                suggestions=[
+                    pointer.suggested_fix,
+                    "Review ownership semantics",
+                    "Consider RAII patterns"
+                ],
+                metadata={
+                    'variable_name': pointer.variable_name,
+                    'type_name': pointer.type_name,
+                    'pattern_type': pointer.pattern_type,
+                    'context': pointer.context
+                }
+            )
+            self.result.findings.append(finding)
     
     def _is_library_function(self, func_name: str) -> bool:
         """Check if function name belongs to a library"""
         library_prefixes = ['glm_', 'SDL_', 'GL_', 'gl', 'stb_']
         return any(func_name.startswith(prefix) for prefix in library_prefixes)
+    
+    def _analyze_raw_pointers(self):
+        """Analyze raw pointer usage patterns"""
+        print("🎯 Analyzing raw pointer usage...")
+        
+        # Patterns to detect different types of raw pointer usage
+        patterns = {
+            'parameter': r'(\w+\s*\*+)\s*(\w+)\s*(?=\)|,)',  # function parameters
+            'member': r'(\w+\s*\*+)\s*(\w+)\s*;',  # class members  
+            'local': r'(\w+\s*\*+)\s*(\w+)\s*=',  # local variables
+            'return': r'(\w+\s*\*+)\s+\w+\s*\(',  # return types
+            'allocation': r'new\s+(\w+)\s*[\(\[]',  # new allocations
+            'delete': r'delete\s+(\w+)',  # delete operations
+            'cast': r'(\w+\s*\*+)\s*\(\s*(\w+)',  # pointer casts
+        }
+        
+        dangerous_patterns = {
+            'double_delete': r'delete\s+\w+.*delete\s+\w+',  # potential double delete
+            'use_after_delete': r'delete\s+(\w+).*\1\s*[^=]',  # use after delete
+            'uninitialized': r'(\w+\s*\*+)\s*(\w+)\s*;.*\2\s*[^=]',  # uninitialized use
+        }
+        
+        for file_path in self.source_files:
+            try:
+                with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    content = f.read()
+                    lines = content.split('\n')
+                
+                for line_num, line in enumerate(lines, 1):
+                    # Skip comments and strings
+                    if '//' in line:
+                        line = line[:line.find('//')]
+                    
+                    line = line.strip()
+                    if not line or line.startswith('/*') or line.startswith('*'):
+                        continue
+                    
+                    # Analyze different pointer patterns
+                    for pattern_type, pattern in patterns.items():
+                        matches = re.finditer(pattern, line, re.IGNORECASE)
+                        for match in matches:
+                            type_name = match.group(1).strip()
+                            var_name = match.group(2).strip() if len(match.groups()) >= 2 else "unknown"
+                            
+                            # Skip library types and common safe patterns
+                            if self._is_safe_pointer_usage(type_name, var_name, line, pattern_type):
+                                continue
+                            
+                            danger_level = self._assess_pointer_danger(line, pattern_type, type_name)
+                            suggested_fix = self._suggest_pointer_fix(pattern_type, type_name, line)
+                            
+                            location = SourceLocation(str(file_path), line_num)
+                            raw_pointer = self._create_raw_pointer_finding(
+                                location, var_name, type_name, line, 
+                                danger_level, pattern_type, suggested_fix
+                            )
+                            
+                            self.result.raw_pointers.append(raw_pointer)
+                    
+                    # Check for dangerous patterns
+                    for danger_type, pattern in dangerous_patterns.items():
+                        if re.search(pattern, line, re.IGNORECASE):
+                            location = SourceLocation(str(file_path), line_num)
+                            raw_pointer = self._create_dangerous_pointer_finding(
+                                location, danger_type, line
+                            )
+                            self.result.raw_pointers.append(raw_pointer)
+                            
+            except Exception as e:
+                print(f"❌ Error analyzing raw pointers in {file_path}: {e}")
+    
+    def _is_safe_pointer_usage(self, type_name: str, var_name: str, line: str, pattern_type: str) -> bool:
+        """Check if this pointer usage is considered safe"""
+        safe_patterns = [
+            'const char*',  # string literals
+            'SDL_',  # SDL library types
+            'void*',  # generic void pointers (often for APIs)
+            'this',  # this pointer
+        ]
+        
+        # Check for library types
+        for pattern in safe_patterns:
+            if pattern.lower() in type_name.lower() or pattern.lower() in var_name.lower():
+                return True
+        
+        # Parameters are often safe if they're const
+        if pattern_type == 'parameter' and 'const' in line.lower():
+            return True
+            
+        # Smart pointer usage is safe
+        if any(smart in line.lower() for smart in ['unique_ptr', 'shared_ptr', 'weak_ptr']):
+            return True
+            
+        return False
+    
+    def _assess_pointer_danger(self, line: str, pattern_type: str, type_name: str) -> 'Severity':
+        """Assess the danger level of a raw pointer usage"""
+        from .models import Severity
+        
+        # High danger patterns
+        if pattern_type == 'allocation' and 'delete' not in line:
+            return Severity.HIGH  # new without corresponding delete visible
+        
+        if pattern_type == 'member' and 'const' not in line.lower():
+            return Severity.HIGH  # non-const member pointers
+            
+        # Medium danger patterns  
+        if pattern_type == 'local' and '=' in line and 'new' in line:
+            return Severity.MEDIUM  # local pointer with allocation
+            
+        if pattern_type == 'return':
+            return Severity.MEDIUM  # returning raw pointers
+        
+        # Low danger patterns
+        if pattern_type == 'parameter':
+            return Severity.LOW  # parameters are often safe
+            
+        return Severity.MEDIUM
+    
+    def _suggest_pointer_fix(self, pattern_type: str, type_name: str, line: str) -> str:
+        """Suggest a fix for raw pointer usage"""
+        if pattern_type == 'allocation':
+            return f"Use std::make_unique<{type_name.replace('*', '')}>()"
+        elif pattern_type == 'member':
+            return f"Use std::unique_ptr<{type_name.replace('*', '')}>"
+        elif pattern_type == 'local':
+            if 'new' in line:
+                return f"Use std::unique_ptr<{type_name.replace('*', '')}>"
+            return "Consider using references or smart pointers"
+        elif pattern_type == 'return':
+            return "Return smart pointer or reference instead"
+        else:
+            return "Consider using smart pointers for ownership clarity"
+    
+    def _create_raw_pointer_finding(self, location, var_name, type_name, context, 
+                                  danger_level, pattern_type, suggested_fix):
+        """Create a RawPointer finding"""
+        from .models import RawPointer
+        
+        return RawPointer(
+            location=location,
+            variable_name=var_name,
+            type_name=type_name,
+            context=context.strip(),
+            danger_level=danger_level,
+            pattern_type=pattern_type,
+            ownership_unclear=True,
+            suggested_fix=suggested_fix
+        )
+    
+    def _create_dangerous_pointer_finding(self, location, danger_type, context):
+        """Create a finding for dangerous pointer patterns"""
+        from .models import RawPointer, Severity
+        
+        return RawPointer(
+            location=location,
+            variable_name="unknown",
+            type_name="unknown",
+            context=context.strip(),
+            danger_level=Severity.CRITICAL,
+            pattern_type=danger_type,
+            ownership_unclear=True,
+            suggested_fix=f"Review {danger_type} pattern for memory safety"
+        )

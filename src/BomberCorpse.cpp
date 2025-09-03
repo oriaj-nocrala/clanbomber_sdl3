@@ -1,6 +1,7 @@
 #include "BomberCorpse.h"
 #include "CorpsePart.h"
 #include "ClanBomber.h"
+#include "GameObject.h"
 #include "AudioMixer.h"
 #include "Timer.h"
 #include "ParticleSystem.h"

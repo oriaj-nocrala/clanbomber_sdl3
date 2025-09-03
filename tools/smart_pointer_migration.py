@@ -135,27 +135,41 @@ class SmartPointerMigrator:
         """Fix incomplete type issues by adding proper includes"""
         changes = 0
         
-        # If file uses std::unique_ptr<GameObject> but GameObject.h not included
-        if 'std::unique_ptr<GameObject>' in content and '#include "GameObject.h"' not in content:
-            # Add GameObject.h include
-            pattern = r'(#include\s*[<"][^>"]+[>"][^\n]*\n)'
+        # Critical fix: Files that use std::unique_ptr<T> MUST include the complete definition
+        incomplete_type_fixes = [
+            ('std::unique_ptr<GameObject>', '#include "GameObject.h"'),
+            ('std::unique_ptr<Bomber>', '#include "Bomber.h"'),
+            ('std::list<std::unique_ptr<GameObject>>', '#include "GameObject.h"'),
+            ('std::list<std::unique_ptr<Bomber>>', '#include "Bomber.h"'),
+        ]
+        
+        for usage_pattern, include_needed in incomplete_type_fixes:
+            if usage_pattern in content and include_needed not in content:
+                # Find the best insertion point after other includes
+                include_pattern = r'(#include\s*[<"][^>"]+[>"][^\n]*\n)'
+                matches = list(re.finditer(include_pattern, content))
+                
+                if matches:
+                    # Insert after the last include
+                    insertion_point = matches[-1].end()
+                    content = content[:insertion_point] + include_needed + '\n' + content[insertion_point:]
+                    changes += 1
+                    self.log_change(file_path, f"incomplete_type_fix", f"Added {include_needed} for {usage_pattern}")
+        
+        # Special case: Files that include ClanBomber.h (which has smart pointer collections)
+        # need GameObject.h for complete type
+        if ('#include "ClanBomber.h"' in content and 
+            '#include "GameObject.h"' not in content and
+            file_path.suffix == '.cpp'):  # Only for .cpp files to avoid circular includes
+            
+            # Find ClanBomber.h include and add GameObject.h after it
+            pattern = r'(#include "ClanBomber\.h"[^\n]*\n)'
             match = re.search(pattern, content)
             if match:
                 insertion_point = match.end()
                 content = content[:insertion_point] + '#include "GameObject.h"\n' + content[insertion_point:]
                 changes += 1
-        
-        # Similar for Bomber
-        if 'std::unique_ptr<Bomber>' in content and '#include "Bomber.h"' not in content:
-            pattern = r'(#include\s*[<"][^>"]+[>"][^\n]*\n)'
-            match = re.search(pattern, content)
-            if match:
-                insertion_point = match.end()
-                content = content[:insertion_point] + '#include "Bomber.h"\n' + content[insertion_point:]
-                changes += 1
-        
-        if changes > 0:
-            self.log_change(file_path, "include_completeness", f"Added {changes} forward declaration fixes")
+                self.log_change(file_path, "clanbomber_include_fix", "Added GameObject.h after ClanBomber.h")
         
         return content
     
@@ -276,13 +290,15 @@ def main():
     
     # Files that need smart pointer fixes based on compilation errors
     target_files = [
-        # Core files already partially converted
-        'GameLogic.cpp',
-        'GameLogic.h', 
-        
-        # Files with compilation errors that need smart pointer fixes
+        # Files with CRITICAL incomplete type compilation errors (PRIORITY)
         'MainMenuScreen.cpp',
         'MainMenuScreen.h',
+        'GameplayScreen.cpp',
+        'GameSystems.cpp',
+        
+        # Core files already partially converted
+        'GameLogic.cpp',
+        'GameLogic.h',
         'TileEntity.cpp',
         'TileEntity.h',
         'Map.cpp',

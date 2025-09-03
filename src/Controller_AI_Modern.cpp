@@ -1,5 +1,6 @@
 #include "Controller_AI_Modern.h"
 #include "ClanBomber.h"
+#include "GameObject.h"
 #include "Map.h"
 #include "Bomber.h"
 #include "Timer.h"

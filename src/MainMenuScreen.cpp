@@ -2,6 +2,7 @@
 #include "Resources.h"
 #include "TextRenderer.h"
 #include "GameContext.h"
+#include "GameObject.h"  // Required for std::unique_ptr<GameObject> in GameContext
 #include "RenderingFacade.h"
 #include "Controller_Joystick.h"
 #include <string.h>
