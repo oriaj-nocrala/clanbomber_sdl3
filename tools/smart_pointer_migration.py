@@ -104,19 +104,108 @@ class SmartPointerMigrator:
         changes = 0
         
         # Check if memory is already included
-        if '#include <memory>' not in content and 'std::unique_ptr' in content:
-            # Find the include section
-            pattern = r'(#include <[^>]+>\n)(?=#include <[^>]+>|\n)'
-            matches = list(re.finditer(pattern, content))
-            if matches:
-                # Add after the last system include
-                last_include = matches[-1]
-                insertion_point = last_include.end()
-                content = content[:insertion_point] + '#include <memory>\n' + content[insertion_point:]
-                changes += 1
+        if '#include <memory>' not in content and ('std::unique_ptr' in content or 'std::make_unique' in content):
+            # Find include section - look for existing includes
+            include_pattern = r'#include\s*[<"][^>"]+[>"]'
+            includes = list(re.finditer(include_pattern, content))
+            
+            if includes:
+                # Find the best insertion point (after system includes, before local includes)
+                insertion_point = 0
+                for include in includes:
+                    if '<' in include.group() and '>' in include.group():  # System include
+                        insertion_point = include.end()
+                
+                if insertion_point > 0:
+                    # Find end of line
+                    while insertion_point < len(content) and content[insertion_point] != '\n':
+                        insertion_point += 1
+                    if insertion_point < len(content):
+                        insertion_point += 1  # Include the newline
+                    
+                    content = content[:insertion_point] + '#include <memory>\n' + content[insertion_point:]
+                    changes += 1
         
         if changes > 0:
             self.log_change(file_path, "include_fixes", f"Added missing #include <memory>")
+        
+        return content
+    
+    def fix_forward_declarations_and_includes(self, content, file_path):
+        """Fix incomplete type issues by adding proper includes"""
+        changes = 0
+        
+        # If file uses std::unique_ptr<GameObject> but GameObject.h not included
+        if 'std::unique_ptr<GameObject>' in content and '#include "GameObject.h"' not in content:
+            # Add GameObject.h include
+            pattern = r'(#include\s*[<"][^>"]+[>"][^\n]*\n)'
+            match = re.search(pattern, content)
+            if match:
+                insertion_point = match.end()
+                content = content[:insertion_point] + '#include "GameObject.h"\n' + content[insertion_point:]
+                changes += 1
+        
+        # Similar for Bomber
+        if 'std::unique_ptr<Bomber>' in content and '#include "Bomber.h"' not in content:
+            pattern = r'(#include\s*[<"][^>"]+[>"][^\n]*\n)'
+            match = re.search(pattern, content)
+            if match:
+                insertion_point = match.end()
+                content = content[:insertion_point] + '#include "Bomber.h"\n' + content[insertion_point:]
+                changes += 1
+        
+        if changes > 0:
+            self.log_change(file_path, "include_completeness", f"Added {changes} forward declaration fixes")
+        
+        return content
+    
+    def fix_object_creation_patterns(self, content, file_path):
+        """Convert raw 'new' object creation to GameContext::create_and_register_object"""
+        changes = 0
+        
+        # Pattern: Type* obj = new Type(...); context->register_object(obj);
+        pattern = r'(\w+)\*\s+(\w+)\s*=\s*new\s+\1\s*\([^)]*\)\s*;\s*[^;]*->register_object\(\2\);'
+        
+        def replace_creation_pattern(match):
+            nonlocal changes
+            changes += 1
+            type_name = match.group(1)
+            var_name = match.group(2)
+            return f'{type_name}* {var_name} = context->create_and_register_object<{type_name}>(...);  // TODO: Fix constructor args'
+        
+        new_content = re.sub(pattern, replace_creation_pattern, content, flags=re.MULTILINE | re.DOTALL)
+        if new_content != content:
+            content = new_content
+            
+        if changes > 0:
+            self.log_change(file_path, "object_creation", f"Converted {changes} object creation patterns to smart pointers")
+        
+        return content
+    
+    def fix_push_back_with_smart_pointers(self, content, file_path):
+        """Fix push_back calls that need .get() for smart pointers"""
+        changes = 0
+        
+        # Pattern: vector.push_back(smart_ptr_obj) -> vector.push_back(smart_ptr_obj.get())
+        patterns_to_fix = [
+            (r'\.push_back\((\w+)\)', r'.push_back(\1.get())'),
+            (r'\.emplace_back\((\w+)\)', r'.emplace_back(\1.get())'),
+        ]
+        
+        for pattern, replacement in patterns_to_fix:
+            # Only apply if the context suggests it's a smart pointer
+            matches = re.findall(pattern, content)
+            for match in matches:
+                var_name = match if isinstance(match, str) else match[0]
+                # Look for evidence this is a smart pointer (auto& in for loop, etc.)
+                if f'auto& {var_name} :' in content or f'std::unique_ptr' in content:
+                    old_content = content
+                    content = re.sub(pattern, replacement, content, count=1)
+                    if content != old_content:
+                        changes += 1
+        
+        if changes > 0:
+            self.log_change(file_path, "container_operations", f"Fixed {changes} container push_back patterns")
         
         return content
     
@@ -128,11 +217,14 @@ class SmartPointerMigrator:
             
             content = original_content
             
-            # Apply fixes in order
+            # Apply fixes in order (includes first to avoid compilation errors)
             content = self.add_missing_includes(content, file_path)
+            content = self.fix_forward_declarations_and_includes(content, file_path)
             content = self.fix_static_cast_with_smart_pointers(content, file_path)
             content = self.fix_function_signatures_expecting_raw_pointers(content, file_path)
+            content = self.fix_push_back_with_smart_pointers(content, file_path)
             content = self.fix_count_if_and_algorithms(content, file_path)
+            content = self.fix_object_creation_patterns(content, file_path)
             
             # Only write if changes were made
             if content != original_content:
@@ -184,9 +276,33 @@ def main():
     
     # Files that need smart pointer fixes based on compilation errors
     target_files = [
+        # Core files already partially converted
         'GameLogic.cpp',
-        'GameLogic.h',
-        # Add more files as needed from compilation errors
+        'GameLogic.h', 
+        
+        # Files with compilation errors that need smart pointer fixes
+        'MainMenuScreen.cpp',
+        'MainMenuScreen.h',
+        'TileEntity.cpp',
+        'TileEntity.h',
+        'Map.cpp',
+        'Map.h',
+        'BomberCorpse.cpp',
+        'BomberCorpse.h',
+        'Bomb.cpp',
+        'Bomb.h',
+        'ThrownBomb.cpp',
+        'ThrownBomb.h',
+        
+        # Files that create objects and need conversion
+        'MapTile.cpp',
+        'LifecycleManager.cpp',
+        'AudioMixer.cpp',
+        
+        # AI and game systems
+        'Controller_AI_Modern.cpp',
+        
+        # Any other files that show up in compilation errors
     ]
     
     print(f"🎯 Targeting {len(target_files)} files for smart pointer migration")

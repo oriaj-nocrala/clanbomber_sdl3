@@ -1,10 +1,12 @@
 #include "GameLogic.h"
+#include "GameObject.h"
 #include "Bomb.h"
 #include "Explosion.h"
 #include "Extra.h"
 #include <SDL3/SDL.h>
 #include <algorithm>
 #include <vector>
+#include <memory>
 
 GameLogic::GameLogic(GameContext* context) 
     : game_context(context), is_paused(false), frame_counter(0) {

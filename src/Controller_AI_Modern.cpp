@@ -19,6 +19,7 @@ static constexpr int TILE_SIZE = CoordinateConfig::TILE_SIZE;
 #include <cmath>
 #include <cstdlib>
 #include <queue>
+#include <memory>
 
 // Helper functions for time management and tile access
 namespace {
