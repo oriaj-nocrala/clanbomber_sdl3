@@ -2,6 +2,7 @@
 #define GAMESYSTEMS_H
 
 #include <list>
+#include <memory>
 
 class GameObject;
 class Bomber;

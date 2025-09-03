@@ -490,7 +490,7 @@ void GameplayScreen::check_victory_conditions() {
     // Count alive bombers and their teams
     for (auto& bomber : app->bomber_objects) {
         if (bomber && !bomber->delete_me && !bomber->is_dead() && bomber->has_lives()) {
-            alive_bombers.push_back(bomber);
+            alive_bombers.push_back(bomber.get());
             if (bomber->get_team() > 0) {
                 alive_teams.insert(bomber->get_team());
             }

@@ -40,7 +40,7 @@ void GameLogic::update_all_objects(float deltaTime) {
     
     // Update all active objects
     for (auto& obj : objects) {
-        if (should_skip_object_update(obj)) continue;
+        if (should_skip_object_update(obj.get())) continue;
         
         try {
             obj->act(deltaTime);
@@ -61,7 +61,7 @@ void GameLogic::render_all_objects() {
     std::vector<GameObject*> draw_list;
     for (auto& obj : objects) {
         if (!obj || obj->delete_me) continue;
-        draw_list.push_back(obj);
+        draw_list.push_back(obj.get());
     }
     
     // Sort by Z-order for proper layering (matches legacy show_all behavior)
@@ -106,7 +106,7 @@ size_t GameLogic::count_active_objects() const {
     const auto& objects = game_context->get_object_lists();
     
     return std::count_if(objects.begin(), objects.end(),
-        [](const GameObject* obj) {
+        [](const std::unique_ptr<GameObject>& obj) {
             return obj && !obj->delete_me;
         });
 }
