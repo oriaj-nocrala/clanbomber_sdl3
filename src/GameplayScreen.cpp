@@ -125,17 +125,18 @@ void GameplayScreen::init_game() {
             SDL_Log("Creating bomber %d: controller=%d, pos=(%f,%f) -> direct spawn at (%d,%d)", 
                    i, GameConfig::bomber[i].get_controller(), pos.x, pos.y, final_x, final_y);
             
-            Bomber* bomber = new Bomber(final_x, final_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, *app->game_context);
+            auto bomber = std::make_unique<Bomber>(final_x, final_y, static_cast<Bomber::COLOR>(GameConfig::bomber[i].get_skin()), controller, *app->game_context);
             bomber->set_name(GameConfig::bomber[i].get_name());
             bomber->set_team(GameConfig::bomber[i].get_team());
             bomber->set_number(i);
             bomber->set_lives(3); // Start with 3 lives
-            app->bomber_objects.push_back(bomber);
             
             // Register bomber with GameContext for proper lifecycle management
             if (app->game_context) {
-                app->game_context->register_object(bomber);
+                app->game_context->register_object(bomber.get());
             }
+            
+            app->bomber_objects.push_back(std::move(bomber));
             
             // No fly-to animation needed - spawn directly at correct position
             
@@ -412,14 +413,14 @@ void GameplayScreen::act_all() {
 void GameplayScreen::delete_some() {
     // ARCHITECTURE FIX: LifecycleManager handles ALL deletion
     // GameplayScreen only removes references from its lists
-    app->objects.remove_if([this](GameObject* obj) {
-        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(obj);
+    app->objects.remove_if([this](const std::unique_ptr<GameObject>& obj) {
+        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(obj.get());
         if (state == LifecycleManager::ObjectState::DELETED) {
-            SDL_Log("GameplayScreen: Removing object %p from render list (LifecycleManager will delete)", obj);
+            SDL_Log("GameplayScreen: Removing object %p from render list (LifecycleManager will delete)", obj.get());
             
             // CRITICAL: Clear Map grid pointer for TileEntity before LifecycleManager deletes it
             if (obj->get_type() == GameObject::MAPTILE && app->map) {
-                TileEntity* tile_entity = static_cast<TileEntity*>(obj);
+                TileEntity* tile_entity = static_cast<TileEntity*>(obj.get());
                 int map_x = tile_entity->get_map_x();
                 int map_y = tile_entity->get_map_y();
                 SDL_Log("GameplayScreen: Clearing Map grid pointer for TileEntity at (%d,%d)", map_x, map_y);
@@ -432,10 +433,10 @@ void GameplayScreen::delete_some() {
         return false;
     });
 
-    app->bomber_objects.remove_if([this](Bomber* bomber) {
-        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(bomber);
+    app->bomber_objects.remove_if([this](const std::unique_ptr<Bomber>& bomber) {
+        LifecycleManager::ObjectState state = app->lifecycle_manager->get_object_state(bomber.get());
         if (state == LifecycleManager::ObjectState::DELETED) {
-            SDL_Log("GameplayScreen: Removing bomber %p from render list (LifecycleManager will delete)", bomber);
+            SDL_Log("GameplayScreen: Removing bomber %p from render list (LifecycleManager will delete)", bomber.get());
             // DON'T DELETE - LifecycleManager owns the object lifecycle
             return true;  // Remove from list only
         }
@@ -448,10 +449,10 @@ void GameplayScreen::show_all() {
     
     std::vector<GameObject*> draw_list;
     for(auto const& value: app->objects) {
-        draw_list.push_back(value);
+        draw_list.push_back(value.get());
     }
     for(auto const& value: app->bomber_objects) {
-        draw_list.push_back(value);
+        draw_list.push_back(value.get());
     }
 
     std::sort(draw_list.begin(), draw_list.end(), [](GameObject* go1, GameObject* go2) {

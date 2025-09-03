@@ -61,6 +61,8 @@ void ParticleSystem::reinitialize(int _x, int _y, ParticleType type, GameContext
     // First reset for pool to clear state
     reset_for_pool();
     
+    SDL_Log("🔁 REINITIALIZE: ParticleSystem reused at (%d,%d) with type %d", _x, _y, type);
+    
     // Reinitialize all members as if constructed fresh
     x = _x;
     y = _y;

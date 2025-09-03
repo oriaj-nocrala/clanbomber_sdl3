@@ -2,6 +2,8 @@
 #define GAMECONTEXT_H
 
 #include <list>
+#include <memory>
+#include <type_traits>
 
 class LifecycleManager;
 class TileManager;
@@ -32,13 +34,13 @@ public:
     ~GameContext();
     
     // Set rendering object list (called during initialization)
-    void set_object_lists(std::list<GameObject*>* objects);
+    void set_object_lists(std::list<std::unique_ptr<GameObject>>* objects);
     
     // Get object lists for iteration (needed for systems like Explosion)
     // Returns const reference to prevent unsafe external modification
-    const std::list<GameObject*>& get_object_lists() const { 
+    const std::list<std::unique_ptr<GameObject>>& get_object_lists() const { 
         if (!render_objects) {
-            static std::list<GameObject*> empty_list;
+            static std::list<std::unique_ptr<GameObject>> empty_list;
             return empty_list;
         }
         return *render_objects; 
@@ -65,6 +67,26 @@ public:
     // GameObject lifecycle management
     void register_object(class GameObject* obj) const;
     
+    // Smart pointer object creation and registration
+    template<typename T, typename... Args>
+    T* create_and_register_object(Args&&... args) {
+        static_assert(std::is_base_of_v<GameObject, T>, "T must derive from GameObject");
+        
+        // Create object with smart pointer
+        auto obj = std::make_unique<T>(std::forward<Args>(args)...);
+        T* raw_ptr = obj.get();
+        
+        // Register with LifecycleManager and SpatialGrid
+        register_object(raw_ptr);
+        
+        // Add to appropriate rendering list
+        if (render_objects) {
+            render_objects->push_back(std::move(obj));
+        }
+        
+        return raw_ptr;
+    }
+    
     // Internal cleanup (called by LifecycleManager, avoids circular calls)
     void remove_from_spatial_systems(class GameObject* obj) const;
     
@@ -85,7 +107,7 @@ private:
     RenderingFacade* rendering_facade;
     
     // Rendering object list (for adding objects to be rendered)
-    std::list<GameObject*>* render_objects;
+    std::list<std::unique_ptr<GameObject>>* render_objects;
 };
 
 #endif

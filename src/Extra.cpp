@@ -85,7 +85,7 @@ void Extra::act(float deltaTime) {
         for (auto& obj : ctx->get_object_lists()) {
             if (!obj || obj->get_type() != GameObject::BOMBER) continue;
             
-            Bomber* bomber = static_cast<Bomber*>(obj);
+            Bomber* bomber = static_cast<Bomber*>(obj.get());
             if (bomber && !bomber->delete_me && !bomber->is_dead()) {
                 float dx = static_cast<float>(bomber->get_x()) - static_cast<float>(x);
                 float dy = static_cast<float>(bomber->get_y()) - static_cast<float>(y);

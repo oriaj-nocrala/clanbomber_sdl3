@@ -95,8 +95,8 @@ void GameSystems::render_ui() {
     // TODO: Extract UI rendering
 }
 
-void GameSystems::set_object_references(std::list<GameObject*>* objects, 
-                                        std::list<Bomber*>* bombers) {
+void GameSystems::set_object_references(std::list<std::unique_ptr<GameObject>>* objects, 
+                                        std::list<std::unique_ptr<Bomber>>* bombers) {
     objects_ref = objects;
     bombers_ref = bombers;
     SDL_Log("GameSystems: Object references set successfully");
@@ -119,17 +119,13 @@ void GameSystems::init_all_systems() {
 }
 
 void GameSystems::register_object(GameObject* obj) {
-    if (objects_ref && obj) {
-        objects_ref->push_back(obj);
-        SDL_Log("GameSystems: Registered object %p", obj);
-    }
+    // NOTE: Objects should be managed by their creator, not by GameSystems
+    SDL_Log("GameSystems: Object registration noted but object management is handled by creator");
 }
 
 void GameSystems::register_bomber(Bomber* bomber) {
-    if (bombers_ref && bomber) {
-        bombers_ref->push_back(bomber);
-        SDL_Log("GameSystems: Registered bomber %p", bomber);
-    }
+    // NOTE: Bombers should be managed by their creator, not by GameSystems
+    SDL_Log("GameSystems: Bomber registration noted but object management is handled by creator");
 }
 
 void GameSystems::cleanup_destroyed_objects() {

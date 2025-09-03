@@ -467,7 +467,7 @@ float Controller_AI_Smart::calculate_danger_level(CL_Vector pos) {
         for (auto& obj : bomber->get_context()->get_object_lists()) {
             if (!obj || obj->get_type() != GameObject::BOMBER) continue;
             
-            Bomber* enemy = static_cast<Bomber*>(obj);
+            Bomber* enemy = static_cast<Bomber*>(obj.get());
             if (enemy && enemy != bomber && !enemy->is_dead()) {
                 CL_Vector enemy_pos(enemy->get_x(), enemy->get_y());
                 float dist = vector_distance(pos, enemy_pos);
@@ -602,7 +602,7 @@ std::vector<AITarget> Controller_AI_Smart::scan_for_targets() {
             for (auto& obj : bomber->get_context()->get_object_lists()) {
                 if (!obj || obj->get_type() != GameObject::BOMBER) continue;
                 
-                Bomber* enemy = static_cast<Bomber*>(obj);
+                Bomber* enemy = static_cast<Bomber*>(obj.get());
                 if (enemy && enemy != bomber && !enemy->is_dead()) {
                     CL_Vector enemy_pos(enemy->get_x(), enemy->get_y());
                     float distance = vector_distance(my_pos, enemy_pos);
@@ -698,7 +698,7 @@ bool Controller_AI_Smart::would_hit_enemy(CL_Vector bomb_pos) {
     for (auto& obj : bomber->get_context()->get_object_lists()) {
         if (!obj || obj->get_type() != GameObject::BOMBER) continue;
         
-        Bomber* enemy = static_cast<Bomber*>(obj);
+        Bomber* enemy = static_cast<Bomber*>(obj.get());
         if (enemy && enemy != bomber && !enemy->is_dead()) {
             CL_Vector enemy_pos(enemy->get_x(), enemy->get_y());
             

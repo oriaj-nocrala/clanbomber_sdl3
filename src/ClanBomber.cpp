@@ -31,9 +31,9 @@ ClanBomberApplication::ClanBomberApplication() {
     client_disconnected_from_server = false;
     client_connecting_to_new_server = false;
     // REMOVED: gpu_renderer = nullptr; - now handled by RenderingFacade
-    lifecycle_manager = new LifecycleManager();
-    tile_manager = new TileManager();
-    particle_effects = new ParticleEffectsManager(this);
+    lifecycle_manager = std::make_unique<LifecycleManager>();
+    tile_manager = std::make_unique<TileManager>();
+    particle_effects = std::make_unique<ParticleEffectsManager>(this);
     game_context = nullptr; // Will be initialized after RenderingFacade is ready
 }
 
@@ -44,18 +44,10 @@ ClanBomberApplication::~ClanBomberApplication() {
         map = nullptr;
     }
     // REMOVED: gpu_renderer deletion - now handled by RenderingFacade
-    if (lifecycle_manager) {
-        delete lifecycle_manager;
-        lifecycle_manager = nullptr;
-    }
-    if (tile_manager) {
-        delete tile_manager;
-        tile_manager = nullptr;
-    }
-    if (particle_effects) {
-        delete particle_effects;
-        particle_effects = nullptr;
-    }
+    // Smart pointers automatically cleanup - no manual delete needed
+    lifecycle_manager.reset();
+    tile_manager.reset();
+    particle_effects.reset();
     if (game_context) {
         delete game_context;
         game_context = nullptr;
@@ -67,9 +59,9 @@ void ClanBomberApplication::initialize_game_context() {
         tile_manager && particle_effects) {
         
         game_context = new GameContext(
-            lifecycle_manager,
-            tile_manager,
-            particle_effects,
+            lifecycle_manager.get(),
+            tile_manager.get(),
+            particle_effects.get(),
             nullptr,  // Map will be set later via set_map()
             nullptr,  // RenderingFacade will handle GPU rendering
             text_renderer
@@ -89,9 +81,9 @@ void ClanBomberApplication::initialize_game_context() {
     } else {
         SDL_Log("ERROR: Cannot initialize GameContext - missing dependencies:");
         SDL_Log("  text_renderer: %p", text_renderer);
-        SDL_Log("  lifecycle_manager: %p", lifecycle_manager);
-        SDL_Log("  tile_manager: %p", tile_manager);
-        SDL_Log("  particle_effects: %p", particle_effects);
+        SDL_Log("  lifecycle_manager: %p", lifecycle_manager.get());
+        SDL_Log("  tile_manager: %p", tile_manager.get());
+        SDL_Log("  particle_effects: %p", particle_effects.get());
     }
 }
 
@@ -157,21 +149,15 @@ void ClanBomberApplication::signal() {
 }
 
 void ClanBomberApplication::delete_all_game_objects() {
-    for (auto& obj : objects) {
-        delete obj;
-    }
+    // Smart pointers automatically handle cleanup - just clear collections
     objects.clear();
-    
-    for (auto& bomber : bomber_objects) {
-        delete bomber;
-    }
     bomber_objects.clear();
 }
 
 GameObject* ClanBomberApplication::get_object_by_id(int object_id) {
     for (auto& obj : objects) {
         if (obj->get_object_id() == object_id) {
-            return obj;
+            return obj.get(); // Extract raw pointer from unique_ptr
         }
     }
     return nullptr;

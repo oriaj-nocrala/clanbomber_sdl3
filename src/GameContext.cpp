@@ -101,13 +101,7 @@ void GameContext::register_object(GameObject* obj) const {
         lifecycle_manager->register_object(obj);
     }
     
-    // CRITICAL FIX: Also add to rendering list so objects are actually rendered
-    if (render_objects && obj) {
-        render_objects->push_back(obj);
-        SDL_Log("GameContext: Added object %p to render list (total: %zu)", obj, render_objects->size());
-    } else if (!render_objects) {
-        SDL_Log("GameContext: WARNING - No render_objects list set, object %p won't be rendered", obj);
-    }
+    // NOTE: render_objects list is managed by the object creator using proper smart pointer ownership
     
     // COLLISION FIX: Also add to SpatialGrid for optimized collision detection
     if (spatial_grid && obj) {
@@ -117,7 +111,7 @@ void GameContext::register_object(GameObject* obj) const {
     }
 }
 
-void GameContext::set_object_lists(std::list<GameObject*>* objects) {
+void GameContext::set_object_lists(std::list<std::unique_ptr<GameObject>>* objects) {
     render_objects = objects;
     SDL_Log("GameContext: Render objects list set to %p", render_objects);
 }

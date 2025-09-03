@@ -21,6 +21,7 @@
 
 #include <list>
 #include <filesystem>
+#include <memory>
 
 #include "Resources.h"
 // REMOVED: #include "GPUAcceleratedRenderer.h" - now handled by RenderingFacade
@@ -122,13 +123,13 @@ class ClanBomberApplication
   ~ClanBomberApplication();
   int main();
   Map* map;
-  std::list<GameObject*> objects;
-  std::list<Bomber*> bomber_objects;
+  std::list<std::unique_ptr<GameObject>> objects;
+  std::list<std::unique_ptr<Bomber>> bomber_objects;
   // REMOVED: GPUAcceleratedRenderer* gpu_renderer; - now handled by RenderingFacade
   class TextRenderer* text_renderer;
-  LifecycleManager* lifecycle_manager;
-  TileManager* tile_manager;
-  class ParticleEffectsManager* particle_effects;
+  std::unique_ptr<LifecycleManager> lifecycle_manager;
+  std::unique_ptr<TileManager> tile_manager;
+  std::unique_ptr<class ParticleEffectsManager> particle_effects;
   class GameContext* game_context;
 
   bool init_server_game();

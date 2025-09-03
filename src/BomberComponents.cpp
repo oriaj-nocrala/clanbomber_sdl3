@@ -195,11 +195,11 @@ void BomberCombatComponent::place_bomb() {
     int bomb_x = static_cast<int>(center.pixel_x);
     int bomb_y = static_cast<int>(center.pixel_y);
     
-    Bomb* bomb = new Bomb(bomb_x, bomb_y, power, static_cast<Bomber*>(owner), context);
-    
     SDL_Log("💣 PLACE BOMB: Bomber at (%d,%d) -> tile (%d,%d) -> Bomb created at center (%d,%d)", 
             bomber_x, bomber_y, map_x, map_y, bomb_x, bomb_y);
-    context->register_object(bomb); // MODERN: Use GameContext for object registration
+    
+    // MODERN: Use smart pointer creation and automatic registration
+    Bomb* bomb = context->create_and_register_object<Bomb>(bomb_x, bomb_y, power, static_cast<Bomber*>(owner), context);
     
     // Register bomb with tile manager
     if (context->get_tile_manager()) {
@@ -234,14 +234,12 @@ void BomberCombatComponent::throw_bomb() {
         case DIR_DOWN:  target_y += throw_distance; break;
     }
     
-    // Create thrown bomb
-    // Create thrown bomb using GameContext - MODERN architecture
-    ThrownBomb* thrown_bomb = new ThrownBomb(
+    // Create thrown bomb using MODERN smart pointer architecture
+    ThrownBomb* thrown_bomb = context->create_and_register_object<ThrownBomb>(
         owner->get_x(), owner->get_y(), power, 
         static_cast<Bomber*>(owner), 
         target_x, target_y, context
     );
-    context->register_object(thrown_bomb); // MODERN: Use GameContext for object registration
     
     // Update bomb tracking
     inc_current_bombs();
@@ -260,10 +258,9 @@ void BomberCombatComponent::die() {
     
     dead = true;
     
-    // Create corpse with bomber's color using GameContext - MODERN architecture  
+    // Create corpse with bomber's color using MODERN smart pointer architecture  
     Bomber* bomber = static_cast<Bomber*>(owner);
-    BomberCorpse* corpse = new BomberCorpse(owner->get_x(), owner->get_y(), bomber->get_color(), context);
-    context->register_object(corpse); // MODERN: Use GameContext for object registration
+    BomberCorpse* corpse = context->create_and_register_object<BomberCorpse>(owner->get_x(), owner->get_y(), bomber->get_color(), context);
     
     // Play death sound
     AudioPosition death_pos(owner->get_x(), owner->get_y(), 0.0f);

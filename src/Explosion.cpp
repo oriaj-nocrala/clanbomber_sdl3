@@ -378,12 +378,12 @@ void Explosion::kill_bombers() {
         }
     } else {
         // FALLBACK: Use legacy O(n²) method if spatial grid not available
-        const std::list<class GameObject*>& object_lists = ctx->get_object_lists();
+        const std::list<std::unique_ptr<GameObject>>& object_lists = ctx->get_object_lists();
         
         for (auto& obj : object_lists) {
             if (!obj || obj->get_type() != GameObject::BOMBER) continue;
             
-            Bomber* bomber = static_cast<Bomber*>(obj);
+            Bomber* bomber = static_cast<Bomber*>(obj.get());
             if (bomber && !bomber->delete_me && !bomber->is_dead()) {
                 int bomber_map_x = bomber->get_map_x();
                 int bomber_map_y = bomber->get_map_y();
@@ -485,11 +485,11 @@ void Explosion::explode_corpses() {
         }
     } else {
         // FALLBACK: Use legacy O(n²) method if spatial grid not available
-        const std::list<class GameObject*>& object_lists = ctx->get_object_lists();
+        const std::list<std::unique_ptr<GameObject>>& object_lists = ctx->get_object_lists();
         
         for (auto& obj : object_lists) {
             if (obj && obj->get_type() == BOMBER_CORPSE) {
-                BomberCorpse* corpse = static_cast<BomberCorpse*>(obj);
+                BomberCorpse* corpse = static_cast<BomberCorpse*>(obj.get());
                 if (!corpse->is_exploded()) {
                     int corpse_map_x = corpse->get_map_x();
                     int corpse_map_y = corpse->get_map_y();
@@ -573,12 +573,12 @@ void Explosion::notify_explosion_haptics() {
     }
     
     // Get all bombers to check which ones use joystick controllers
-    const std::list<class GameObject*>& object_lists = ctx->get_object_lists();
+    const std::list<std::unique_ptr<GameObject>>& object_lists = ctx->get_object_lists();
     
     for (auto& obj : object_lists) {
         if (!obj || obj->get_type() != GameObject::BOMBER) continue;
         
-        Bomber* bomber = static_cast<Bomber*>(obj);
+        Bomber* bomber = static_cast<Bomber*>(obj.get());
         if (!bomber || bomber->delete_me) continue;
         
         Controller* controller = bomber->get_controller();

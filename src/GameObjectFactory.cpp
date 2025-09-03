@@ -12,9 +12,13 @@ ParticleSystem* GameObjectFactory::create_particle_system(int x, int y, int part
     
     if (particle_system) {
         // Reuse existing object by reinitializing it
+        SDL_Log("🔄 POOL HIT: Reusing ParticleSystem from pool (type=%d, pool_size=%zu)", 
+                particle_type, pool.size());
         particle_system->reinitialize(x, y, type, context);
     } else {
         // Create new object if pool is empty
+        SDL_Log("🆕 POOL MISS: Creating new ParticleSystem (type=%d, pool_size=%zu)", 
+                particle_type, pool.size());
         particle_system = std::make_unique<ParticleSystem>(x, y, type, context);
     }
     
@@ -31,7 +35,13 @@ bool GameObjectFactory::try_return_to_pool(GameObject* obj) {
     // Type-specific pool return (only ParticleSystem supported for now)
     if (auto* particle_system = dynamic_cast<ParticleSystem*>(obj)) {
         auto unique_obj = std::unique_ptr<ParticleSystem>(particle_system);
+        auto& pool = get_pool<ParticleSystem>();
+        size_t pool_size_before = pool.size();
+        
         return_to_pool(std::move(unique_obj));
+        
+        SDL_Log("♻️  POOL RETURN: ParticleSystem returned to pool (pool_size: %zu -> %zu)", 
+                pool_size_before, pool.size());
         return true;
     }
     
