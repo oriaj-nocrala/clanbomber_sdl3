@@ -57,6 +57,51 @@ void ParticleSystem::reset_for_pool() {
     random_gen.seed(std::random_device{}());
 }
 
+void ParticleSystem::reinitialize(int _x, int _y, ParticleType type, GameContext* context) {
+    // First reset for pool to clear state
+    reset_for_pool();
+    
+    // Reinitialize all members as if constructed fresh
+    x = _x;
+    y = _y;
+    particle_type = type;
+    set_game_context(context); // Update context reference
+    
+    emission_timer = 0.0f;
+    emission_rate = 60.0f;
+    continuous_emission = false;
+    system_lifetime = 0.0f;
+    max_lifetime = 3.0f;
+    
+    z = Z_EXPLOSION; // Same layer as explosions
+    
+    // Initialize based on particle type (same logic as constructor)
+    switch (type) {
+        case EXPLOSION_SPARKS:
+            emit_explosion_sparks();
+            max_lifetime = 1.5f;
+            break;
+        case DUST_CLOUDS:
+            emit_dust_cloud();
+            continuous_emission = true;
+            emission_rate = 30.0f;
+            max_lifetime = 2.0f;
+            break;
+        case FIRE_PARTICLES:
+            emit_fire_particles();
+            continuous_emission = true;
+            emission_rate = 40.0f;
+            max_lifetime = 2.5f;
+            break;
+        case SMOKE_TRAILS:
+            emit_smoke_trail();
+            continuous_emission = true;
+            emission_rate = 20.0f;
+            max_lifetime = 3.0f;
+            break;
+    }
+}
+
 void ParticleSystem::act(float deltaTime) {
     system_lifetime += deltaTime;
     

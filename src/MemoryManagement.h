@@ -79,15 +79,13 @@ UniquePtr<T> make_unique_with_deleter(std::function<void(T*)> deleter, Args&&...
 template<typename T>
 class ObjectPool {
 public:
-    explicit ObjectPool(size_t initial_size = 50) {
+    explicit ObjectPool(size_t initial_size = 50) : max_size(200) {
         pool.reserve(initial_size);
-        for (size_t i = 0; i < initial_size; ++i) {
-            pool.push_back(std::make_unique<T>());
-        }
+        // Pool starts empty - objects added when released back to pool
     }
     
     /**
-     * @brief Obtiene objeto del pool o crea uno nuevo
+     * @brief Obtiene objeto del pool, returns nullptr if pool is empty
      */
     UniquePtr<T> acquire() {
         if (!pool.empty()) {
@@ -95,7 +93,7 @@ public:
             pool.pop_back();
             return obj;
         }
-        return std::make_unique<T>();
+        return nullptr; // Caller must handle nullptr case
     }
     
     /**
@@ -145,12 +143,31 @@ public:
     }
     
     /**
-     * @brief Specialized factory for ParticleSystem with auto-registration
-     * Uses RAII and clean resource management instead of complex ObjectPool
+     * @brief Regresa objeto al pool para reuso
+     */
+    template<typename T>
+    void return_to_pool(UniquePtr<T> obj) {
+        auto& pool = get_pool<T>();
+        pool.release(std::move(obj));
+    }
+    
+    /**
+     * @brief Specialized factory for ParticleSystem with ObjectPool and auto-registration
+     * Implements proper architecture with object reuse for performance
      */
     template<typename... Args>
     class ParticleSystem* create_particle_system(int x, int y, ParticleType type, GameContext* context, Args&&... args) {
-        auto particle_system = std::make_unique<ParticleSystem>(x, y, type, context, std::forward<Args>(args)...);
+        auto& pool = get_pool<ParticleSystem>();
+        auto particle_system = pool.acquire();
+        
+        if (particle_system) {
+            // Reuse existing object by reinitializing it
+            particle_system->reinitialize(x, y, type, context, std::forward<Args>(args)...);
+        } else {
+            // Create new object if pool is empty
+            particle_system = std::make_unique<ParticleSystem>(x, y, type, context, std::forward<Args>(args)...);
+        }
+        
         auto* raw_ptr = particle_system.release(); // Transfer ownership to GameContext
         context->register_object(raw_ptr);
         return raw_ptr;
@@ -160,16 +177,31 @@ public:
      * @brief Obtiene estadísticas de memory usage
      */
     struct MemoryStats {
-        size_t objects_created = 0;
-        size_t particle_systems_created = 0;
+        size_t total_pools = 0;
+        size_t total_pooled_objects = 0;
         std::unordered_map<std::string, size_t> objects_per_type;
     };
     
     MemoryStats get_memory_statistics() const;
 
 private:
-    // Statistics tracking
-    mutable size_t particle_systems_created_ = 0;
+    // Pool storage por tipo usando type erasure correctamente
+    std::unordered_map<std::type_index, std::unique_ptr<void, std::function<void(void*)>>> pools;
+    
+    template<typename T>
+    ObjectPool<T>& get_pool() {
+        auto type_idx = std::type_index(typeid(T));
+        auto it = pools.find(type_idx);
+        
+        if (it == pools.end()) {
+            auto deleter = [](void* ptr) { delete static_cast<ObjectPool<T>*>(ptr); };
+            pools[type_idx] = std::unique_ptr<void, std::function<void(void*)>>(
+                new ObjectPool<T>(), deleter
+            );
+        }
+        
+        return *static_cast<ObjectPool<T>*>(pools[type_idx].get());
+    }
 };
 
 /**

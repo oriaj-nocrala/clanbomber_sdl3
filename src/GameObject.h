@@ -205,6 +205,15 @@ public:
    * Override in derived classes that need pool compatibility
    */
   virtual void		reset_for_pool() {}
+
+protected:
+  /**
+   * Set new context for ObjectPool reinitialization
+   * Protected to allow derived classes to update context during reuse
+   */
+  void set_game_context(GameContext* context) { game_context = context; }
+
+public:
   void show(int _x, int _y) const;
   void show(int _x, int _y, float _scale) const;
   void fly_to(int _x, int _y, int _speed=0);

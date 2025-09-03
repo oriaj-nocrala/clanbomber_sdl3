@@ -32,6 +32,9 @@ public:
     ObjectType get_type() const override { return EXPLOSION; } // Reuse explosion type
     void reset_for_pool() override;
     
+    // ObjectPool support - reinitializes object with new parameters
+    void reinitialize(int _x, int _y, ParticleType type, GameContext* context);
+    
     void emit_explosion_sparks(int count = 30);
     void emit_dust_cloud(int count = 20);
     void emit_fire_particles(int count = 25);
