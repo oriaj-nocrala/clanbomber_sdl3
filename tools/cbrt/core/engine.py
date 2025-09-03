@@ -207,7 +207,12 @@ class AnalysisEngine:
                 if func_match:
                     current_function = func_match.group(1)
                 
-                # Find function calls
+                # Find function calls (but skip function definitions)
+                # Skip lines that are function definitions themselves
+                if func_match and current_function:
+                    # This line is a function definition, skip call detection
+                    continue
+                    
                 call_patterns = [
                     r'([a-zA-Z_][a-zA-Z0-9_]*)\s*::\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\(',  # Class::method
                     r'([a-zA-Z_][a-zA-Z0-9_]*)\s*\('  # function
@@ -222,9 +227,10 @@ class AnalysisEngine:
                         else:
                             called_func = match.group(1)
                         
-                        # Skip keywords and invalid names
-                        if (called_func in ['if', 'for', 'while', 'switch', 'return', 'sizeof'] or
-                            len(called_func) <= 2):
+                        # Skip keywords, invalid names, and function definitions
+                        if (called_func in ['if', 'for', 'while', 'switch', 'return', 'sizeof', 'void', 'int', 'bool'] or
+                            len(called_func) <= 2 or
+                            called_func == current_function):  # Don't count function calling itself in definition
                             continue
                         
                         location = SourceLocation(str(file_path), i + 1)
